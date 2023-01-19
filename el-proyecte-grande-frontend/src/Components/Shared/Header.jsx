@@ -1,17 +1,28 @@
 import Box from "@mui/material/Box";
-import CardMedia from "@mui/material/CardMedia";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
 
 const Header = () => {
     return (
         <div className="Header">
+            <Paper>
+                <Grid container alignItems="right" spacing={2}>
+                    <Grid item xs={12} md={9}>
 
-            <Box sx={{ marginY: 2 }}>
-                <CardMedia
-                    component="img"
-                    src="https://via.placeholder.com/1200x120.png"
-                ></CardMedia>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <div className="User">
+                        <span>Logged in: Admin</span>
+                        <Button>Logout</Button>
+                    </div>
+                </Grid>
+            </Grid>
+            <Box sx={{ marginY: 2, textAlign: 'center' }}>
+                <h1>Grande management</h1>
             </Box>
-        </div>
+        </Paper >
+        </div >
 
     )
 }

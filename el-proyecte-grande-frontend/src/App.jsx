@@ -26,14 +26,15 @@ function App() {
             <div className="App">
                 <ThemeProvider theme={Theme}>
                     <CssBaseline enableColorScheme />
-                    <Header />
-                    <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
-                        <Grid item xs={12} md={2}>
-                            <Menu />
-                        </Grid>
-                        <Grid item xs={12} md={10}>
-                            <Paper>
-                                <Container>
+                    <Container>
+                        <Header />
+                        <Grid container direction="row" spacing={2}>
+                            <Grid item xs={12} md={2}>
+                                <Menu />
+                            </Grid>
+                            <Grid item xs={12} md={10}>
+                                <Paper sx={{padding: '10px'}}>
+
                                     <Routes>
                                         <Route path="/hotel" element={<Hotel />} />
                                         <Route path="/room" element={<Room />} />
@@ -44,11 +45,12 @@ function App() {
                                         <Route path="/" element={<Home />} />
                                         <Route path="*" element={<Navigate replace to="/" />} />
                                     </Routes>
-                                </Container>
-                            </Paper>
+
+                                </Paper>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Footer />
+                        <Footer />
+                    </Container>
                 </ThemeProvider>
             </div>
 
