@@ -1,6 +1,10 @@
+import Navlinks from './Navlinks.jsx';
+
 const Menu = () => {
     return (
-        <div>Menu</div>
+        <div>
+            <Navlinks />
+        </div>
     )
 }
 
