@@ -13,31 +13,42 @@ import Guest from './Components/Content/GuestModule/Guests.jsx';
 
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import theme from "./Theme.jsx"
+import Theme from "./Theme.jsx"
 import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 
 function App() {
 
     return (
         <BrowserRouter>
             <div className="App">
-                <ThemeProvider theme={theme}>
+                <ThemeProvider theme={Theme}>
                     <CssBaseline enableColorScheme />
-                    <Container>
-                        <Header />
-                        <Menu />
-                        <Routes>
-                            <Route path="/hotel" element={<Hotel />} />
-                            <Route path="/room" element={<Room />} />
-                            <Route path="/guest" element={<Guest />} />
-                            <Route path="/inventory" element={<Inventory />} />
-                            <Route path="/reservation" element={<Reservation />} />
+                    <Header />
+                    <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                        <Grid item xs={12} md={2}>
+                            <Menu />
+                        </Grid>
+                        <Grid item xs={12} md={10}>
+                            <Paper>
+                                <Container>
+                                    <Routes>
+                                        <Route path="/hotel" element={<Hotel />} />
+                                        <Route path="/room" element={<Room />} />
+                                        <Route path="/guest" element={<Guest />} />
+                                        <Route path="/inventory" element={<Inventory />} />
+                                        <Route path="/reservation" element={<Reservation />} />
 
-                            <Route path="/" element={<Home />} />
-                            <Route path="*" element={<Navigate replace to="/" />} />
-                        </Routes>
-                        <Footer />
-                    </Container>
+                                        <Route path="/" element={<Home />} />
+                                        <Route path="*" element={<Navigate replace to="/" />} />
+                                    </Routes>
+                                </Container>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                    <Footer />
                 </ThemeProvider>
             </div>
 
