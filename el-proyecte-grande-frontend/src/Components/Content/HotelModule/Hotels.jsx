@@ -11,6 +11,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+import ContentPagination from '../../Shared/Pagination';
 import TextField from '@mui/material/TextField';
 
 function createData(id, name, address, status, stars, floors, rooms) {
@@ -79,6 +80,7 @@ const Hotels = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <ContentPagination />
         </div>
     )
 }
