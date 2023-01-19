@@ -31,6 +31,9 @@ const rows = [
 const Hotels = () => {
     return (
         <div className="Hotels">
+            <Box sx={{ textAlign: 'center' }}>
+                <h2 >Hotel</h2>
+            </Box>
             <Box sx={{ marginY: 1 }}>
                 <Grid container
                     direction="row"
