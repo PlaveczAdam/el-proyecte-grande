@@ -1,7 +1,10 @@
 import * as React from 'react';
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TextField from '@mui/material/TextField';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -27,6 +30,23 @@ const rows = [
 const Rooms = () => {
   return (
         <>
+            <Box sx={{ textAlign: 'center' }}>
+                <h2 >Room</h2>
+            </Box>
+            <Box sx={{ marginY: 1 }}>
+                <Grid container
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <Grid item xs={12} md={9} >
+                        <Button variant="text">Add new</Button>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" />
+                    </Grid>
+                </Grid>
+            </Box>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
