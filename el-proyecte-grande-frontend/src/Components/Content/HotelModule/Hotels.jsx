@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+import ContentPagination from '../../Shared/Pagination';
 
 function createData(id, name, address, status, stars, floors, rooms) {
     return { id, name, address, status, stars, floors, rooms };
@@ -26,6 +27,7 @@ const rows = [
 
 const Hotels = () => {
     return (
+        <>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -60,7 +62,9 @@ const Hotels = () => {
                     ))}
                 </TableBody>
             </Table>
-        </TableContainer>
+            </TableContainer>
+            <ContentPagination />
+        </>
     )
 }
 
