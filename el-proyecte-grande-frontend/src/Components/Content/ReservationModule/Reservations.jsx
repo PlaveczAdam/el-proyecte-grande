@@ -10,6 +10,9 @@ import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import ContentPagination from '../../Shared/Pagination';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
 function createData(id, reservator, reserveDate, startDate, endDate, hotelName) {
     return { id, reservator, reserveDate, startDate, endDate, hotelName };
@@ -27,6 +30,23 @@ const rows = [
 const Reservations = () => {
     return (
         <>
+            <Box sx={{ textAlign: 'center' }}>
+                <h2 >Reservation</h2>
+            </Box>
+            <Box sx={{ marginY: 1 }}>
+                <Grid container
+                    direction="row"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <Grid item xs={12} md={9} >
+                        <Button variant="text">Add new</Button>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" />
+                    </Grid>
+                </Grid>
+            </Box>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
