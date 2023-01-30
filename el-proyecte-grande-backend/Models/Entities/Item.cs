@@ -10,6 +10,6 @@ namespace el_proyecte_grande_backend.Models.Entities
         public uint RequiredAmount { get; set; }
 		public ItemType ItemType { get; set; }
 
-		public List<Inventory> Inventories { get; set; }
+		public Inventory Inventory { get; set; }
     }
 }
