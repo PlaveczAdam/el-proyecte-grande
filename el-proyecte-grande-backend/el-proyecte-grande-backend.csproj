@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>el_proyecte_grande_backend</RootNamespace>
+    <UserSecretsId>8cf55b28-1064-4f32-9b2d-0b1adc9f31ba</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
