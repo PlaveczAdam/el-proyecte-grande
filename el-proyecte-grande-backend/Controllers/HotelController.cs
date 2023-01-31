@@ -1,5 +1,6 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.HotelNs;
 using el_proyecte_grande_backend.Models.Entities;
+using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Repositories.HotelNs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,6 +39,12 @@ namespace el_proyecte_grande_backend.Controllers
         {
             var hotel = await _hotelRepository.UpdateHotel(hotelId, MapDtoToHotel(hotelDto));
             return MapHotelToDto(hotel);
+        }
+
+        [HttpPut("{hotelId}/{hotelStatus}")]
+        public async Task UpdateStatus(long hotelId, HotelStatus hotelStatus)
+        {
+            await _hotelRepository.SetHotelStatus(hotelId, hotelStatus);
         }
 
         private static AddressDto MapAddressToDto(Address adress)
