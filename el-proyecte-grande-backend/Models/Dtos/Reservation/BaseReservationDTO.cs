@@ -41,32 +41,41 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
         public long Id { get; set; }
 
         public Hotel Hotel { get; set; }
-        public Reservator Reservator { get; set; }
+        public GetReservatorDTOForReservation Reservator { get; set; }
 
-        public List<Room> Rooms { get; set; }
+        public List<RoomDTOsForReservation> Rooms { get; set; }
         public List<Guest> Guests { get; set; }
     }
 
     public class AddReservationDTO : BaseReservationDTO
-    { 
+    {
+        [Required]
         public int HotelId { get; set; }
 
+        [Required]
+        public AddReservatorDTOForReservation Reservator { get; set; }
+
+        [Required]
+        public long[] RoomIds { get; set; }
+        //public List<RoomDTOsForReservation> Rooms { get; set; }
 
     }
 
 
-    public class UpdateReservationDTO { }
+    public class UpdateReservationDTO : AddReservationDTO
+    {
+    }
 
 
 
-    public class ReservatorDTOForReservation
+    public class GetReservatorDTOForReservation
     {
         public long Id { get; set; }
         public string Name { get; set; }
 
         public AddressDTOForReservation? Address { get; set; }
     }
-    
+
     public class AddReservatorDTOForReservation
     {
         [Required]
@@ -78,6 +87,8 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
 
     public class AddressDTOForReservation
     {
+        //[Required]
+        //public long Id { get; set; }
         [Required]
         public string? PostalCode { get; set; }
         [Required]
@@ -90,5 +101,17 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
         public string? AddressLineOne { get; set; }
         [Required]
         public string? AddressLineTwo { get; set; }
+    }
+
+    public class RoomDTOsForReservation
+    {
+        [Required]
+        public long Id { get; set; }
+        public int Floor { get; set; }
+        public int DoorNo { get; set; }
+        public bool Accessible { get; set; }
+        public string Status { get; set; }
+
+        public RoomType RoomType { get; set; }
     }
 }
