@@ -20,6 +20,12 @@ namespace el_proyecte_grande_backend.Controllers
             return (await _hotelRepository.GetAllHotels()).Select(MapHotelToDto);
         }
 
+        [HttpGet("{hotelId}")]
+        public async Task<HotelDto> GetHotelById(long hotelId)
+        {
+            return MapHotelToDto(await _hotelRepository.GetHotel(hotelId));
+        }
+
         [HttpPost]
         public async Task<HotelDto> AddHotel([FromBody] HotelDto hotelDto)
         {

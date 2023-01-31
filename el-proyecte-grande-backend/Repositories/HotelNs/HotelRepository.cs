@@ -25,7 +25,7 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
             return await _context.Hotels.Include(x => x.Address).ToListAsync();
         }
 
-        public async Task<Hotel> GetHotel(int id)
+        public async Task<Hotel> GetHotel(long id)
         {
             var hotel = await _context.Hotels.Include(x => x.Address).SingleAsync(x => x.Id == id);
             return hotel;
