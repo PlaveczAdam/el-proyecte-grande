@@ -1,7 +1,11 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
+using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Repositories.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using el_proyecte_grande_backend.Extensions;
+using AutoMapper;
+using el_proyecte_grande_backend.Models.Dtos.Reservation;
 
 namespace el_proyecte_grande_backend.Controllers
 {
@@ -10,10 +14,12 @@ namespace el_proyecte_grande_backend.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly IReservationRepository _reservationRepository;
+        private readonly IMapper _mapper;
 
-        public ReservationController(IReservationRepository reservationRepository)
+        public ReservationController(IReservationRepository reservationRepository, IMapper mapper)
         {
             _reservationRepository = reservationRepository;
+            _mapper = mapper;
         }
 
 
@@ -23,7 +29,8 @@ namespace el_proyecte_grande_backend.Controllers
         public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservations()
         {
             IEnumerable<Reservation> reservations = await _reservationRepository.GetAllAsync();
-            return Ok(reservations);
+            IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
+            return Ok(reservationDTOs);
         }
 
         // GET: api/Reservation/Hotel/hotelId
@@ -31,7 +38,8 @@ namespace el_proyecte_grande_backend.Controllers
         public async Task<ActionResult<IEnumerable<Reservation>>> GetHotelReservations(long hotelId)
         {
             IEnumerable<Reservation> reservations = await _reservationRepository.GetHotelReservations(hotelId);
-            return Ok(reservations);
+            IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
+            return Ok(reservationDTOs);
         }
 
         // GET: api/Reservation/flter
@@ -46,7 +54,8 @@ namespace el_proyecte_grande_backend.Controllers
             )
         {
             IEnumerable<Reservation> reservations = await _reservationRepository.GetFilteredReservations(boardType, paymentMethod, reservedFor, payFulfillment, startDate, endDate);
-            return Ok(reservations);
+            IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
+            return Ok(reservationDTOs);
         }
 
 
@@ -54,35 +63,50 @@ namespace el_proyecte_grande_backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetReservation(long id)
         {
-            Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
+                        Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            return Ok(reservation);
+            GetReservationDTO reservationDTO = _mapper.Map<GetReservationDTO>(reservation);
+            return Ok(reservationDTO);
         }
 
 
+        // GET: api/Reservation/enum/BoardTypes
+        [HttpGet("enum/{enumName}")]
+        public ActionResult<EnumDetails> GetEnum(string enumName)
+        {
+            //var x = EnumExtensions.GetDictionaryOfEnum<BoardType>();
+            //return Ok(new EnumDetails("boardType", x));
+
+            EnumDetails? enumDetails = EnumExtensions.GetValuesOfEnum(enumName);
+            if (enumDetails == null)
+                return NotFound(JsonConvert.SerializeObject(new { message = $"Enum with the name of {enumName} does not exist" }));
+
+            return Ok(enumDetails);
+        }
+
         // POST: api/Reservation
         [HttpPost]
-        public async Task<ActionResult<Reservation>> PostReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation>> PostReservation(AddReservationDTO reservationDTO)
         {
-            //_context.Reservations.Add(reservation);
-            //await _context.SaveChangesAsync();
+            Reservation reservationToAdd = _mapper.Map<Reservation>(reservationDTO);
+            Reservation? createdReservation = await _reservationRepository.AddAsync(reservationToAdd, reservationDTO.RoomIds);
 
-            return CreatedAtAction("GetReservation", new { id = reservation.Id }, reservation);
+            GetReservationDTO createdReservationDTO = _mapper.Map<GetReservationDTO>(createdReservation);
+
+            return CreatedAtAction("GetReservation", new { id = createdReservation.Id }, createdReservationDTO);
         }
 
         // PUT: api/Reservation/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReservation(long id, Reservation reservation)
+        public async Task<IActionResult> UpdateReservation(long id, UpdateReservationDTO reservationDTO)
         {
-            //if (id != reservation.Id)
-            //{
-            //    return BadRequest();
-            //}
+            Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
-            //_context.Entry(reservation).State = EntityState.Modified;
+            if (reservation == null)
+                return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
             //try
             //{
@@ -106,8 +130,11 @@ namespace el_proyecte_grande_backend.Controllers
 
         // PUT: /api/reservation/status/5
         [HttpPut("status/{id}")]
-        public async Task<IActionResult> SetReservationPayFulfillment(long id, Reservation reservation)
+        public async Task<IActionResult> SetReservationPayFulfillment(long id, Reservation reservationDTO)
         {
+            Reservation? reservation = await _reservationRepository.GetAsync(id);
+            if (reservation == null)
+                return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
             return NoContent();
         }
@@ -116,17 +143,15 @@ namespace el_proyecte_grande_backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReservation(long id)
         {
-            //var reservation = await _context.Reservations.FindAsync(id);
-            //if (reservation == null)
-            //{
-            //    return NotFound();
-            //}
+            Reservation? reservation = await _reservationRepository.GetAsync(id);
+            if (reservation == null)
+                return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            //_context.Reservations.Remove(reservation);
-            //await _context.SaveChangesAsync();
+            await _reservationRepository.DeleteAsync(id);
 
-            return NoContent();
+            return Ok(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} has been deleted successfully" }));
         }
+
 
 
     }
