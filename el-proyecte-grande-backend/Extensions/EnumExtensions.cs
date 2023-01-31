@@ -7,26 +7,37 @@ namespace el_proyecte_grande_backend.Extensions
     {
         private static IEnumerable<EnumDetails> _allEnumDetails = GenerateEnumDetailslList();
 
-        public static EnumDetails? GetValuesOfEnum(this Enum enumName)
+        public static EnumDetails? GetValuesOfEnum(string enumName)
         {
-            return _allEnumDetails.FirstOrDefault(e => enumName.ToString() == e.Name);
+            return _allEnumDetails.FirstOrDefault(e => enumName == e.Name);
+        }
+
+        private static Dictionary<string, int> GetDictionaryOfEnum<TEnum>() where TEnum : struct, IComparable, IFormattable, IConvertible
+        {
+            IEnumerable<TEnum> enumValues = GetValuesOfEnum<TEnum>();
+            Dictionary<string, int> enumDictionary = enumValues.ToDictionary(t => t.ToString()!, t => Convert.ToInt32(t));
+            return enumDictionary;
+        }
+
+
+        private static IEnumerable<TEnum> GetValuesOfEnum<TEnum>() where TEnum : struct, IComparable, IFormattable, IConvertible
+        {
+            Type? enumType = typeof(TEnum);
+
+            if (!enumType.IsEnum)
+                throw new ArgumentException();
+            
+            return  Enum.GetValues(enumType).Cast<TEnum>();
         }
 
 
         private static IEnumerable<EnumDetails> GenerateEnumDetailslList()
         {
-            Dictionary<string, int> boardTypes = Enum.GetValues(typeof(BoardType))
-                .Cast<BoardType>()
-                .ToDictionary(t => t.ToString(), t => (int)t);
+            EnumDetails boardTypeEnumDetails = new("BoardType", GetDictionaryOfEnum<BoardType>());
+            EnumDetails paymentMethodEnumDetails = new("PaymentMethod", GetDictionaryOfEnum<PaymentMethod>());
+            EnumDetails gendernumDetails = new("Gender", GetDictionaryOfEnum<Gender>());
 
-            Dictionary<string, int> paymentMethods = Enum.GetValues(typeof(PaymentMethod))
-                .Cast<PaymentMethod>()
-                .ToDictionary(t => t.ToString(), t => (int)t);
-
-            EnumDetails boardTypeEnumDetails = new("BoardType", boardTypes);
-            EnumDetails paymentMethodsEnumDetails = new("PaymentMethods", paymentMethods);
-
-            return new List<EnumDetails> { boardTypeEnumDetails,paymentMethodsEnumDetails };
+            return new List<EnumDetails> { boardTypeEnumDetails, paymentMethodEnumDetails, gendernumDetails };
         }
     }
 }
