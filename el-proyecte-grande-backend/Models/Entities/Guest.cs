@@ -19,6 +19,6 @@ namespace el_proyecte_grande_backend.Models.Entities
 		public Address Address { get; set; }
 		public Room Room { get; set; }
 		public Hotel Hotel { get; set; }
-		public List<Reservation> Reservations { get; set; } = new(){};
+		public virtual ICollection<Reservation> Reservations { get; set; } 
 	}
 }
