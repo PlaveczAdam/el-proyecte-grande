@@ -9,6 +9,6 @@ namespace el_proyecte_grande_backend.Models.Entities
 		public double Price { get; set; }
 		public RoomQuality RoomQuality { get; set; }
 
-		public List<Accessory> Accessories { get; set; }
+		public virtual ICollection<Accessory> Accessories { get; set; }
 	}
 }

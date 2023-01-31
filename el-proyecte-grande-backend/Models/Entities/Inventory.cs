@@ -3,8 +3,8 @@
 	public class Inventory
 	{
 		public long Id { get; set; }
-		public List<Item> Items { get; set; }
 
+		public virtual ICollection<Item> Items { get; set; }
 		public Hotel Hotel { get; set; }
 	}
 }

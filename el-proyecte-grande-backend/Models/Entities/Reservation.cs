@@ -16,8 +16,8 @@ namespace el_proyecte_grande_backend.Models.Entities
 
 		public Reservator Reservator { get; set; }
 		public Hotel Hotel { get; set; }
-		public List<Room> Rooms { get; set; }
-		public List<Guest> Guests { get; set; }
+		public virtual ICollection<Room> Rooms { get; set; }
+		public virtual ICollection<Guest> Guests { get; set; }
 
 	}
 }
