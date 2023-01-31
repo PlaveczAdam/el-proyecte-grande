@@ -22,16 +22,12 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
 
         public async Task<IEnumerable<Hotel>> GetAllHotels()
         {
-            return await _context.Hotels.ToListAsync();
+            return await _context.Hotels.Include(x => x.Address).ToListAsync();
         }
 
         public async Task<Hotel> GetHotel(int id)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
-            if (hotel is null)
-            {
-                throw new Exception("There is no hotel.");
-            }
+            var hotel = await _context.Hotels.Include(x => x.Address).SingleAsync(x => x.Id == id);
             return hotel;
         }
 
