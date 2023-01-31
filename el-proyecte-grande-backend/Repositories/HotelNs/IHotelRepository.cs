@@ -8,7 +8,7 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
         public Task<IEnumerable<Hotel>> GetAllHotels();
         public Task<Hotel> GetHotel(long id);
         public Task<Hotel> AddHotel(Hotel hotel);
-        public Task<Hotel> UpdateHotel(int hotelId, Hotel hotel);
-        public Task<Hotel> SetHotelStatus(int hotelId, HotelStatus status);
+        public Task<Hotel> UpdateHotel(long hotelId, Hotel hotel);
+        public Task<Hotel> SetHotelStatus(long hotelId, HotelStatus status);
     }
 }

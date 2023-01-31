@@ -31,7 +31,7 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
             return hotel;
         }
 
-        public async Task<Hotel> SetHotelStatus(int hotelId, HotelStatus status)
+        public async Task<Hotel> SetHotelStatus(long hotelId, HotelStatus status)
         {
             var hotel = await _context.Hotels.FindAsync(hotelId);
             if (hotel is null)
@@ -43,19 +43,21 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
             return hotel;
         }
 
-        public async Task<Hotel> UpdateHotel(int hotelId, Hotel hotel)
+        public async Task<Hotel> UpdateHotel(long hotelId, Hotel hotel)
         {
-            var foundHotel = await _context.Hotels.FindAsync(hotelId);
-            if (foundHotel is null)
-            {
-                throw new Exception("There is no hotel.");
-            }
+            var foundHotel = await _context.Hotels.Include(x => x.Address).SingleAsync(x => x.Id == hotelId);
+
             foundHotel.Status = hotel.Status;
             foundHotel.Floor = hotel.Floor;
-            foundHotel.Address = hotel.Address;
             foundHotel.Rooms = hotel.Rooms;
             foundHotel.Classification = hotel.Classification;
             foundHotel.Name = hotel.Name;
+            foundHotel.Address.PostalCode = hotel.Address.PostalCode;
+            foundHotel.Address.Country = hotel.Address.Country;
+            foundHotel.Address.Region = hotel.Address.Region;
+            foundHotel.Address.City = hotel.Address.City;
+            foundHotel.Address.AddressLineOne = hotel.Address.AddressLineOne;
+            foundHotel.Address.AddressLineTwo = hotel.Address.AddressLineTwo;
 
             await _context.SaveChangesAsync();
             return foundHotel;

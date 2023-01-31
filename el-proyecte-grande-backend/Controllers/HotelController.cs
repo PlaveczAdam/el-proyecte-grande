@@ -33,6 +33,13 @@ namespace el_proyecte_grande_backend.Controllers
             return MapHotelToDto(hotel);
         }
 
+        [HttpPut("{hotelId}")]
+        public async Task<HotelDto> UpdateHotel(long hotelId, [FromBody] HotelDto hotelDto)
+        {
+            var hotel = await _hotelRepository.UpdateHotel(hotelId, MapDtoToHotel(hotelDto));
+            return MapHotelToDto(hotel);
+        }
+
         private static AddressDto MapAddressToDto(Address adress)
         {
             return new AddressDto(
