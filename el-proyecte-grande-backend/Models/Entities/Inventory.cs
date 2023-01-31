@@ -3,7 +3,7 @@
 	public class Inventory
 	{
 		public long Id { get; set; }
-		public List<Item> Inventories { get; set; }
+		public List<Item> Items { get; set; }
 
 		public Hotel Hotel { get; set; }
 	}
