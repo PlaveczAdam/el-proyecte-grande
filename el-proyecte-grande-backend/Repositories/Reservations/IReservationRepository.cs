@@ -18,7 +18,7 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
         Task<Reservation?> GetAsync(long? id);
         Task<Reservation?> GetWithDetailsAsync(long? id);
 
-        Task<Reservation> AddAsync(Reservation reservation);
+        Task<Reservation> AddAsync(Reservation reservation, long[] roomIds);
         Task<Reservation> UpdateAsync(Reservation reservation);
         Task<Reservation?> SetReservationPayFulfillment(long id, PaymentMethod paymentMethod);
         Task DeleteAsync(long id);

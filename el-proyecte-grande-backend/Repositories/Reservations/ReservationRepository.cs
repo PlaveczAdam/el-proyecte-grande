@@ -2,6 +2,7 @@
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace el_proyecte_grande_backend.Repositories.Reservations
@@ -85,15 +86,33 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             return await _context.Reservations
                 .Include(r => r.Hotel)
                 .Include(r => r.Reservator)
+                    .ThenInclude(res => res.Address)
                 .Include(r => r.Rooms)
                 .Include(r => r.Guests)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-
-        public async Task<Reservation> AddAsync(Reservation reservation)
+        private async Task<ICollection<Room>> GetRoomsForNewReservation(long[] roomIds)
         {
+            ICollection<Room> rooms = new List<Room>();
+            foreach (var item in roomIds)
+            {
+                Room? room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == item);
+                if (room != null)
+                    rooms.Add(room); 
+            }
+            return rooms;
+        }
+
+        public async Task<Reservation> AddAsync(Reservation reservation, long[] roomIds)
+        {
+            Hotel hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == reservation.Hotel.Id);
+            reservation.Hotel = hotel;
+
+            ICollection<Room> rooms = await GetRoomsForNewReservation(roomIds);
+            reservation.Rooms = rooms;
+
             await _context.AddAsync(reservation);
             await _context.SaveChangesAsync();
             return reservation;
