@@ -50,9 +50,12 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
         }
 
 
-        public Task<IEnumerable<Guest>> GetAllGuestByHotelAsync(long hotelId)
+        public async Task<IEnumerable<Guest>> GetAllGuestByHotelAsync(long hotelId)
         {
-            throw new NotImplementedException();
+            IEnumerable<Guest> guests = await GetGuestsWithAllDetails();
+            IEnumerable<Guest> result = guests.Where(g => g.Hotel != null && g.Hotel.Id == hotelId);
+
+            return result;
         }
 
         public async Task<IEnumerable<Guest>> GetAllGuestsAsync()
@@ -131,8 +134,17 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             return fromdb;
         }
 
-        public Task<Guest?> UpdateGuestStatusAsync(long guestId, int guestStatus)
+        public async Task<Guest?> UpdateGuestStatusAsync(long guestId, int guestStatus)
         {
+            Guest? fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
+            if (fromdb != null)
+            {
+                fromdb.Status = (GuestStatus)guestStatus;
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return fromdb;
+
             throw new NotImplementedException();
         }
         private async Task<IEnumerable<Guest>> GetGuestsWithAllDetails()
