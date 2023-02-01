@@ -22,7 +22,7 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
 
         public async Task<IEnumerable<Hotel>> GetAllHotels()
         {
-            return await _context.Hotels.Include(x => x.Address).ToListAsync();
+            return await _context.Hotels.Include(x => x.Address).OrderBy(x=>x.Id).ToListAsync();
         }
 
         public async Task<Hotel> GetHotel(long id)
