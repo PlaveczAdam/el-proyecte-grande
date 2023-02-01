@@ -2,7 +2,7 @@
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.Metadata;
+using el_proyecte_grande_backend.Models.Dtos;
 
 namespace el_proyecte_grande_backend.Repositories.GuestModule
 {
@@ -13,37 +13,42 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
         public GuestRepository(GrandeHotelContext dbContext)
         {
             _dbContext = dbContext;
+            Seed();
         }
 
-        public async Task<Guest?> AddGuestAsync(Guest guest)
+
+
+        public async Task<Guest?> AddGuestAsync(GuestUpdateDto guest)
         {
+            Guest newGuest = MakeGuestFromDto(guest);
             try
             {
-                guest.Hotel = await GetGuestHotel(guest);
-                guest.Room = await GetGuestRoom(guest);
-                guest.Reservations = await GetGuestReservations(guest);
+                newGuest.Hotel = await GetGuestHotel(guest.HotelId);
+                newGuest.Room = await GetGuestRoom(guest.RoomId);
+                newGuest.Reservations = await GetGuestReservations(guest.ReservationIds);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
 
-            if(guest.Reservations != null)
+            if (guest.ReservationIds != null)
             {
-                if (!await AllReservationIsInTheDatabase(guest.Reservations))
+                if (!await AllReservationIsInTheDatabase(guest.ReservationIds))
                 {
                     throw new InvalidOperationException("One or more reservation(s) with the given Id(s) not exits in the database");
                 }
-                
-                List<Reservation> reservations = await GetReservationsFromDb(guest.Reservations);
-                guest.Reservations = reservations;
+
+                List<Reservation> reservations = await GetReservationsFromDb(guest.ReservationIds);
+                newGuest.Reservations = reservations;
             }
 
-            await _dbContext.Guests.AddAsync(guest);
+            await _dbContext.Guests.AddAsync(newGuest);
             int affectedRows = await _dbContext.SaveChangesAsync();
 
-            return affectedRows > 0 ? guest : null;
+            return affectedRows > 0 ? newGuest : null;
         }
+
 
         public Task<IEnumerable<Guest>> GetAllGuestByHotelAsync(long hotelId)
         {
@@ -75,12 +80,15 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             return result;
         }
 
-        public Task<Guest?> GetGuestByIdAsync(long guestId)
+        public async Task<Guest?> GetGuestByIdAsync(long guestId)
         {
-            throw new NotImplementedException();
+            IEnumerable<Guest> guests = await GetGuestsWithAllDetails();
+            Guest? guest =  guests.FirstOrDefault(r => r.Id == guestId);
+
+            return guest;
         }
 
-        public async Task<Guest?> UpdateGuestAsync(long guestId, Guest guest)
+        public async Task<Guest?> UpdateGuestAsync(long guestId, GuestUpdateDto guest)
         {
             if (guestId != guest.Id)
             {
@@ -95,9 +103,9 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
 
             try
             {
-                fromdb.Hotel = await GetGuestHotel(guest);
-                fromdb.Room = await GetGuestRoom(guest);
-                fromdb.Reservations = await GetGuestReservations(guest);
+                fromdb.Hotel = await GetGuestHotel(guest.HotelId);
+                fromdb.Room = await GetGuestRoom(guest.RoomId);
+                fromdb.Reservations = await GetGuestReservations(guest.ReservationIds);
 
             }
             catch (Exception)
@@ -130,7 +138,7 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
         private async Task<IEnumerable<Guest>> GetGuestsWithAllDetails()
         {
             List<Guest> result = await _dbContext.Guests.Include(g => g.Address).Include(g => g.Reservations).Include(g => g.Hotel).Include(g => g.Room).ToListAsync();
-            
+
             return result;
         }
 
@@ -139,85 +147,192 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             Hotel? hotel = await _dbContext.Hotels.FirstOrDefaultAsync(h => h.Id == hotelId);
             return hotel != null;
         }
-        
+
         private async Task<bool> RoomIsInTheDatabase(long roomId)
         {
             Room? room = await _dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
             return room != null;
         }
-        private async Task<bool> AllReservationIsInTheDatabase(ICollection<Reservation> reservations)
+        private async Task<bool> AllReservationIsInTheDatabase(ICollection<long> reservationIds)
         {
             bool valid = true;
             List<Reservation> allReservatrions = await _dbContext.Reservations.ToListAsync();
 
-            reservations.ToList().ForEach(r =>
+            reservationIds.ToList().ForEach(r =>
             {
-                if (allReservatrions.FirstOrDefault(res => res.Id == r.Id) == null)
+                if (allReservatrions.FirstOrDefault(res => res.Id == r) == null)
                 {
                     valid = false;
                 }
             });
-            
+
             return valid;
         }
 
-        private async Task<Hotel?> GetGuestHotel(Guest guest)
+        private async Task<Hotel?> GetGuestHotel(long? hotelId)
         {
-            if (guest.Hotel != null)
+            if (hotelId != null)
             {
-                if (!await HotelIsInTheDatabase(guest.Hotel.Id))
+                if (!await HotelIsInTheDatabase(hotelId.Value))
                 {
                     throw new InvalidOperationException("There is no hotel with the given Id in the database");
                 }
-                Hotel hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == guest.Hotel.Id);
+                Hotel hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == hotelId.Value);
                 return hotel;
             }
 
             return null;
         }
-        
-        private async Task<Room?> GetGuestRoom(Guest guest)
+
+        private async Task<Room?> GetGuestRoom(long? roomId)
         {
-            if (guest.Room != null)
+            if (roomId != null)
             {
-                if (!await RoomIsInTheDatabase(guest.Room.Id))
+                if (!await RoomIsInTheDatabase(roomId.Value))
                 {
                     throw new InvalidOperationException("There is no room with the given Id in the database");
                 }
 
-                Room room = await _dbContext.Rooms.FirstAsync(r => r.Id == guest.Room.Id);
+                Room room = await _dbContext.Rooms.FirstAsync(r => r.Id == roomId.Value);
                 return room;
             }
 
             return null;
         }
-        
-        private async Task<ICollection<Reservation>?> GetGuestReservations(Guest guest)
+
+        private async Task<ICollection<Reservation>?> GetGuestReservations(ICollection<long>? reservationIds)
         {
-            if (guest.Reservations != null)
+            if (reservationIds != null)
             {
-                if (!await AllReservationIsInTheDatabase(guest.Reservations))
+                if (!await AllReservationIsInTheDatabase(reservationIds))
                 {
                     throw new InvalidOperationException("One or more reservation(s) with the given Id(s) not exits in the database");
                 }
 
-                List<Reservation> reservations = await GetReservationsFromDb(guest.Reservations);
+                List<Reservation> reservations = await GetReservationsFromDb(reservationIds);
                 return reservations;
             }
 
             return null;
         }
 
-        private async Task<List<Reservation>> GetReservationsFromDb(ICollection<Reservation> reservations)
+        private async Task<List<Reservation>> GetReservationsFromDb(ICollection<long> reservationIds)
         {
             List<Reservation> AllReservations = await _dbContext.Reservations.ToListAsync();
             List<Reservation> result = new List<Reservation>();
-            reservations.ToList().ForEach(r =>
+            reservationIds.ToList().ForEach(r =>
             {
-                result.Add(AllReservations.First(res => res.Id == r.Id));
+                result.Add(AllReservations.First(res => res.Id == r));
             });
 
             return result;
+        }
+
+        private void Seed()
+        {
+            if (_dbContext.Hotels.Count() == 0)
+            {
+                Hotel hotel = new Hotel()
+                {
+                    Address = new Address()
+                    {
+                        Country = "Hungary",
+                        Region = "Borsod-Abaúj-Zemplén",
+                        PostalCode = "3900",
+                        City = "Szerencs",
+                        AddressLineOne = "Ondi út 1",
+                        AddressLineTwo = ""
+                    },
+                    Classification = Classification.Standard,
+                    Floor = 1,
+                    Name = "Name",
+                    Rooms = 1,
+                    Status = HotelStatus.InUse
+                };
+
+                RoomType roomType = new RoomType()
+                {
+                    Accessories = new List<Accessory>(),
+                    Name = "Name",
+                    Price = 5000,
+                    RoomQuality = RoomQuality.Standard
+                };
+
+                Accessory accessory = new Accessory()
+                {
+                    Name = "Bed",
+                    Quantity = 1,
+                    RoomType = roomType
+                };
+
+                roomType.Accessories.Add(accessory);
+
+                Room room = new Room()
+                {
+                    Accessible = true,
+                    DoorNo = 101,
+                    Floor = 1,
+                    Hotel = hotel,
+                    Reservations = new List<Reservation>(),
+                    RoomType = roomType,
+                    Status = RoomStatus.InUse
+                };
+
+                Reservation reservation = new Reservation()
+                {
+                    BoardType = BoardType.BedOnly,
+                    EndDate = DateTime.Now.ToUniversalTime(),
+                    Guests = new List<Guest>(),
+                    Hotel = hotel,
+                    PayFullfillment = false,
+                    Price = roomType.Price,
+                    Reservator = new Reservator()
+                    {
+                        Address = new Address()
+                        {
+                            Country = "Hungary",
+                            Region = "Borsod-Abaúj-Zemplén",
+                            PostalCode = "3900",
+                            City = "Szerencs",
+                            AddressLineOne = "Ondi út 2",
+                            AddressLineTwo = ""
+                        },
+                        Name = "Name",
+                    },
+                    ReserveDate = DateTime.Now.ToUniversalTime(),
+                    ReservedFor = 1,
+                    Rooms = new List<Room>()
+                    {
+                        room
+                    },
+                    StartDate = DateTime.Now.ToUniversalTime()
+                };
+
+                room.Reservations.Add(reservation);
+
+                _dbContext.Hotels.Add(hotel);
+                _dbContext.Rooms.Add(room);
+                _dbContext.SaveChanges();
+            }
+        }
+
+        private Guest MakeGuestFromDto(GuestUpdateDto guest)
+        {
+            return new Guest()
+            {
+                Id = guest.Id,
+                Address = guest.Address,
+                BirthDate = guest.BirthDate,
+                BirthPlace = guest.BirthPlace,
+                Email = guest.Email,
+                FirstName = guest.FirstName,
+                Gender = guest.Gender,
+                LastName = guest.LastName,
+                Note = guest.Note,
+                PersonalId = guest.PersonalId,
+                Phone = guest.Phone,
+                Status = guest.Status,
+            };
         }
     }
 }
