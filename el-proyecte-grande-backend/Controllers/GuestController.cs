@@ -52,7 +52,7 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostGuest(Guest guest)
+        public async Task<ActionResult> PostGuest(GuestUpdateDto guest)
         {
             if (!ValidateGuestObject(guest))
             {
@@ -72,7 +72,7 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpPut("{guestId}")]
-        public async Task<ActionResult> UpdateGuest(long guestId, Guest guest)
+        public async Task<ActionResult> UpdateGuest(long guestId, GuestUpdateDto guest)
         {
             bool guestIdIsNotValid = guestId != guest.Id;
             if (guestIdIsNotValid || !ValidateGuestObject(guest))
@@ -106,7 +106,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         }
 
-        private bool ValidateGuestObject(Guest guest)
+        private bool ValidateGuestObject(GuestUpdateDto guest)
         {
             if( guest.PersonalId == null
                 || guest.FirstName == null
@@ -121,10 +121,12 @@ namespace el_proyecte_grande_backend.Controllers
             }
             bool hasProperValuesBasedOnStatus = guest.Status == Models.Enums.GuestStatus.CheckedOut
                 || (guest.Status == Models.Enums.GuestStatus.CheckedIn
-                    && guest.Hotel != null 
-                    && guest.Hotel.Id > 0 
-                    && guest.Room != null 
-                    && guest.Room.Id > 0);
+                    && guest.HotelId != null
+                    && guest.HotelId > 0
+                    && guest.RoomId != null
+                    && guest.RoomId > 0
+                    && guest.ReservationIds != null
+                    && guest.ReservationIds.Count > 0);
 
             return hasProperValuesBasedOnStatus;
         }
@@ -156,5 +158,7 @@ namespace el_proyecte_grande_backend.Controllers
             };
             return result;
         }
+
+
     }
 }
