@@ -1,4 +1,5 @@
 using el_proyecte_grande_backend.Data;
+using el_proyecte_grande_backend.Repositories.Room;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -13,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GrandeHotelContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 
 var app = builder.Build();
 
