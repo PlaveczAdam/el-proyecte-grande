@@ -1,3 +1,4 @@
+using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
 using el_proyecte_grande_backend.Repositories.Reservations;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GrandeHotelContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
