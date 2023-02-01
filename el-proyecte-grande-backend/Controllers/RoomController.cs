@@ -15,6 +15,8 @@ public class RoomController : ControllerBase
         _repository = repository;
     }
 
+    //Room
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Room>>> GetAllRooms()
     {
@@ -110,4 +112,103 @@ public class RoomController : ControllerBase
         }
     }
 
+    //RoomType
+
+    [HttpGet("/api/room/roomtype")]
+    public async Task<ActionResult<IEnumerable<RoomTypeDto>>> GetAllRoomTypes()
+    {
+        return Ok(await _repository.GetAllRoomTypes());
+    }
+
+    [HttpGet("/api/room/roomtype/{roomTypeId}")]
+    public async Task<ActionResult<RoomTypeDto?>> GetRoomTypeById(long roomTypeId)
+    {
+        var returnedRoomType = await _repository.GetRoomTypeById(roomTypeId);
+        if (returnedRoomType != null)
+        {
+            return Ok(returnedRoomType);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost("/api/room/roomtype")]
+    public async Task<ActionResult<RoomTypeDto?>> PostRoomType([FromBody] NewRoomType roomType)
+    {
+        var returnedRoomType = await _repository.AddRoomType(roomType);
+        if (returnedRoomType != null)
+        {
+            return Ok(returnedRoomType);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpPut("/api/room/roomtype/{roomTypeId}")]
+    public async Task<ActionResult<RoomTypeDto?>> PutRoomType(long roomTypeId, [FromBody] NewRoomType roomType)
+    {
+        var returnedRoomType = await _repository.UpdateRoomType(roomTypeId, roomType);
+        if (returnedRoomType != null)
+        {
+            return Ok(returnedRoomType);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
+    //Accessory
+
+    [HttpGet("/api/room/accessory")]
+    public async Task<ActionResult<IEnumerable<AccessoryDto>>> GetAllAccessories()
+    {
+        return Ok(await _repository.GetAllAccessories());
+    }
+
+    [HttpGet("/api/room/accessory/{accessoryId}")]
+    public async Task<ActionResult<AccessoryDto?>> GetaccessoryById(long accessoryId)
+    {
+        var returnedAccessory = await _repository.GetAccessoryById(accessoryId);
+        if (returnedAccessory != null)
+        {
+            return Ok(returnedAccessory);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost("/api/room/accessory")]
+    public async Task<ActionResult<AccessoryDto?>> PostAccessory([FromBody] NewAccessory accessory)
+    {
+        var returnedAccessory = await _repository.AddAccessory(accessory);
+        if (returnedAccessory != null)
+        {
+            return Ok(returnedAccessory);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpPut("/api/room/accessory/{accessoryId}")]
+    public async Task<ActionResult<AccessoryDto?>> PutAccessory(long accessoryId, [FromBody] NewAccessory accessory)
+    {
+        var returnedAccessory = await _repository.UpdateAccessory(accessoryId, accessory);
+        if (returnedAccessory != null)
+        {
+            return Ok(returnedAccessory);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
 }
