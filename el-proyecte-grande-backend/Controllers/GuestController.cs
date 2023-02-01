@@ -58,9 +58,17 @@ namespace el_proyecte_grande_backend.Controllers
             {
                 return BadRequest();
             }
-            Guest? result = await _repository.AddGuestAsync(guest);
 
-            return result != null ? Ok() : StatusCode(500);
+            try
+            {
+                Guest? result = await _repository.AddGuestAsync(guest);
+
+                return result != null ? Ok() : StatusCode(500);
+            }
+            catch (Exception e) 
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpPut("{guestId}")]
