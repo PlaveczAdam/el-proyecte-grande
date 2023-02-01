@@ -1,6 +1,6 @@
 using el_proyecte_grande_backend.Data;
+using el_proyecte_grande_backend.Repositories.GuestModule;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GrandeHotelContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddSingleton<IGuestRepository>(x => 
+    new GuestRepository(x.CreateScope().ServiceProvider.GetRequiredService<GrandeHotelContext>()));
 
 var app = builder.Build();
 
