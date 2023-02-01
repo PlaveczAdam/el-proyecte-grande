@@ -17,25 +17,15 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
 
         public async Task<Guest?> AddGuestAsync(Guest guest)
         {
-            if (guest.Hotel != null )
+            try
             {
-                if (!await HotelIsInTheDatabase(guest.Hotel.Id))
-                {
-                    throw new InvalidOperationException("There is no hotel with the given Id in the database");
-                }
-                Hotel hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == guest.Hotel.Id);
-                guest.Hotel = hotel;
+                guest.Hotel = await GetGuestHotel(guest);
+                guest.Room = await GetGuestRoom(guest);
+                guest.Reservations = await GetGuestReservations(guest);
             }
-
-            if (guest.Room != null)
+            catch(Exception)
             {
-                if (!await RoomIsInTheDatabase(guest.Room.Id))
-                {
-                    throw new InvalidOperationException("There is no room with the given Id in the database");
-                }
-
-                Room room = await _dbContext.Rooms.FirstAsync(r => r.Id == guest.Room.Id);
-                guest.Room = room;
+                throw;
             }
 
             if(guest.Reservations != null)
@@ -90,9 +80,47 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             throw new NotImplementedException();
         }
 
-        public Task<Guest?> UpdateGuestAsync(long guestId, Guest guest)
+        public async Task<Guest?> UpdateGuestAsync(long guestId, Guest guest)
         {
-            throw new NotImplementedException();
+            if (guestId != guest.Id)
+            {
+                throw new InvalidOperationException("Guest Id modification is nat allowed.");
+            }
+
+            Guest? fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
+            if (fromdb == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                fromdb.Hotel = await GetGuestHotel(guest);
+                fromdb.Room = await GetGuestRoom(guest);
+                fromdb.Reservations = await GetGuestReservations(guest);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            fromdb.Address = guest.Address;
+            fromdb.BirthDate = guest.BirthDate;
+            fromdb.BirthPlace = guest.BirthPlace;
+            fromdb.Email = guest.Email;
+            fromdb.FirstName = guest.FirstName;
+            fromdb.LastName = guest.LastName;
+            fromdb.Phone = guest.Phone;
+            fromdb.Gender = guest.Gender;
+            fromdb.Note = guest.Note;
+            fromdb.PersonalId = guest.PersonalId;
+            fromdb.Status = guest.Status;
+
+            await _dbContext.SaveChangesAsync();
+
+            return fromdb;
         }
 
         public Task<Guest?> UpdateGuestStatusAsync(long guestId, int guestStatus)
@@ -131,6 +159,53 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             });
             
             return valid;
+        }
+
+        private async Task<Hotel?> GetGuestHotel(Guest guest)
+        {
+            if (guest.Hotel != null)
+            {
+                if (!await HotelIsInTheDatabase(guest.Hotel.Id))
+                {
+                    throw new InvalidOperationException("There is no hotel with the given Id in the database");
+                }
+                Hotel hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == guest.Hotel.Id);
+                return hotel;
+            }
+
+            return null;
+        }
+        
+        private async Task<Room?> GetGuestRoom(Guest guest)
+        {
+            if (guest.Room != null)
+            {
+                if (!await RoomIsInTheDatabase(guest.Room.Id))
+                {
+                    throw new InvalidOperationException("There is no room with the given Id in the database");
+                }
+
+                Room room = await _dbContext.Rooms.FirstAsync(r => r.Id == guest.Room.Id);
+                return room;
+            }
+
+            return null;
+        }
+        
+        private async Task<ICollection<Reservation>?> GetGuestReservations(Guest guest)
+        {
+            if (guest.Reservations != null)
+            {
+                if (!await AllReservationIsInTheDatabase(guest.Reservations))
+                {
+                    throw new InvalidOperationException("One or more reservation(s) with the given Id(s) not exits in the database");
+                }
+
+                List<Reservation> reservations = await GetReservationsFromDb(guest.Reservations);
+                return reservations;
+            }
+
+            return null;
         }
 
         private async Task<List<Reservation>> GetReservationsFromDb(ICollection<Reservation> reservations)
