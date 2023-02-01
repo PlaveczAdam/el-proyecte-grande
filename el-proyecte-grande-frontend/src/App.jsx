@@ -6,6 +6,7 @@ import Header from './Components/Shared/Header.jsx';
 import Footer from './Components/Shared/Footer.jsx';
 import Home from './Components/Content/Home.jsx';
 import Hotel from './Components/Content/HotelModule/Hotels.jsx';
+import HotelContextProvider from './Components/Content/HotelModule/HotelContextProvider.jsx';
 import Room from './Components/Content/RoomModule/Rooms.jsx';
 import Reservation from './Components/Content/ReservationModule/Reservations.jsx';
 import Inventory from './Components/Content/InventoryModule/Inventories.jsx';
@@ -35,7 +36,7 @@ function App() {
                                 <Paper sx={{ padding: '10px' }}>
 
                                     <Routes>
-                                        <Route path="/hotel" element={<Hotel />} />
+                                        <Route path="/hotel" element={<HotelContextProvider>{()=>< Hotel />}</HotelContextProvider>} />
                                         <Route path="/room" element={<Room />} />
                                         <Route path="/guest" element={<Guest />} />
                                         <Route path="/inventory" element={<Inventory />} />
