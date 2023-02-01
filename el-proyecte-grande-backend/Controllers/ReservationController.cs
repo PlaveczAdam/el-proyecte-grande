@@ -1,11 +1,9 @@
-﻿using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Models.Enums;
+﻿using AutoMapper;
+using el_proyecte_grande_backend.Models.Dtos.Reservation;
+using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Repositories.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using el_proyecte_grande_backend.Extensions;
-using AutoMapper;
-using el_proyecte_grande_backend.Models.Dtos.Reservation;
 
 namespace el_proyecte_grande_backend.Controllers
 {
@@ -63,7 +61,7 @@ namespace el_proyecte_grande_backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetReservation(long id)
         {
-                        Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
+            Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
@@ -72,20 +70,6 @@ namespace el_proyecte_grande_backend.Controllers
             return Ok(reservationDTO);
         }
 
-
-        // GET: api/Reservation/enum/BoardTypes
-        [HttpGet("enum/{enumName}")]
-        public ActionResult<EnumDetails> GetEnum(string enumName)
-        {
-            //var x = EnumExtensions.GetDictionaryOfEnum<BoardType>();
-            //return Ok(new EnumDetails("boardType", x));
-
-            EnumDetails? enumDetails = EnumExtensions.GetValuesOfEnum(enumName);
-            if (enumDetails == null)
-                return NotFound(JsonConvert.SerializeObject(new { message = $"Enum with the name of {enumName} does not exist" }));
-
-            return Ok(enumDetails);
-        }
 
         // POST: api/Reservation
         [HttpPost]
