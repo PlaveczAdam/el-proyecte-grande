@@ -62,8 +62,16 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
     }
 
 
-    public class UpdateReservationDTO : AddReservationDTO
+    public class UpdateReservationDTO : BaseReservationDTO
     {
+        [Required]
+        public int HotelId { get; set; }
+
+        [Required]
+        public AddReservatorDTOForReservation Reservator { get; set; }
+
+        [Required]
+        public long[] RoomIds { get; set; }
     }
 
 

@@ -3,6 +3,7 @@ using el_proyecte_grande_backend.Models.Dtos.Reservation;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Repositories.Reservations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace el_proyecte_grande_backend.Controllers
@@ -24,7 +25,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         // GET: api/Reservation
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservations()
+        public async Task<ActionResult<IEnumerable<GetAllReservationDTO>>> GetAllReservations()
         {
             IEnumerable<Reservation> reservations = await _reservationRepository.GetAllAsync();
             IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
@@ -33,7 +34,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         // GET: api/Reservation/Hotel/hotelId
         [HttpGet("hotel/{hotelId}")]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetHotelReservations(long hotelId)
+        public async Task<ActionResult<IEnumerable<GetAllReservationDTO>>> GetHotelReservations(long hotelId)
         {
             IEnumerable<Reservation> reservations = await _reservationRepository.GetHotelReservations(hotelId);
             IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
@@ -42,7 +43,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         // GET: api/Reservation/flter
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetFilteredReservations(
+        public async Task<ActionResult<IEnumerable<GetAllReservationDTO>>> GetFilteredReservations(
             string? boardType,
             string? paymentMethod,
             uint? reservedFor,
@@ -59,7 +60,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         // GET: api/Reservation/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Reservation>> GetReservation(long id)
+        public async Task<ActionResult<GetReservationDTO>> GetReservation(long id)
         {
             Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
@@ -73,7 +74,7 @@ namespace el_proyecte_grande_backend.Controllers
 
         // POST: api/Reservation
         [HttpPost]
-        public async Task<ActionResult<Reservation>> PostReservation(AddReservationDTO reservationDTO)
+        public async Task<ActionResult<GetReservationDTO>> PostReservation(AddReservationDTO reservationDTO)
         {
             Reservation reservationToAdd = _mapper.Map<Reservation>(reservationDTO);
             Reservation? createdReservation = await _reservationRepository.AddAsync(reservationToAdd, reservationDTO.RoomIds);
@@ -92,36 +93,47 @@ namespace el_proyecte_grande_backend.Controllers
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!ReservationExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+            _mapper.Map(reservationDTO, reservation);
 
-            return NoContent();
+            Reservation? updatedReservation;
+            try
+            {
+                updatedReservation = await _reservationRepository.UpdateAsync(reservation, reservationDTO.RoomIds);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _reservationRepository.Exists(id))
+                {
+                    return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} was not found, it might have been deleted while trying to update" }));
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            GetReservationDTO updatedReservationDTO = _mapper.Map<GetReservationDTO>(updatedReservation);
+            return Ok(updatedReservationDTO);
         }
 
 
         // PUT: /api/reservation/status/5
         [HttpPut("status/{id}")]
-        public async Task<IActionResult> SetReservationPayFulfillment(long id, Reservation reservationDTO)
+        public async Task<ActionResult<GetReservationDTO>> SetReservationPayFulfillment(long id, [FromBody] int paymentMethod)
         {
             Reservation? reservation = await _reservationRepository.GetAsync(id);
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            return NoContent();
+            Reservation? updatedReservation = await _reservationRepository.SetReservationPayFulfillment(id, paymentMethod);
+
+            if (updatedReservation == null)
+                return BadRequest(JsonConvert.SerializeObject(new { message = $"Reservation could not be updated" }));
+
+            GetReservationDTO updatedReservationDTO = _mapper.Map<GetReservationDTO>(updatedReservation);
+            return Ok(updatedReservationDTO);
         }
+
 
         // DELETE: api/Reservation/5
         [HttpDelete("{id}")]
