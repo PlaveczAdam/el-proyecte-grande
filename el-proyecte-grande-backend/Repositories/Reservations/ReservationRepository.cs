@@ -2,8 +2,6 @@
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace el_proyecte_grande_backend.Repositories.Reservations
 {
@@ -23,14 +21,14 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
         }
 
         public async Task<IEnumerable<Reservation>> GetFilteredReservations(
-            string? boardType, 
+            string? boardType,
             string? paymentMethod,
-            uint? reservedFor, 
-            bool? payFulfillment, 
-            DateTime? startDate, 
+            uint? reservedFor,
+            bool? payFulfillment,
+            DateTime? startDate,
             DateTime? endDate)
         {
-            IEnumerable<Reservation> reservations = await GetAllAsync(); 
+            IEnumerable<Reservation> reservations = await GetAllAsync();
 
             if (!string.IsNullOrEmpty(boardType))
             {
@@ -38,7 +36,7 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             }
             if (!string.IsNullOrEmpty(paymentMethod))
             {
-                reservations = reservations.Where(r => r.PaymentMethod != null && r.PaymentMethod.ToString().ToLower() == paymentMethod.ToLower());
+                reservations = reservations.Where(r => r.PaymentMethod != null && r.PaymentMethod?.ToString().ToLower() == paymentMethod.ToLower());
             }
             if (reservedFor != null)
             {
@@ -50,11 +48,11 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             }
             if (startDate != null)
             {
-                reservations = reservations.Where(r => r.EndDate < startDate);
+                reservations = reservations.Where(r => r.StartDate >= startDate);
             }
             if (endDate != null)
             {
-                reservations = reservations.Where(r => r.StartDate > startDate);
+                reservations = reservations.Where(r => r.EndDate <= endDate);
             }
 
             return reservations;
@@ -66,7 +64,7 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
                     .Include(r => r.Hotel)
                     .ToListAsync();
 
-                return reservations.Where(r => r.Hotel.Id == hotelId);
+            return reservations.Where(r => r.Hotel.Id == hotelId);
         }
 
         public async Task<Reservation?> GetAsync(long? id)
@@ -76,12 +74,11 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
 
             return await _context.Reservations.FindAsync(id);
         }
-        
+
         public async Task<Reservation?> GetWithDetailsAsync(long? id)
         {
             if (id is null)
                 return null;
-            
 
             return await _context.Reservations
                 .Include(r => r.Hotel)
@@ -93,47 +90,83 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        private async Task<ICollection<Room>> GetRoomsForNewReservation(long[] roomIds)
-        {
-            ICollection<Room> rooms = new List<Room>();
-            foreach (var item in roomIds)
-            {
-                Room? room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == item);
-                if (room != null)
-                    rooms.Add(room); 
-            }
-            return rooms;
-        }
-
         public async Task<Reservation> AddAsync(Reservation reservation, long[] roomIds)
         {
-            Hotel hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == reservation.Hotel.Id);
-            reservation.Hotel = hotel;
+            Hotel? hotel = await GetHotelForNewReservation(reservation.Hotel.Id);
+            if (hotel != null)
+                reservation.Hotel = hotel;
 
-            ICollection<Room> rooms = await GetRoomsForNewReservation(roomIds);
+            ICollection<Room> rooms = await GetRoomsFromIds(roomIds);
             reservation.Rooms = rooms;
 
             await _context.AddAsync(reservation);
             await _context.SaveChangesAsync();
             return reservation;
         }
-        public async Task<Reservation> UpdateAsync(Reservation reservation)
+        public async Task<Reservation?> UpdateAsync(Reservation reservation, long[] updatedRoomIds)
         {
-            _context.Update(reservation);
+            // examine whether the Rooms for the Reservation have changed
+            Reservation? resInDb = await GetWithDetailsAsync(reservation.Id);
+            //IEnumerable<long> existingRoomIdsOfReservation = resInDb!.Rooms.Select(r => r.Id);
+
+            //// we need this ICollection because reservation.Rooms do not contain any Rooms (they were not mapped from the DTO in the controller
+            // ICollection<Room> roomsForReservationToBeUpdatedTo = await GetRoomsFromIds(updatedRoomIds);
+            //ICollection<Room> roomsToActuallyAdd = new List<Room>();
+
+            //foreach (Room room in roomsForReservationToBeUpdatedTo)  
+            //{
+            //    if (!existingRoomIdsOfReservation.Contains(room.Id))  // if the Room-Reservation connection has been established, do not create it again
+            //        roomsToActuallyAdd.Add(room); // only add those that have not been added yet
+            //}
+
+
+            //List<long> idsOfRoomsToBeRemoved = new List<long>();
+            //foreach (long roomId in existingRoomIdsOfReservation)
+            //{
+            //    if (!updatedRoomIds.Contains(roomId))
+            //        idsOfRoomsToBeRemoved.Add(roomId);
+            //}
+
+            //foreach (Room room in roomsToActuallyAdd)
+            //{
+            //    resInDb.Rooms.Add(room);
+            //}
+            ////resInDb.Rooms = roomsToActuallyAdd;
+            //foreach (long id in idsOfRoomsToBeRemoved)
+            //{
+            //    Room roomInReservation = resInDb.Rooms.FirstOrDefault(r => r.Id == id)!;
+            //    resInDb.Rooms.Remove(roomInReservation);
+            //}
+
+            resInDb.Rooms.Clear();
+            _context.Update(resInDb);
             await _context.SaveChangesAsync();
-            return reservation;
+
+            //foreach (long id in updatedRoomIds)
+            //{
+            //    Room? room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+            //    resInDb.Rooms.Add(room);
+            //}
+
+            //_context.Update(resInDb);
+            //await _context.SaveChangesAsync();
+
+            return await GetWithDetailsAsync(reservation.Id); // return with details for the frontend to show
         }
 
-        public async Task<Reservation?> SetReservationPayFulfillment(long id, PaymentMethod paymentMethod)
+        public async Task<Reservation?> SetReservationPayFulfillment(long id, int paymentMethod)
         {
             Reservation? reservationToUpdate = await GetAsync(id);
             if (reservationToUpdate == null)
                 return null;
 
             reservationToUpdate.PayFullfillment = true;
-            reservationToUpdate.PaymentMethod = paymentMethod;
+            reservationToUpdate.PaymentMethod = (PaymentMethod)paymentMethod;
 
-            return await UpdateAsync(reservationToUpdate);
+            _context.Update(reservationToUpdate);
+            await _context.SaveChangesAsync();
+
+            return await GetWithDetailsAsync(reservationToUpdate.Id);
         }
 
         public async Task DeleteAsync(long id)
@@ -143,6 +176,29 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
                 _context.Reservations.Remove(reservation);
 
             await _context.SaveChangesAsync();
+        }
+
+        private async Task<Hotel?> GetHotelForNewReservation(long hotelId)
+        {
+            return await _context.Hotels.FirstOrDefaultAsync(h => h.Id == hotelId);
+        }
+
+        private async Task<ICollection<Room>> GetRoomsFromIds(long[] roomIds)
+        {
+            ICollection<Room> rooms = new List<Room>();
+            foreach (var item in roomIds)
+            {
+                Room? room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == item);
+                if (room != null)
+                    rooms.Add(room);
+            }
+            return rooms;
+        }
+
+        public async Task<bool> Exists(long id)
+        {
+            Reservation? reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
+            return reservation != null;
         }
     }
 }
