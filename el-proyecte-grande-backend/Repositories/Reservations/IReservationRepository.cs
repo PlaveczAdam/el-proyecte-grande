@@ -1,5 +1,4 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Models.Enums;
 
 namespace el_proyecte_grande_backend.Repositories.Reservations
 {
@@ -20,6 +19,7 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
 
         Task<Reservation> AddAsync(Reservation reservation, long[] roomIds);
         Task<Reservation?> UpdateAsync(Reservation reservation, long[] roomIds);
+        Task<Reservation?> SetReservationToBeCancelled(long id);
         Task<Reservation?> SetReservationPayFulfillment(long id, int paymentMethod);
         Task DeleteAsync(long id);
         Task<bool> Exists(long id);

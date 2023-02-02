@@ -107,51 +107,56 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
         {
             // examine whether the Rooms for the Reservation have changed
             Reservation? resInDb = await GetWithDetailsAsync(reservation.Id);
-            //IEnumerable<long> existingRoomIdsOfReservation = resInDb!.Rooms.Select(r => r.Id);
+            IEnumerable<long> roomIdsOfReservation = resInDb!.Rooms.Select(r => r.Id);
 
             //// we need this ICollection because reservation.Rooms do not contain any Rooms (they were not mapped from the DTO in the controller
-            // ICollection<Room> roomsForReservationToBeUpdatedTo = await GetRoomsFromIds(updatedRoomIds);
-            //ICollection<Room> roomsToActuallyAdd = new List<Room>();
+            ICollection<long> roomIdsToActuallyAdd = new List<long>();
 
-            //foreach (Room room in roomsForReservationToBeUpdatedTo)  
-            //{
-            //    if (!existingRoomIdsOfReservation.Contains(room.Id))  // if the Room-Reservation connection has been established, do not create it again
-            //        roomsToActuallyAdd.Add(room); // only add those that have not been added yet
-            //}
+            foreach (long id in updatedRoomIds)
+            {
+                if (!roomIdsOfReservation.Contains(id))
+                    roomIdsToActuallyAdd.Add(id);
+            }
 
+            List<long> idsOfRoomsToBeRemoved = new List<long>();
+            foreach (long roomId in roomIdsOfReservation)
+            {
+                if (!updatedRoomIds.Contains(roomId))
+                    idsOfRoomsToBeRemoved.Add(roomId);
+            }
 
-            //List<long> idsOfRoomsToBeRemoved = new List<long>();
-            //foreach (long roomId in existingRoomIdsOfReservation)
-            //{
-            //    if (!updatedRoomIds.Contains(roomId))
-            //        idsOfRoomsToBeRemoved.Add(roomId);
-            //}
-
-            //foreach (Room room in roomsToActuallyAdd)
-            //{
-            //    resInDb.Rooms.Add(room);
-            //}
-            ////resInDb.Rooms = roomsToActuallyAdd;
-            //foreach (long id in idsOfRoomsToBeRemoved)
-            //{
-            //    Room roomInReservation = resInDb.Rooms.FirstOrDefault(r => r.Id == id)!;
-            //    resInDb.Rooms.Remove(roomInReservation);
-            //}
+            foreach (long id in roomIdsToActuallyAdd)
+            {
+                Room room = resInDb.Rooms.FirstOrDefault(r => r.Id == id)!;
+                resInDb.Rooms.Add(room);
+            }
+            //resInDb.Rooms = roomsToActuallyAdd;
+            foreach (long id in idsOfRoomsToBeRemoved)
+            {
+                Room roomInReservation = resInDb.Rooms.FirstOrDefault(r => r.Id == id)!;
+                resInDb.Rooms.Remove(roomInReservation);
+            }
 
             resInDb.Rooms.Clear();
             _context.Update(resInDb);
             await _context.SaveChangesAsync();
 
-            //foreach (long id in updatedRoomIds)
-            //{
-            //    Room? room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
-            //    resInDb.Rooms.Add(room);
-            //}
-
-            //_context.Update(resInDb);
-            //await _context.SaveChangesAsync();
 
             return await GetWithDetailsAsync(reservation.Id); // return with details for the frontend to show
+        }
+
+        public async Task<Reservation?> SetReservationToBeCancelled(long id)
+        {
+            Reservation? reservationToUpdate = await GetAsync(id);
+            if (reservationToUpdate == null)
+                return null;
+
+            reservationToUpdate.isCancelled = true;
+
+            _context.Update(reservationToUpdate);
+            await _context.SaveChangesAsync();
+
+            return await GetWithDetailsAsync(reservationToUpdate.Id);
         }
 
         public async Task<Reservation?> SetReservationPayFulfillment(long id, int paymentMethod)
