@@ -1,9 +1,12 @@
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
+
+using el_proyecte_grande_backend.Repositories.Inventories;
 using el_proyecte_grande_backend.Repositories.GuestModule;
 using el_proyecte_grande_backend.Repositories.HotelNs;
 using el_proyecte_grande_backend.Repositories.Reservations;
 using el_proyecte_grande_backend.Repositories.RoomRepository;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +32,7 @@ builder.Services.AddSingleton<IGuestRepository>(x =>
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 
