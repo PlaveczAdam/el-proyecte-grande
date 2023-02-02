@@ -1,7 +1,7 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos;
 using el_proyecte_grande_backend.Models.Entities;
 
-namespace el_proyecte_grande_backend.Repositories.Room;
+namespace el_proyecte_grande_backend.Repositories.RoomRepository;
 
 public interface IRoomRepository
 {

@@ -4,9 +4,8 @@ using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Xml.Linq;
 
-namespace el_proyecte_grande_backend.Repositories.Room;
+namespace el_proyecte_grande_backend.Repositories.RoomRepository;
 
 public class RoomRepository : IRoomRepository
 {
