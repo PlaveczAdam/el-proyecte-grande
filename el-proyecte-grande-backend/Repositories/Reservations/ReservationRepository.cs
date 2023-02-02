@@ -96,6 +96,14 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             if (hotel != null)
                 reservation.Hotel = hotel;
 
+            IEnumerable<long> idsOfReservedRooms = await GetIdsOfReservedRoomsForHotelBetween(reservation.Hotel.Id, reservation.StartDate, reservation.EndDate);
+
+            foreach (long id in roomIds)
+            {
+                if (idsOfReservedRooms.Contains(id))
+                    throw new Exception($"Room with the id of {id} is reserved for the specified time period");
+            }
+
             ICollection<Room> rooms = await GetRoomsFromIds(roomIds);
             reservation.Rooms = rooms;
 
@@ -208,6 +216,25 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
 
         public async Task<IEnumerable<Room>> GetEmptyRoomsForHotelBetween(long hotelId, DateTime startDate, DateTime endDate)
         {
+            IEnumerable<long> idsOfReservedRooms = await GetIdsOfReservedRoomsForHotelBetween(hotelId, startDate, endDate);
+
+            IEnumerable<Room> allRoomsInHotel = await _context.Rooms
+                    .Include(room => room.Hotel)
+                    .Include(r => r.Reservations)
+                    .Where(room => room.Hotel.Id == hotelId)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            IEnumerable<Room> freeRooms = allRoomsInHotel.Where(r => !idsOfReservedRooms.Contains(r.Id));
+
+            return freeRooms;
+
+        }
+
+
+
+        private async Task<IEnumerable<long>> GetIdsOfReservedRoomsForHotelBetween(long hotelId, DateTime startDate, DateTime endDate)
+        {
             List<Reservation> notConflictingReservationsInTimePeriod = await _context.Reservations
                     .Include(r => r.Hotel)
                     .Include(r => r.Rooms)
@@ -222,28 +249,18 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
 
             IEnumerable<Reservation> conflictingReservationsInTimePeriod = allReservationsInTimePeriod.Except(notConflictingReservationsInTimePeriod);
 
-            IEnumerable<ICollection<Room> > reservedRoomsForConflictingReservationsInTimePeriod = conflictingReservationsInTimePeriod.Select(res => res.Rooms);
+            IEnumerable<ICollection<Room>> reservedRoomsForConflictingReservationsInTimePeriod = conflictingReservationsInTimePeriod.Select(res => res.Rooms);
 
             List<long> idsOfReservedRooms = new List<long>();
             foreach (ICollection<Room> roomsForReservation in reservedRoomsForConflictingReservationsInTimePeriod)
             {
                 foreach (Room room in roomsForReservation)
-                {
                     idsOfReservedRooms.Add(room.Id);
-                }
             }
 
-            IEnumerable<Room> allRoomsInHotel = await _context.Rooms
-                    .Include(room => room.Hotel)
-                    .Include(r => r.Reservations)
-                    .Where(room => room.Hotel.Id == hotelId)
-                    .AsNoTracking()
-                    .ToListAsync();
+            return idsOfReservedRooms;
 
-            IEnumerable<Room> freeRooms = allRoomsInHotel.Where(r => !idsOfReservedRooms.Contains(r.Id));
-
-            return freeRooms;
-                    
         }
+
     }
 }
