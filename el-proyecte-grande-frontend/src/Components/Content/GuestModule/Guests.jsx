@@ -20,8 +20,23 @@ import { useEffect } from 'react';
 const Guests = () => {
     const [loading, setLoading] = React.useState(true);
     const [rows, setRows] = React.useState([]);
+    const [filteredRows, setFilteredRows] = React.useState([]);
     const [enums, setEnums] = React.useState({});
     const [hotelNames, setHotelNames] = React.useState([]);
+    const [searchText, setSearchText] = React.useState("");
+
+    function searchBoxChanged(e) {
+        const text = e.target.value;
+        console.log(text);
+        const filteredUsers = rows.filter(r => r.firstName.includes(text) || r.lastName.includes(text));
+        setSearchText(text);
+        if (text !== "" && text !== undefined) {
+            setFilteredRows(filteredUsers);
+        } else {
+            setFilteredRows(rows);
+        }
+        
+    }
 
     useEffect(() => {
         async function getHotelNames() {
@@ -44,6 +59,7 @@ const Guests = () => {
             const response = await fetch("api/guest");
             const guestsJson = await response.json();
             setRows(guestsJson);
+            setFilteredRows(guestsJson);
         }
 
         async function load() {
@@ -73,7 +89,7 @@ const Guests = () => {
                             <Button variant="text">Add new</Button>
                         </Grid>
                         <Grid item xs={12} md={3}>
-                            <TextField id="outlined-basic" label="Search" variant="outlined" size="small" />
+                            <TextField id="outlined-basic" onInput={searchBoxChanged} value={searchText} label="Search" variant="outlined" size="small" />
                         </Grid>
                         <Grid item md={12}>
                             <Filter enums={enums} hotelNames={hotelNames} />
@@ -93,7 +109,7 @@ const Guests = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {filteredRows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
