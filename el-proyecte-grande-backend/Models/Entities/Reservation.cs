@@ -13,6 +13,7 @@ namespace el_proyecte_grande_backend.Models.Entities
 		public bool PayFullfillment { get; set; }
 		public BoardType BoardType { get; set; }
 		public PaymentMethod? PaymentMethod { get; set; }
+		public bool isCancelled { get; set; }
 
 		public Reservator Reservator { get; set; }
 		public Hotel Hotel { get; set; }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using el_proyecte_grande_backend.Data;
@@ -11,9 +12,11 @@ using el_proyecte_grande_backend.Data;
 namespace elproyectegrandebackend.Migrations
 {
     [DbContext(typeof(GrandeHotelContext))]
-    partial class GrandeHotelContextModelSnapshot : ModelSnapshot
+    [Migration("20230201145030_AddIsCancelledPropertyToReservation")]
+    partial class AddIsCancelledPropertyToReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
