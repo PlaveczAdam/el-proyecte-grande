@@ -17,7 +17,11 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
 
         public async Task<IEnumerable<Reservation>> GetAllAsync()
         {
-            return await _context.Reservations.ToListAsync();
+            return await _context.Reservations
+                    .Include(r => r.Hotel)
+                    .Include(r => r.Reservator)
+                    .AsNoTracking()
+                    .ToListAsync();
         }
 
         public async Task<IEnumerable<Reservation>> GetFilteredReservations(
