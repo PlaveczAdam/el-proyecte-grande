@@ -2,6 +2,7 @@
 using el_proyecte_grande_backend.Models.Dtos.Reservation;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Repositories.Reservations;
+using el_proyecte_grande_backend.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -87,8 +88,17 @@ namespace el_proyecte_grande_backend.Controllers
         public async Task<ActionResult<GetReservationDTO>> PostReservation(AddReservationDTO reservationDTO)
         {
             Reservation reservationToAdd = _mapper.Map<Reservation>(reservationDTO);
-            Reservation? createdReservation = await _reservationRepository.AddAsync(reservationToAdd, reservationDTO.RoomIds);
 
+            Reservation createdReservation;
+            try
+            {
+               createdReservation = await _reservationRepository.AddAsync(reservationToAdd, reservationDTO.RoomIds);
+            }
+            catch (Exception exc)
+            {
+                return Problem(exc.Message);
+            }
+         
             GetReservationDTO createdReservationDTO = _mapper.Map<GetReservationDTO>(createdReservation);
 
             return CreatedAtAction("GetReservation", new { id = createdReservation.Id }, createdReservationDTO);
@@ -96,19 +106,18 @@ namespace el_proyecte_grande_backend.Controllers
 
         // PUT: api/Reservation/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReservation(long id, UpdateReservationDTO reservationDTO)
+        public async Task<IActionResult> SetReservationToBeCancelled(long id)  // sets isCancelled to true
         {
             Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            _mapper.Map(reservationDTO, reservation);
 
             Reservation? updatedReservation;
             try
             {
-                updatedReservation = await _reservationRepository.UpdateAsync(reservation, reservationDTO.RoomIds);
+                updatedReservation = await _reservationRepository.SetReservationToBeCancelled(id);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -129,13 +138,17 @@ namespace el_proyecte_grande_backend.Controllers
 
         // PUT: /api/reservation/status/5
         [HttpPut("status/{id}")]
-        public async Task<ActionResult<GetReservationDTO>> SetReservationPayFulfillment(long id, [FromBody] int paymentMethod)
+        public async Task<ActionResult<GetReservationDTO>> SetReservationPayFulfillment(long id, UpdateReservationDTO paymentMethod)
         {
             Reservation? reservation = await _reservationRepository.GetAsync(id);
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-            Reservation? updatedReservation = await _reservationRepository.SetReservationPayFulfillment(id, paymentMethod);
+            KeyValuePair<string, int> paymentMethodKvp = EnumUtils.GetValuesOfEnum("PaymentMethod")!.Values.FirstOrDefault(e => e.Key == paymentMethod.PaymentMethod);
+            if (paymentMethodKvp.Key == null)
+                    return BadRequest(JsonConvert.SerializeObject(new { message = $"Reservation could not be updated" }));
+
+            Reservation? updatedReservation = await _reservationRepository.SetReservationPayFulfillment(id, paymentMethodKvp.Value);
 
             if (updatedReservation == null)
                 return BadRequest(JsonConvert.SerializeObject(new { message = $"Reservation could not be updated" }));
