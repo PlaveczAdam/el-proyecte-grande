@@ -18,6 +18,7 @@ const AddReservation = () => {
   const [choosableHotels, setChoosableHotels] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [roomIds, setRoomIds] = useState([]);
 
   const [reservation, setReservation] = useState({
     ReservedFor: 0,
@@ -29,7 +30,7 @@ const AddReservation = () => {
     BoardType: "",
     PaymentMethod: "",
     HotelId: "",
-    RoomIds: [],
+    // RoomIds: roomIds,
     Reservator: {
       Name: "",
       Address: {
@@ -43,8 +44,9 @@ const AddReservation = () => {
     },
   });
 
-  const addReservation = (reservation) => {
+  const addReservation = (reservation, selectedRooms) => {
     console.log(reservation);
+    console.log(selectedRooms);
   };
 
   const fetchChoosableHotels = async () => {
@@ -126,9 +128,6 @@ const AddReservation = () => {
             reservation.EndDate && (
               <AddReservationForm
                 reservation={reservation}
-                onAddRoom={(newValue) =>
-                  setReservation({ ...reservation, RoomIds: [...reservation.RoomIds, newValue] })
-                }
                 onCreate={addReservation}
               />
             )}
