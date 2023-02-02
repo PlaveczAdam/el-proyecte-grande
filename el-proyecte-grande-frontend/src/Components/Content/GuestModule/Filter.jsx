@@ -9,17 +9,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
-export default function Filter() {
-    const guestStatuses = [
-        "Checked in",
-        "Checked out"
-    ];
-    const hotels = [
-        "Hotel Lorem Ipsum",
-        "Grand Hotel Szekszárd",
-        "Grand Theft Hotel",
-        "Really Long Named Lorem Ipsum Hotel All Stars"
-    ];
+export default function Filter(props) {
+    const guestStatuses = Object.keys(props.enums.status.values);
+    const hotels = props.hotelNames;
     const [guestStatus, setGuestStatus] = React.useState("");
     const [hotel, setHotel] = React.useState("");
 
@@ -47,7 +39,7 @@ export default function Filter() {
                         label="Guest Status"
                         onChange={handleStatusChange}
                         >
-                            { guestStatuses.map((s, i) => <MenuItem value={i}>{s}</MenuItem>) }
+                            {guestStatuses.map((s, i) => <MenuItem key={i} value={i}>{s}</MenuItem>) }
                         </Select>
                     </FormControl>
                 </Grid>
@@ -61,7 +53,7 @@ export default function Filter() {
                             label="Hotel"
                             onChange={handleHotelChange}
                         >
-                            {hotels.map((h, i) => <MenuItem value={i}>{h}</MenuItem>) }
+                            {hotels.map((h) => <MenuItem key={h.id} value={h.id}>{h.name}</MenuItem>) }
                         </Select>
                     </FormControl>
                 </Grid>
