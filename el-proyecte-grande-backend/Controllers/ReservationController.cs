@@ -71,6 +71,16 @@ namespace el_proyecte_grande_backend.Controllers
             return Ok(reservationDTO);
         }
 
+        // GET: api/Reservation/emptyBetween
+        [HttpGet("emptyBetween")]
+        public async Task<ActionResult<IEnumerable<Room>>> GetEmptyRoomsForHotelBetween(long hotelId, DateTime startDate,
+            DateTime endDate)
+        {
+            IEnumerable<Room> emptyRooms = await _reservationRepository.GetEmptyRoomsForHotelBetween(hotelId, startDate, endDate);
+            IEnumerable<RoomDTOsForReservation> roomDTOs = _mapper.Map<IEnumerable<RoomDTOsForReservation>>(emptyRooms);
+            return Ok(roomDTOs);
+        }
+
 
         // POST: api/Reservation
         [HttpPost]

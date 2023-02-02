@@ -200,5 +200,45 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             Reservation? reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
             return reservation != null;
         }
+
+        public async Task<IEnumerable<Room>> GetEmptyRoomsForHotelBetween(long hotelId, DateTime startDate, DateTime endDate)
+        {
+            List<Reservation> notConflictingReservationsInTimePeriod = await _context.Reservations
+                    .Include(r => r.Hotel)
+                    .Include(r => r.Rooms)
+                    .Where(r => r.Hotel.Id == hotelId && ((r.EndDate <= startDate || r.StartDate >= endDate) || r.isCancelled))
+                    .ToListAsync();
+
+            IEnumerable<Reservation> allReservationsInTimePeriod = await _context.Reservations
+                    .Include(r => r.Hotel)
+                    .Include(r => r.Rooms)
+                    .Where(r => r.Hotel.Id == hotelId).ToListAsync();
+
+
+            IEnumerable<Reservation> conflictingReservationsInTimePeriod = allReservationsInTimePeriod.Except(notConflictingReservationsInTimePeriod);
+
+            IEnumerable<ICollection<Room> > reservedRoomsForConflictingReservationsInTimePeriod = conflictingReservationsInTimePeriod.Select(res => res.Rooms);
+
+            List<long> idsOfReservedRooms = new List<long>();
+            foreach (ICollection<Room> roomsForReservation in reservedRoomsForConflictingReservationsInTimePeriod)
+            {
+                foreach (Room room in roomsForReservation)
+                {
+                    idsOfReservedRooms.Add(room.Id);
+                }
+            }
+
+            IEnumerable<Room> allRoomsInHotel = await _context.Rooms
+                    .Include(room => room.Hotel)
+                    .Include(r => r.Reservations)
+                    .Where(room => room.Hotel.Id == hotelId)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            IEnumerable<Room> freeRooms = allRoomsInHotel.Where(r => !idsOfReservedRooms.Contains(r.Id));
+
+            return freeRooms;
+                    
+        }
     }
 }

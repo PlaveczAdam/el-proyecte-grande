@@ -23,5 +23,6 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
         Task<Reservation?> SetReservationPayFulfillment(long id, int paymentMethod);
         Task DeleteAsync(long id);
         Task<bool> Exists(long id);
+        Task<IEnumerable<Room>> GetEmptyRoomsForHotelBetween(long hotelId, DateTime startDate, DateTime endDate);
     }
 }
