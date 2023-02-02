@@ -24,7 +24,8 @@ const Reservations = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
-  const [addReservationModalIsOpen, setAddReservationModalIsOpen] = useState(false)
+  const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
+    useState(false);
 
   const fetchReservations = async () => {
     const url = "https://localhost:7027/api/reservation";
@@ -69,15 +70,19 @@ const Reservations = () => {
           <CircularProgress color="primary" />
         </div>
       ) : (
-          <>
-          {addReservationModalIsOpen && <AddReservationModal onClose={closeModal} />}
+        <>
+          {addReservationModalIsOpen && (
+            <AddReservationModal onClose={closeModal} />
+          )}
           <Box sx={{ textAlign: "center" }}>
             <h2>Reservations</h2>
           </Box>
           <Box sx={{ marginY: 1 }}>
             <Grid container direction="row" alignItems="center" spacing={2}>
               <Grid item xs={12} md={9}>
-                <Button variant="text" onClick={openAddReservationModal}>Add new Reservation</Button>
+                <Button variant="text" onClick={openAddReservationModal}>
+                  Add new Reservation
+                </Button>
               </Grid>
               <Grid item xs={12} md={3}>
                 <TextField
@@ -103,7 +108,7 @@ const Reservations = () => {
                   <TableCell align="center">Price</TableCell>
                   <TableCell align="center">Payment</TableCell>
                   <TableCell align="center">Edit payment</TableCell>
-                  <TableCell align="center">Set status</TableCell>
+                  <TableCell align="center">Cancel</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -143,9 +148,13 @@ const Reservations = () => {
                       </Button>
                     </TableCell>
                     <TableCell align="center">
-                      <Button variant="text">
-                        <DisabledByDefaultIcon />
-                      </Button>
+                      {reservation.isCancelled ? (
+                        "Cancelled"
+                      ) : (
+                        <Button variant="text">
+                          <DisabledByDefaultIcon />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 import AddReservationForm from "./AddReservationForm";
 
@@ -17,11 +16,36 @@ import "../Reservations.css";
 
 const AddReservation = () => {
   const [choosableHotels, setChoosableHotels] = useState([]);
-  const [chosenHotel, setChosenHotel] = useState(0);
-  const [chosenStartDate, setChosenStartDate] = useState(null);
-  const [chosenEndDate, setChosenEndDate] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [reservation, setReservation] = useState({
+    ReservedFor: 0,
+    ReserveDate: null,
+    StartDate: null,
+    EndDate: null,
+    Price: 0,
+    PayFulfillment: false,
+    BoardType: "",
+    PaymentMethod: "",
+    HotelId: "",
+    RoomIds: [],
+    Reservator: {
+      Name: "",
+      Address: {
+        PostalCode: "",
+        Country: "",
+        Region: "",
+        City: "",
+        AddressLineOne: "",
+        AddressLineTwo: "",
+      },
+    },
+  });
+
+  const addReservation = (reservation) => {
+    console.log(reservation);
+  };
 
   const fetchChoosableHotels = async () => {
     const url = `https://localhost:7027/api/hotel`;
@@ -38,16 +62,6 @@ const AddReservation = () => {
       setIsLoading(false);
       console.log(err);
     }
-  };
-
-  const handleHotelSelectChange = (event) => {
-    setChosenHotel(event.target.value);
-  };
-  const handleStartDateChange = (newValue) => {
-    setChosenStartDate(newValue);
-  };
-  const handleEndDateChange = (newValue) => {
-    setChosenEndDate(newValue);
   };
 
   useEffect(() => {
@@ -67,9 +81,11 @@ const AddReservation = () => {
             {choosableHotels.length > 0 ? (
               <Select
                 name="Select a Hotel"
-                value={chosenHotel}
+                value={reservation.HotelId}
                 label="Hotel"
-                onChange={handleHotelSelectChange}
+                onChange={(e) =>
+                  setReservation({ ...reservation, HotelId: e.target.value })
+                }
               >
                 {choosableHotels.map((h) => (
                   <MenuItem key={h.id} value={h.id}>
@@ -81,28 +97,41 @@ const AddReservation = () => {
               "There are no hotels to choose from"
             )}
           </FormControl>
-          Selected Hotel's ID: {chosenHotel !== 0 ? chosenHotel : "Not selected"}
+          Selected Hotel's ID:{" "}
+          {reservation.HotelId !== 0 ? reservation.HotelId : "Not selected"}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div>
               <DesktopDatePicker
                 label="Start date"
                 inputFormat="YYYY/MM/DD"
-                value={chosenStartDate}
-                onChange={handleStartDateChange}
+                value={reservation.StartDate}
+                onChange={(newValue) =>
+                  setReservation({ ...reservation, StartDate: newValue })
+                }
                 renderInput={(params) => <TextField {...params} />}
               />
               <DesktopDatePicker
                 label="End date"
                 inputFormat="YYYY/MM/DD"
-                value={chosenEndDate}
-                onChange={handleEndDateChange}
+                value={reservation.EndDate}
+                onChange={(newValue) =>
+                  setReservation({ ...reservation, EndDate: newValue })
+                }
                 renderInput={(params) => <TextField {...params} />}
               />
             </div>
           </LocalizationProvider>
-          {chosenHotel !== "" && chosenStartDate && chosenEndDate && (
-            <AddReservationForm chosenHotel={chosenHotel} chosenStartDate={chosenStartDate} chosenEndDate={chosenEndDate} />
-          )}
+          {reservation.HotelId !== "" &&
+            reservation.StartDate &&
+            reservation.EndDate && (
+              <AddReservationForm
+                reservation={reservation}
+                onAddRoom={(newValue) =>
+                  setReservation({ ...reservation, RoomIds: [...reservation.RoomIds, newValue] })
+                }
+                onCreate={addReservation}
+              />
+            )}
         </>
       )}
     </>
