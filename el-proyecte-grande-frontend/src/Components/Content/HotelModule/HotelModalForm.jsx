@@ -126,8 +126,6 @@ const HotelModalForm = (props) => {
           }
         />
       </Card>
-      <pre>{JSON.stringify(hotel, null, 2)}</pre>
-      <pre>{JSON.stringify(address, null, 2)}</pre>
     </Box>
   );
 };

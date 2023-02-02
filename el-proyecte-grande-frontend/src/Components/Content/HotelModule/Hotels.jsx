@@ -9,7 +9,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import EditIcon from "@mui/icons-material/Edit";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import ContentPagination from "../../Shared/Pagination";
 import TextField from "@mui/material/TextField";
@@ -103,7 +102,7 @@ const Hotels = () => {
                 <HotelDataCell
                   data={getAddressString(row.address)}
                 ></HotelDataCell>
-                <HotelDataCell data={row.hotelStatus}></HotelDataCell>
+                <HotelDataCell data={Object.keys(context.enums.hotelStatus.values)[row.hotelStatus]}></HotelDataCell>
                 <HotelDataCell data={row.classification}></HotelDataCell>
                 <HotelDataCell data={row.floor}></HotelDataCell>
                 <HotelDataCell data={row.rooms}></HotelDataCell>
