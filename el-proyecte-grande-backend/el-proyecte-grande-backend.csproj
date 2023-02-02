@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <Folder Include="Models\Dtos\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 

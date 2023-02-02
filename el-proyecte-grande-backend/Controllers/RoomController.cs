@@ -1,6 +1,6 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos;
 using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Repositories.Room;
+using el_proyecte_grande_backend.Repositories.RoomRepository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers;
