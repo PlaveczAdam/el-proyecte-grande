@@ -14,40 +14,72 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import "../Reservations.css";
 
-const AddReservation = () => {
+const initialReservation = {
+  ReservedFor: 0,
+  ReserveDate: null,
+  StartDate: null,
+  EndDate: null,
+  Price: 0,
+  PayFulfillment: false,
+  BoardType: "",
+  PaymentMethod: "",
+  HotelId: "",
+  RoomIds: [],
+  Reservator: {
+    Name: "",
+    Address: {
+      PostalCode: "",
+      Country: "",
+      Region: "",
+      City: "",
+      AddressLineOne: "",
+      AddressLineTwo: "",
+    },
+  },
+};
+
+const AddReservation = ({onCreated}) => {
   const [choosableHotels, setChoosableHotels] = useState([]);
+  const [createdReservation, setCreatedReservation] = useState({});
 
   const [isLoading, setIsLoading] = useState(false);
-  const [roomIds, setRoomIds] = useState([]);
 
-  const [reservation, setReservation] = useState({
-    ReservedFor: 0,
-    ReserveDate: null,
-    StartDate: null,
-    EndDate: null,
-    Price: 0,
-    PayFulfillment: false,
-    BoardType: "",
-    PaymentMethod: "",
-    HotelId: "",
-    // RoomIds: roomIds,
-    Reservator: {
-      Name: "",
-      Address: {
-        PostalCode: "",
-        Country: "",
-        Region: "",
-        City: "",
-        AddressLineOne: "",
-        AddressLineTwo: "",
-      },
-    },
-  });
+  const [reservation, setReservation] = useState(initialReservation);
 
-  const addReservation = (reservation, selectedRooms, reservator) => {
+  const addReservation = async (reservation) => {
     console.log(reservation);
-    console.log(selectedRooms);
-    console.log(reservator);
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `https://localhost:7027/api/reservation/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(reservation),
+        }
+      );
+      const responseData = await response.json();
+      console.log(responseData);
+
+      // setReservation(initialReservation);
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const error = responseData.title;
+        console.log(error);
+        return error;
+      }
+
+      setCreatedReservation(responseData);
+      onCreated(createdReservation)
+    } catch (err) {
+      //setReservation(initialReservation);
+      setIsLoading(false);
+      console.log(err);
+    }
   };
 
   const fetchChoosableHotels = async () => {
@@ -87,7 +119,7 @@ const AddReservation = () => {
                 value={reservation.HotelId}
                 label="Hotel"
                 onChange={(e) =>
-                  setReservation({ ...reservation, HotelId: e.target.value })
+                  setReservation({ ...reservation, HotelId: parseInt(e.target.value) })
                 }
               >
                 {choosableHotels.map((h) => (
@@ -100,7 +132,7 @@ const AddReservation = () => {
               "There are no hotels to choose from"
             )}
           </FormControl>
-          Selected Hotel's ID:{" "}
+          Selected Hotel's ID:
           {reservation.HotelId !== 0 ? reservation.HotelId : "Not selected"}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <div>
