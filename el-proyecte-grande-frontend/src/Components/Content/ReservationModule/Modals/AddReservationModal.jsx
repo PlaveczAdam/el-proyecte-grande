@@ -20,11 +20,12 @@ const style = {
   border: "2px solid black",
   boxShadow: 24,
   p: 4,
+  height: "90vh",
+  overflowY: "auto",
 };
 
 const AddReservationModal = ({ onClose, buttonText = "Close" }) => {
   const [open, setOpen] = useState(true);
-
 
   const handleClose = () => {
     onClose();
@@ -32,7 +33,11 @@ const AddReservationModal = ({ onClose, buttonText = "Close" }) => {
   };
 
   return (
-    <ReservationModalBase open={open} handleClose={handleClose} boxStyle={style}>
+    <ReservationModalBase
+      open={open}
+      handleClose={handleClose}
+      boxStyle={style}
+    >
       <Typography id="transition-modal-title" variant="h5" component="h2">
         Add new Reservation
       </Typography>

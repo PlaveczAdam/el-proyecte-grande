@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const SelectRoom = ({ choosableRooms, onAdd, selectedRooms }) => {
   const [chosenRoom, setChosenRoom] = useState("");
@@ -16,12 +17,12 @@ const SelectRoom = ({ choosableRooms, onAdd, selectedRooms }) => {
 
   return (
     <Box
-      mt={2}
+    mb={2}
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <FormControl sx={{ m: 1, minWidth: 200 }}>
+      <FormControl sx={{ m: 1, minWidth: 250 }}>
         <InputLabel id="demo-simple-select-label">
-          Available Rooms for time period:
+          Available Rooms for period
         </InputLabel>
         {choosableRooms.length > 0 ? (
           <Select
@@ -52,10 +53,11 @@ const SelectRoom = ({ choosableRooms, onAdd, selectedRooms }) => {
         >
           Add this Room
         </Button>
-        <p>
-          Selected Room(s):
+      
+        <Typography variant="overline" display="block" gutterBottom>
+        Selected Room(s):
           {selectedRooms.map((r) => `${r}, `)}
-        </p>
+      </Typography>
       </div>
     </Box>
   );

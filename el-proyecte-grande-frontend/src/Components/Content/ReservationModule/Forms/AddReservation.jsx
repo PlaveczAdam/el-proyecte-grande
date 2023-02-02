@@ -44,9 +44,10 @@ const AddReservation = () => {
     },
   });
 
-  const addReservation = (reservation, selectedRooms) => {
+  const addReservation = (reservation, selectedRooms, reservator) => {
     console.log(reservation);
     console.log(selectedRooms);
+    console.log(reservator);
   };
 
   const fetchChoosableHotels = async () => {
