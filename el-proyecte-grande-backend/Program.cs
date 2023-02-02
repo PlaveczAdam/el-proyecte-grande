@@ -1,7 +1,9 @@
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
+using el_proyecte_grande_backend.Repositories.HotelNs;
 using el_proyecte_grande_backend.Repositories.Room;
 using el_proyecte_grande_backend.Repositories.Reservations;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GrandeHotelContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 
 var app = builder.Build();
