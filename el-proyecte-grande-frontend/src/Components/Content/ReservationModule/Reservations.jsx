@@ -14,6 +14,9 @@ import ContentPagination from "../../Shared/Pagination";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import CircularProgress from '@mui/material/CircularProgress';
+
+import "./Reservations.css"
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -56,7 +59,10 @@ const Reservations = () => {
   return (
     <>
       {isLoading ? (
-        <div>Loading....</div>
+        <div className="loader_overlay" > 
+
+        <CircularProgress color="primary" />
+        </div>
       ) : (
         <>
           <Box sx={{ textAlign: "center" }}>
@@ -82,12 +88,15 @@ const Reservations = () => {
               <TableHead>
                 <TableRow>
                   <TableCell align="center">Id</TableCell>
+                  <TableCell align="center">Hotel</TableCell>
                   <TableCell align="center">Reservator</TableCell>
+                  <TableCell align="center">Reserved for</TableCell>
                   <TableCell align="center">Reservation date</TableCell>
                   <TableCell align="center">Start date</TableCell>
                   <TableCell align="center">End date</TableCell>
-                  <TableCell align="center">Hotel</TableCell>
-                  <TableCell align="center">Edit</TableCell>
+                  <TableCell align="center">Price</TableCell>
+                  <TableCell align="center">Payment</TableCell>
+                  <TableCell align="center">Edit payment</TableCell>
                   <TableCell align="center">Set status</TableCell>
                 </TableRow>
               </TableHead>
@@ -98,18 +107,23 @@ const Reservations = () => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="center">{reservation.id}</TableCell>
+                    <TableCell align="center">{reservation.hotel.name}</TableCell>
+                    <TableCell align="center">{reservation.reservator.name}</TableCell>
                     <TableCell align="center">
-                      {reservation.reservator}
+                      {reservation.reservedFor}
                     </TableCell>
                     <TableCell align="center">
-                      {reservation.reserveDate}
+                      {reservation.reserveDate.substring(0,10)}
                     </TableCell>
                     <TableCell align="center">
-                      {reservation.startDate}
+                      {reservation.startDate.substring(0,10)}
                     </TableCell>
-                    <TableCell align="center">{reservation.endDate}</TableCell>
+                    <TableCell align="center">{reservation.endDate.substring(0,10)}</TableCell>
                     <TableCell align="center">
-                      {reservation.hotelName}
+                      {reservation.price}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.payFullfillment ? reservation.paymentMethod : "not been paid"}
                     </TableCell>
                     <TableCell align="center">
                       <Button variant="text">
