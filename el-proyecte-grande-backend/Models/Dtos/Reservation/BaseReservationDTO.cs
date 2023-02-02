@@ -28,6 +28,9 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
 
         [Required]
         public string? PaymentMethod { get; set; }
+
+        [Required]
+        public bool IsCancelled { get; set; }
     }
 
     public class GetAllReservationDTO : BaseReservationDTO
@@ -50,28 +53,22 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
     public class AddReservationDTO : BaseReservationDTO
     {
         [Required]
-        public int HotelId { get; set; }
+        public long HotelId { get; set; }
 
         [Required]
         public AddReservatorDTOForReservation Reservator { get; set; }
 
         [Required]
         public long[] RoomIds { get; set; }
+
         //public List<RoomDTOsForReservation> Rooms { get; set; }
 
     }
 
-
-    public class UpdateReservationDTO : BaseReservationDTO
+    public class UpdateReservationDTO 
     {
         [Required]
-        public int HotelId { get; set; }
-
-        [Required]
-        public AddReservatorDTOForReservation Reservator { get; set; }
-
-        [Required]
-        public long[] RoomIds { get; set; }
+        public string PaymentMethod { get; set; }
     }
 
 
@@ -95,8 +92,6 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
 
     public class AddressDTOForReservation
     {
-        //[Required]
-        //public long Id { get; set; }
         [Required]
         public string? PostalCode { get; set; }
         [Required]
