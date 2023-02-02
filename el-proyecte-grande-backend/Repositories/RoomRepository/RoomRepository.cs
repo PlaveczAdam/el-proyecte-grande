@@ -138,7 +138,7 @@ public class RoomRepository : IRoomRepository
         var relatedRoomType = await _context.RoomTypes.Where(t => t.Id == room.RoomTypeId).SingleOrDefaultAsync();
         if (relatedHotel == null || relatedRoomType == null) return null;
 
-        var roomToAdd = new Models.Entities.Room
+        var roomToAdd = new Room
         {
             Floor = room.Floor,
             DoorNo = room.DoorNo,
@@ -332,7 +332,7 @@ public class RoomRepository : IRoomRepository
         return CreateAccessoryDto(accessoryToUpdate);
     }
 
-    private RoomDto? CreateRoomDto(Models.Entities.Room? room)
+    private RoomDto? CreateRoomDto(Room? room)
     {
         if (room == null) return null;
         var dto = new RoomDto()
@@ -358,6 +358,7 @@ public class RoomRepository : IRoomRepository
             Id = roomType.Id,
             Name = roomType.Name,
             Price = roomType.Price,
+            RoomQuality = roomType.RoomQuality,
             AccessoryIds = new(),
         };
         roomType.Accessories.ToList().ForEach(rt => { dto.AccessoryIds.Add(rt.Id); });
