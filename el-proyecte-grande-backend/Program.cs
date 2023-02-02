@@ -19,6 +19,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GrandeHotelContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+}));
+
 builder.Services.AddSingleton<IGuestRepository>(x =>
     new GuestRepository(x.CreateScope().ServiceProvider.GetRequiredService<GrandeHotelContext>()));
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
@@ -38,6 +43,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
