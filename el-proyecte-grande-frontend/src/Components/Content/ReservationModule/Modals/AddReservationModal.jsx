@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ReservationModalBase from "./ReservationModalBase";
-import AddReservationForm from "../Forms/AddReservationForm";
+import AddReservation from "../Forms/AddReservation";
 
 const style = {
   display: "flex",
@@ -25,9 +25,6 @@ const style = {
 const AddReservationModal = ({ onClose, buttonText = "Close" }) => {
   const [open, setOpen] = useState(true);
 
-const addReservation = () => {
-    console.log("added");
-}
 
   const handleClose = () => {
     onClose();
@@ -39,11 +36,10 @@ const addReservation = () => {
       <Typography id="transition-modal-title" variant="h5" component="h2">
         Add new Reservation
       </Typography>
-      <AddReservationForm />
+
+      <AddReservation />
+
       <div className="modal-buttons-container">
-        <Button onClick={addReservation} variant="contained" color="success">
-          Add
-        </Button>
         <Button onClick={handleClose} variant="outlined" color="error">
           {buttonText}
         </Button>

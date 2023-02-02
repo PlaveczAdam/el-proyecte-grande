@@ -14,14 +14,17 @@ import ContentPagination from "../../Shared/Pagination";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
-import "./Reservations.css"
+import "./Reservations.css";
+import AddReservationModal from "./Modals/AddReservationModal";
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+
+  const [addReservationModalIsOpen, setAddReservationModalIsOpen] = useState(false)
 
   const fetchReservations = async () => {
     const url = "https://localhost:7027/api/reservation";
@@ -52,26 +55,29 @@ const Reservations = () => {
     fetchReservations();
   }, []);
 
-  const clearError = () => {
-    setError(null);
+  const openAddReservationModal = () => {
+    setAddReservationModalIsOpen(true);
+  };
+  const closeModal = () => {
+    setAddReservationModalIsOpen(false);
   };
 
   return (
     <>
       {isLoading ? (
-        <div className="loader_overlay" > 
-
-        <CircularProgress color="primary" />
+        <div className="loader_overlay">
+          <CircularProgress color="primary" />
         </div>
       ) : (
-        <>
+          <>
+          {addReservationModalIsOpen && <AddReservationModal onClose={closeModal} />}
           <Box sx={{ textAlign: "center" }}>
-            <h2>Reservation</h2>
+            <h2>Reservations</h2>
           </Box>
           <Box sx={{ marginY: 1 }}>
             <Grid container direction="row" alignItems="center" spacing={2}>
               <Grid item xs={12} md={9}>
-                <Button variant="text">Add new</Button>
+                <Button variant="text" onClick={openAddReservationModal}>Add new Reservation</Button>
               </Grid>
               <Grid item xs={12} md={3}>
                 <TextField
@@ -107,23 +113,29 @@ const Reservations = () => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="center">{reservation.id}</TableCell>
-                    <TableCell align="center">{reservation.hotel.name}</TableCell>
-                    <TableCell align="center">{reservation.reservator.name}</TableCell>
+                    <TableCell align="center">
+                      {reservation.hotel.name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.reservator.name}
+                    </TableCell>
                     <TableCell align="center">
                       {reservation.reservedFor}
                     </TableCell>
                     <TableCell align="center">
-                      {reservation.reserveDate.substring(0,10)}
+                      {reservation.reserveDate.substring(0, 10)}
                     </TableCell>
                     <TableCell align="center">
-                      {reservation.startDate.substring(0,10)}
-                    </TableCell>
-                    <TableCell align="center">{reservation.endDate.substring(0,10)}</TableCell>
-                    <TableCell align="center">
-                      {reservation.price}
+                      {reservation.startDate.substring(0, 10)}
                     </TableCell>
                     <TableCell align="center">
-                      {reservation.payFullfillment ? reservation.paymentMethod : "not been paid"}
+                      {reservation.endDate.substring(0, 10)}
+                    </TableCell>
+                    <TableCell align="center">{reservation.price}</TableCell>
+                    <TableCell align="center">
+                      {reservation.payFullfillment
+                        ? reservation.paymentMethod
+                        : "not been paid"}
                     </TableCell>
                     <TableCell align="center">
                       <Button variant="text">
