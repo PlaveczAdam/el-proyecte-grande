@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using el_proyecte_grande_backend.Data;
@@ -11,9 +12,11 @@ using el_proyecte_grande_backend.Data;
 namespace elproyectegrandebackend.Migrations
 {
     [DbContext(typeof(GrandeHotelContext))]
-    partial class GrandeHotelContextModelSnapshot : ModelSnapshot
+    [Migration("20230201145030_AddIsCancelledPropertyToReservation")]
+    partial class AddIsCancelledPropertyToReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace elproyectegrandebackend.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("HotelId")
+                    b.Property<long>("HotelId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("LastName")
@@ -162,7 +165,7 @@ namespace elproyectegrandebackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("RoomId")
+                    b.Property<long>("RoomId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Status")
@@ -443,11 +446,15 @@ namespace elproyectegrandebackend.Migrations
 
                     b.HasOne("el_proyecte_grande_backend.Models.Entities.Hotel", "Hotel")
                         .WithMany()
-                        .HasForeignKey("HotelId");
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("el_proyecte_grande_backend.Models.Entities.Room", "Room")
                         .WithMany()
-                        .HasForeignKey("RoomId");
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Address");
 

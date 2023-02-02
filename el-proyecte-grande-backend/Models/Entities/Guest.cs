@@ -17,8 +17,8 @@ namespace el_proyecte_grande_backend.Models.Entities
 		public GuestStatus Status { get; set; }
 
 		public Address Address { get; set; }
-		public Room Room { get; set; }
-		public Hotel Hotel { get; set; }
-		public virtual ICollection<Reservation> Reservations { get; set; } 
+		public Room? Room { get; set; }
+		public Hotel? Hotel { get; set; }
+		public virtual ICollection<Reservation>? Reservations { get; set; } 
 	}
 }
