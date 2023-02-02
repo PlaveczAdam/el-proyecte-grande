@@ -19,11 +19,14 @@ import { useEffect } from 'react';
 
 const Guests = () => {
     const [loading, setLoading] = React.useState(true);
+    const [filterLoading, setFilterLoading] = React.useState(false);
     const [rows, setRows] = React.useState([]);
     const [filteredRows, setFilteredRows] = React.useState([]);
     const [enums, setEnums] = React.useState({});
     const [hotelNames, setHotelNames] = React.useState([]);
     const [searchText, setSearchText] = React.useState("");
+    const [selectedHotelId, setSelectedHotelId] = React.useState(null);
+    const [selectedStatusId, setSelectedStatusId] = React.useState(null);
 
     function searchBoxChanged(e) {
         const text = e.target.value;
@@ -39,22 +42,6 @@ const Guests = () => {
     }
 
     useEffect(() => {
-        async function getHotelNames() {
-            const hotelsResp = await fetch("api/hotel");
-            const hotelJson = await hotelsResp.json();
-            const namesArray = hotelJson.map(({id, name}) => {
-                return { name, id };
-            });
-            setHotelNames(namesArray);
-        }
-        async function getEnums() {
-            const genderResp = await fetch("api/enum/Gender");
-            const gender = await genderResp.json();
-            const statusResp= await fetch("api/enum/GuestStatus");
-            const status = await statusResp.json();
-            const enumsObj = { gender, status };
-            setEnums(enumsObj);
-        }
         async function getGuests() {
             const response = await fetch("api/guest");
             const guestsJson = await response.json();
@@ -62,16 +49,57 @@ const Guests = () => {
             setFilteredRows(guestsJson);
         }
 
+        async function getFilteredGuests() {
+            let url = "api/guest/filter?";
+            url += selectedHotelId !== null ? `hotelId=${selectedHotelId}` : "";
+            url += selectedStatusId !== null ? selectedHotelId !== null ? `&guestStatus=${selectedStatusId}` : `guestStatus=${selectedStatusId}` : "";
+            console.log(url);
+            const filteredResp = await fetch(url);
+            const filteredJson = await filteredResp.json();
+            console.log(filteredJson);
+            setRows(filteredJson);
+            setFilteredRows(filteredJson);
+        }
+
+        async function getHotelNames() {
+            const hotelsResp = await fetch("api/hotel");
+            const hotelJson = await hotelsResp.json();
+            const namesArray = hotelJson.map(({ id, name }) => {
+                return { name, id };
+            });
+            setHotelNames(namesArray);
+        }
+
+        async function getEnums() {
+            const genderResp = await fetch("api/enum/Gender");
+            const gender = await genderResp.json();
+            const statusResp = await fetch("api/enum/GuestStatus");
+            const status = await statusResp.json();
+            const enumsObj = { gender, status };
+            setEnums(enumsObj);
+        }
+
         async function load() {
             await getHotelNames();
             await getEnums();
-            await getGuests();
-            setLoading(false);
+            if (selectedHotelId === null && selectedStatusId === null) {
+                setFilterLoading(true);
+                await getGuests();
+                setTimeout(() => {
+                    setFilterLoading(false);
+                    setLoading(false);
+
+                }, 500);
+            } else {
+                setFilterLoading(true);
+                await getFilteredGuests();
+                setTimeout(() => { setFilterLoading(false); }, 500);
+            }
 
         }
 
         load();
-    }, []);
+    }, [selectedHotelId, selectedStatusId]);
 
     return (
         <>
@@ -89,13 +117,26 @@ const Guests = () => {
                             <Button variant="text">Add new</Button>
                         </Grid>
                         <Grid item xs={12} md={3}>
-                            <TextField id="outlined-basic" onInput={searchBoxChanged} value={searchText} label="Search" variant="outlined" size="small" />
+                            <TextField
+                                id="outlined-basic"
+                                onInput={searchBoxChanged}
+                                value={searchText}
+                                label="Search"
+                                variant="outlined"
+                                size="small"
+                            />
                         </Grid>
                         <Grid item md={12}>
-                            <Filter enums={enums} hotelNames={hotelNames} />
+                            <Filter
+                                enums={enums}
+                                hotelNames={hotelNames}
+                                setSelectedHotelId={setSelectedHotelId}
+                                setSelectedStatusId={setSelectedStatusId}
+                            />
                         </Grid>
                     </Grid>
                 </Box>
+                {filterLoading ? <CircularProgress /> : <>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
@@ -128,6 +169,7 @@ const Guests = () => {
                     </Table>
                 </TableContainer>
                 <ContentPagination />
+                </>}
             </>
             }
         </>

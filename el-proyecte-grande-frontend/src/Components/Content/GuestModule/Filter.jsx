@@ -17,14 +17,18 @@ export default function Filter(props) {
 
     const handleStatusChange = (e) => {
         setGuestStatus(e.target.value);
+        props.setSelectedStatusId(e.target.value);
     }
     const handleHotelChange = (e) => {
         setHotel(e.target.value);
+        props.setSelectedHotelId(e.target.value);
     }
 
     const resetFilters = () => {
         setHotel("");
         setGuestStatus("");
+        props.setSelectedStatusId(null);
+        props.setSelectedHotelId(null);
     };
     return (
         <Box>
