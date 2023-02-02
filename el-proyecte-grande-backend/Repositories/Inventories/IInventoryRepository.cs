@@ -1,13 +1,22 @@
-﻿using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Models.Enums;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using el_proyecte_grande_backend.Models.Entities;
 
-namespace el_proyecte_grande_backend.Repositories.Inventories;
-
-public interface IInventoryRepository
+namespace el_proyecte_grande_backend.Repositories.Inventories
 {
-	public Task<IEnumerable<Inventory>> GetAllInventories();
-	public Task<Inventory> GetInventoryById(int id);
-	public Task<Inventory> GetInventoryByHotel(int hotelId);
-	public Task<Inventory> AddInventory(Inventory inventory);
-	public Task<Inventory> UpdateInventory(Inventory inventory);
+	public interface IInventoryRepository
+	{
+		Task<IEnumerable<Inventory>> GetAllInventoriesAsync();
+		Task<Inventory> GetInventoryByIdAsync(long id);
+		Task<Inventory> GetInventoryByHotelIdAsync(long hotelId);
+		Task<IEnumerable<Item>> GetItemsByInventoryIdAsync(long inventoryId);
+		Task<Item> GetItemByIdAsync(long itemId);
+		Task<bool> InventoryExistsAsync(long id);
+		Task<bool> CreateInventoryAsync(Inventory inventory);
+		Task<bool> UpdateInventoryAsync(Inventory inventory);
+		Task<bool> DeleteInventoryAsync(long id);
+		Task<bool> CreateItemAsync(Item item);
+		Task<bool> UpdateItemAsync(Item item);
+		Task<bool> DeleteItemAsync(long id);
+	}
 }
