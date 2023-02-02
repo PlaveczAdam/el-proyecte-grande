@@ -10,6 +10,7 @@ namespace el_proyecte_grande_backend.Repositories.Inventories
 		Task<Inventory> GetInventoryByIdAsync(long id);
 		Task<Inventory> GetInventoryByHotelIdAsync(long hotelId);
 		Task<IEnumerable<Item>> GetItemsByInventoryIdAsync(long inventoryId);
+		Task<IEnumerable<Item>> GetAllItemsAsync();
 		Task<Item> GetItemByIdAsync(long itemId);
 		Task<bool> InventoryExistsAsync(long id);
 		Task<bool> CreateInventoryAsync(Inventory inventory);

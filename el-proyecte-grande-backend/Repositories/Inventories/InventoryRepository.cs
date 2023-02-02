@@ -41,6 +41,11 @@ public class InventoryRepository : IInventoryRepository
 			.ToListAsync();
 	}
 
+	public async Task<IEnumerable<Item>> GetAllItemsAsync()
+	{
+		return await _context.Items.ToListAsync();
+	}
+
 	public async Task<Item> GetItemByIdAsync(long itemId)
 	{
 		return await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId);

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using el_proyecte_grande_backend.Models.Entities;
+﻿using el_proyecte_grande_backend.Models.Entities;
+using el_proyecte_grande_backend.Models.Dtos.Inventory;
 using el_proyecte_grande_backend.Repositories.Inventories;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using el_proyecte_grande_backend.Models.Enums;
 
 namespace el_proyecte_grande_backend.Controllers;
 
@@ -20,18 +19,35 @@ public class InventoryController : ControllerBase
 
 	// GET: api/Inventory
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<Inventory>>> GetInventories()
+	public async Task<IActionResult> GetInventories()
 	{
 		var inventories = await _inventoryRepository.GetAllInventoriesAsync();
+		if (!inventories.Any())
+		{
+			return NotFound();
+		}
+
 		return Ok(inventories);
 	}
 
 	// GET: api/Inventory/5
 	[HttpGet("{id}")]
-	public async Task<ActionResult<Inventory>> GetInventory(long id)
+	public async Task<IActionResult> GetInventory(long id)
 	{
 		var inventory = await _inventoryRepository.GetInventoryByIdAsync(id);
+		if (inventory == null)
+		{
+			return NotFound();
+		}
+		return Ok(inventory);
+	}
 
+
+	// GET: api/Inventory/Hotel/5
+	[HttpGet("hotel/{hotelId}")]
+	public async Task<IActionResult> GetInventoryByHotelId(long hotelId)
+	{
+		var inventory = await _inventoryRepository.GetInventoryByHotelIdAsync(hotelId);
 		if (inventory == null)
 		{
 			return NotFound();
@@ -40,26 +56,35 @@ public class InventoryController : ControllerBase
 		return Ok(inventory);
 	}
 
-	// GET: api/Inventory/Hotel/5
-	[HttpGet("Hotel/{hotelId}")]
-	public async Task<ActionResult<Inventory>> GetInventoryByHotelId(long hotelId)
-	{
-		var inventory = await _inventoryRepository.GetInventoryByHotelIdAsync(hotelId);
 
-		if (inventory == null)
+	// GET: api/Inventory/Item
+	[HttpGet("item")]
+	public async Task<IActionResult> GetItems()
+	{
+		var items = await _inventoryRepository.GetAllItemsAsync();
+		return Ok(items);
+	}
+
+
+
+	// GET: api/Inventory/Item/5
+	[HttpGet("item/{itemId}")]
+	public async Task<IActionResult> GetItem(long id)
+	{
+		var item = await _inventoryRepository.GetItemByIdAsync(id);
+		if (item == null)
 		{
 			return NotFound();
 		}
 
-		return Ok(inventory);
+		return Ok(item);
 	}
 
 	// GET: api/Inventory/5/Items
-	[HttpGet("{inventoryId}/Items")]
-	public async Task<ActionResult<IEnumerable<Item>>> GetItems(long inventoryId)
+	[HttpGet("{inventoryId}/items")]
+	public async Task<IActionResult> GetItemsOfInventory(long inventoryId)
 	{
 		var items = await _inventoryRepository.GetItemsByInventoryIdAsync(inventoryId);
-
 		if (items == null)
 		{
 			return NotFound();
@@ -68,19 +93,6 @@ public class InventoryController : ControllerBase
 		return Ok(items);
 	}
 
-	// GET: api/Inventory/Item/5
-	[HttpGet("Item/{itemId}")]
-	public async Task<ActionResult<Item>> GetItem(long itemId)
-	{
-		var item = await _inventoryRepository.GetItemByIdAsync(itemId);
-
-		if (item == null)
-		{
-			return NotFound();
-		}
-
-		return Ok(item);
-	}
 
 	// POST: api/Inventory
 	[HttpPost]
@@ -140,4 +152,67 @@ public class InventoryController : ControllerBase
 			return BadRequest();
 		}
 	}
+
+	// POST: api/Inventory/Item
+	[HttpPost("item")]
+	public async Task<IActionResult> CreateItem([FromBody] Item item)
+	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
+		var success = await _inventoryRepository.CreateItemAsync(item);
+		if (success)
+		{
+			return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
+		}
+		else
+		{
+			return BadRequest();
+		}
+	}
+
+	//PUT: api/Inventory/Item/{id}
+	[HttpPut("item/{id}")]
+	public async Task<IActionResult> UpdateItem(long id, [FromBody] Item item)
+	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
+		var itemToUpdate = await _inventoryRepository.GetItemByIdAsync(id);
+		if (itemToUpdate == null)
+		{
+			return NotFound();
+		}
+
+		itemToUpdate.Name = item.Name;
+		itemToUpdate.ItemType = item.ItemType;
+		itemToUpdate.Inventory = item.Inventory;
+
+		await _inventoryRepository.UpdateItemAsync(itemToUpdate);
+		return NoContent();
+	}
+
+	//DELETE: api/Inventory/Item/{id}
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteItem(long id)
+	{
+		var item = await _inventoryRepository.GetItemByIdAsync(id);
+		if (item == null)
+		{
+			return NotFound();
+		}
+
+		var success = await _inventoryRepository.DeleteItemAsync(item.Id);
+		if (success)
+		{
+			return NoContent();
+		}
+
+		return BadRequest();
+	}
+
 }
