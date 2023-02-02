@@ -24,7 +24,7 @@ const style = {
   overflowY: "auto",
 };
 
-const AddReservationModal = ({ onClose, buttonText = "Close" }) => {
+const AddReservationModal = ({ onClose, buttonText = "Close", reservationWasCreated }) => {
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {
@@ -42,7 +42,7 @@ const AddReservationModal = ({ onClose, buttonText = "Close" }) => {
         Add new Reservation
       </Typography>
 
-      <AddReservation />
+      <AddReservation onCreated={reservationWasCreated} />
 
       <div className="modal-buttons-container">
         <Button onClick={handleClose} variant="outlined" color="error">

@@ -321,8 +321,10 @@ const AddReservationForm = ({ reservation, onCreate }) => {
           variant="contained"
           color="success"
           onClick={() =>
-            onCreate({ ...reservationDetails }, selectedRooms, {
-              ...reservatorDetails,
+            onCreate({
+              ...reservationDetails,
+              RoomIds: selectedRooms,
+              Reservator: { ...reservatorDetails },
             })
           }
         >

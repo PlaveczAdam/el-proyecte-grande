@@ -63,6 +63,10 @@ const Reservations = () => {
     setAddReservationModalIsOpen(false);
   };
 
+  const reservationWasCreated = (newReservation) => {
+    console.log(newReservation);
+  }
+
   return (
     <>
       {isLoading ? (
@@ -72,7 +76,7 @@ const Reservations = () => {
       ) : (
         <>
           {addReservationModalIsOpen && (
-            <AddReservationModal onClose={closeModal} />
+            <AddReservationModal onClose={closeModal} reservationWasCreated={reservationWasCreated}/>
           )}
           <Box sx={{ textAlign: "center" }}>
             <h2>Reservations</h2>
