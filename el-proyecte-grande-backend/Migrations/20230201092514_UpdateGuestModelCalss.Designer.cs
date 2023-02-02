@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using el_proyecte_grande_backend.Data;
@@ -11,9 +12,11 @@ using el_proyecte_grande_backend.Data;
 namespace elproyectegrandebackend.Migrations
 {
     [DbContext(typeof(GrandeHotelContext))]
-    partial class GrandeHotelContextModelSnapshot : ModelSnapshot
+    [Migration("20230201092514_UpdateGuestModelCalss")]
+    partial class UpdateGuestModelCalss
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,9 +302,6 @@ namespace elproyectegrandebackend.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("isCancelled")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
