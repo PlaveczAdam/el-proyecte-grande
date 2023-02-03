@@ -15,6 +15,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import ContentPagination from '../../Shared/Pagination';
 import Filter from "./Filter.jsx";
+import AddGuestModal from './AddGuestModal.jsx';
+import EditGuestModal from './EditGuestModal.jsx';
 import { useEffect } from 'react';
 
 const Guests = () => {
@@ -27,24 +29,30 @@ const Guests = () => {
     const [searchText, setSearchText] = React.useState("");
     const [selectedHotelId, setSelectedHotelId] = React.useState(null);
     const [selectedStatusId, setSelectedStatusId] = React.useState(null);
+    const [refresh, setRefresh] = React.useState(0);
 
-    function searchBoxChanged(e) {
+    const searchBoxChanged = (e) => {
         const text = e.target.value;
-        console.log(text);
         const filteredUsers = rows.filter(r => r.firstName.includes(text) || r.lastName.includes(text));
-        setSearchText(text);
         if (text !== "" && text !== undefined) {
             setFilteredRows(filteredUsers);
         } else {
             setFilteredRows(rows);
         }
-        
+        setSearchText(text);      
+    }
+
+    const handleGuestUpdate = () => {
+        const counter = (refresh + 1) % 2; 
+        setRefresh(counter);
+        setSearchText("");
     }
 
     useEffect(() => {
         async function getGuests() {
             const response = await fetch("api/guest");
             const guestsJson = await response.json();
+            console.log("guests: ", guestsJson);
             setRows(guestsJson);
             setFilteredRows(guestsJson);
         }
@@ -57,6 +65,7 @@ const Guests = () => {
             const filteredResp = await fetch(url);
             const filteredJson = await filteredResp.json();
             console.log(filteredJson);
+            console.log("guests: ", filteredJson);
             setRows(filteredJson);
             setFilteredRows(filteredJson);
         }
@@ -71,10 +80,10 @@ const Guests = () => {
         }
 
         async function getEnums() {
-            const genderResp = await fetch("api/enum/Gender");
-            const gender = await genderResp.json();
-            const statusResp = await fetch("api/enum/GuestStatus");
-            const status = await statusResp.json();
+            let resp = await fetch("api/enum/Gender");
+            const gender = await resp.json();
+            resp = await fetch("api/enum/GuestStatus");
+            const status = await resp.json();
             const enumsObj = { gender, status };
             setEnums(enumsObj);
         }
@@ -99,7 +108,7 @@ const Guests = () => {
         }
 
         load();
-    }, [selectedHotelId, selectedStatusId]);
+    }, [selectedHotelId, selectedStatusId, refresh]);
 
     return (
         <>
@@ -114,7 +123,7 @@ const Guests = () => {
                         spacing={2}
                     >
                         <Grid item xs={12} md={9} >
-                            <Button variant="text">Add new</Button>
+                            <AddGuestModal enums={enums} hotels={hotelNames} onSave={handleGuestUpdate} />
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <TextField
@@ -161,13 +170,14 @@ const Guests = () => {
                                     <TableCell align="center">{new Date(Date.parse(row.birthDate)).toLocaleDateString('en-US')}</TableCell>
                                     <TableCell align="center">{row.phone}</TableCell>
                                     <TableCell align="center">{Object.keys(enums.status.values)[row.status]}</TableCell>
-                                    <TableCell align="center"><Button variant="text"><EditIcon /></Button></TableCell>
-                                    <TableCell align="center"><Button variant="text"><DisabledByDefaultIcon /></Button></TableCell>
+                                    <TableCell align="center">
+                                        <EditGuestModal enums={enums} hotels={hotelNames} guest={row} onSave={handleGuestUpdate} />
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                    </TableContainer>
                 <ContentPagination />
                 </>}
             </>
