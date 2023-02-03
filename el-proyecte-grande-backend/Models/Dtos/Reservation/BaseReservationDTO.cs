@@ -31,6 +31,9 @@ namespace el_proyecte_grande_backend.Models.Dtos.Reservation
 
         [Required]
         public bool IsCancelled { get; set; }
+
+        public Hotel? Hotel { get; set; }
+        public GetReservatorDTOForReservation Reservator { get; set; }
     }
 
     public class GetAllReservationDTO : BaseReservationDTO

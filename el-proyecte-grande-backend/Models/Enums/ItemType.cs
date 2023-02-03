@@ -5,5 +5,9 @@
         CleaningTools,
         Toiletries,
 		RoomAmenities,
+        KitchenSpplies,
+        ELectronics,
+        Furniture,
+        OfficeSupplies
     }
 }
