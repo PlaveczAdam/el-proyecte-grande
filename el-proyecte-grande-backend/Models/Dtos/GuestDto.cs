@@ -16,6 +16,8 @@ namespace el_proyecte_grande_backend.Models.Dtos
         public DateTime BirthDate { get; set; }
         public Gender Gender { get; set; }
         public GuestStatus Status { get; set; }
+        public long? HotelId { get; set; }
+        public long? RoomId { get; set; }
         public Address Address { get; set; }
 
     }

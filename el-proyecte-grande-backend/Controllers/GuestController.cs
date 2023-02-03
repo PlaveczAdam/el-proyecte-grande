@@ -125,8 +125,8 @@ namespace el_proyecte_grande_backend.Controllers
                     && guest.HotelId > 0
                     && guest.RoomId != null
                     && guest.RoomId > 0
-                    && guest.ReservationIds != null
-                    && guest.ReservationIds.Count > 0);
+                    /*&& guest.ReservationIds != null
+                    && guest.ReservationIds.Count > 0*/);
 
             return hasProperValuesBasedOnStatus;
         }
@@ -143,7 +143,7 @@ namespace el_proyecte_grande_backend.Controllers
         {
             GuestDto result = new GuestDto()
             {
-                Id= guest.Id,
+                Id = guest.Id,
                 PersonalId = guest.PersonalId,
                 FirstName = guest.FirstName,
                 LastName = guest.LastName,
@@ -156,6 +156,14 @@ namespace el_proyecte_grande_backend.Controllers
                 Status = guest.Status,
                 Address = guest.Address
             };
+            if (guest.Hotel != null)
+            {
+                result.HotelId = guest.Hotel.Id;
+            }
+            if (guest.Room != null)
+            {
+                result.RoomId = guest.Room.Id;
+            }
             return result;
         }
 
