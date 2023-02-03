@@ -52,7 +52,6 @@ const Guests = () => {
         async function getGuests() {
             const response = await fetch("api/guest");
             const guestsJson = await response.json();
-            console.log("guests: ", guestsJson);
             setRows(guestsJson);
             setFilteredRows(guestsJson);
         }
@@ -61,11 +60,8 @@ const Guests = () => {
             let url = "api/guest/filter?";
             url += selectedHotelId !== null ? `hotelId=${selectedHotelId}` : "";
             url += selectedStatusId !== null ? selectedHotelId !== null ? `&guestStatus=${selectedStatusId}` : `guestStatus=${selectedStatusId}` : "";
-            console.log(url);
             const filteredResp = await fetch(url);
             const filteredJson = await filteredResp.json();
-            console.log(filteredJson);
-            console.log("guests: ", filteredJson);
             setRows(filteredJson);
             setFilteredRows(filteredJson);
         }
