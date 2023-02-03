@@ -6,6 +6,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import Card from '@mui/material/Card';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -113,6 +114,8 @@ function GuestModalForm(props) {
                     renderInput={(params) => <TextField {...params} />}
                 />
             </LocalizationProvider>
+            <Card variant="outlined" sx={{ display: "flex", gap: 1, padding: 1, flexWrap: "wrap", flexDirection: "column" }}>
+                <Box>
             <TextField
                 required
                 multiline
@@ -141,6 +144,7 @@ function GuestModalForm(props) {
                 value={address.city}
                 onChange={(e) => setAddress({ ...address, city: e.target.value })}
             />
+                </Box>
             <TextField
                 required
                 multiline
@@ -154,7 +158,8 @@ function GuestModalForm(props) {
                 label="Address line #2:"
                 value={address.addressLineTwo}
                 onChange={(e) => setAddress({ ...address, addressLineTwo: e.target.value })}
-            />
+                    />
+                </Card>
             <TextField
                 required
                 label="Phone number:"
