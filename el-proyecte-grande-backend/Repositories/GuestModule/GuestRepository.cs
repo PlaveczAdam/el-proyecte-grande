@@ -117,7 +117,12 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
                 throw;
             }
 
-            fromdb.Address = guest.Address;
+            fromdb.Address.Country = guest.Address.Country;
+            fromdb.Address.Region = guest.Address.Region;
+            fromdb.Address.PostalCode = guest.Address.PostalCode;
+            fromdb.Address.City = guest.Address.City;
+            fromdb.Address.AddressLineOne = guest.Address.AddressLineOne;
+            fromdb.Address.AddressLineTwo = guest.Address.AddressLineTwo;
             fromdb.BirthDate = guest.BirthDate;
             fromdb.BirthPlace = guest.BirthPlace;
             fromdb.Email = guest.Email;
@@ -128,7 +133,7 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
             fromdb.Note = guest.Note;
             fromdb.PersonalId = guest.PersonalId;
             fromdb.Status = guest.Status;
-
+            _dbContext.Update(fromdb);
             await _dbContext.SaveChangesAsync();
 
             return fromdb;
