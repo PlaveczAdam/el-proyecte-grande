@@ -1,88 +1,175 @@
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-import ContentPagination from '../../Shared/Pagination';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import EditIcon from "@mui/icons-material/Edit";
+import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
+import ContentPagination from "../../Shared/Pagination";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
-function createData(id, reservator, reserveDate, startDate, endDate, hotelName) {
-    return { id, reservator, reserveDate, startDate, endDate, hotelName };
-}
-
-const rows = [
-    createData(1, 'Mr Smith', '2022-01-01', '2022-02-01', '2022-02-05', 'Hotel Menthol'),
-    createData(2, 'Mr Jones', '2022-01-01', '2022-02-01', '2022-02-05', 'Hotel Coffee'),
-    createData(3, 'Mrs Smith', '2022-01-01', '2022-02-01', '2022-02-05', 'Hotel Menthol'),
-    createData(4, 'Mrs Anonymus', '2022-01-01', '2022-02-01', '2022-02-05', 'Hotel Menthol'),
-    createData(5, 'Mr X', '2022-01-01', '2022-02-01', '2022-02-05', 'Hotel Zizi'),
-];
-
+import "./Reservations.css";
+import AddReservationModal from "./Modals/AddReservationModal";
 
 const Reservations = () => {
-    return (
-        <>
-            <Box sx={{ textAlign: 'center' }}>
-                <h2 >Reservation</h2>
-            </Box>
-            <Box sx={{ marginY: 1 }}>
-                <Grid container
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                >
-                    <Grid item xs={12} md={9} >
-                        <Button variant="text">Add new</Button>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" />
-                    </Grid>
-                </Grid>
-            </Box>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="center">Id</TableCell>
-                            <TableCell align="center">Reservator</TableCell>
-                            <TableCell align="center">Reservation date</TableCell>
-                            <TableCell align="center">Start date</TableCell>
-                            <TableCell align="center">End date</TableCell>
-                            <TableCell align="center">Hotel</TableCell>
-                            <TableCell align="center">Edit</TableCell>
-                            <TableCell align="center">Set status</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row) => (
-                            <TableRow
-                                key={row.name}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell align="center">{row.id}</TableCell>
-                                <TableCell align="center">{row.reservator}</TableCell>
-                                <TableCell align="center">{row.reserveDate}</TableCell>
-                                <TableCell align="center">{row.startDate}</TableCell>
-                                <TableCell align="center">{row.endDate}</TableCell>
-                                <TableCell align="center">{row.hotelName}</TableCell>
-                                <TableCell align="center"><Button variant="text"><EditIcon /></Button></TableCell>
-                                <TableCell align="center"><Button variant="text"><DisabledByDefaultIcon /></Button></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <ContentPagination />
-        </>
-    )
-}
+  const [reservations, setReservations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
-export default Reservations
+  const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
+    useState(false);
+
+  const fetchReservations = async () => {
+    const url = "https://localhost:7027/api/reservation";
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(url);
+      const responseData = await response.json();
+      console.log(responseData);
+      setIsLoading(false);
+
+      if (!response.ok) {
+        const error = response.message;
+        setError(error);
+        console.log(error);
+        return;
+      }
+
+      setReservations(responseData);
+    } catch (err) {
+      setIsLoading(false);
+      setError(err.message);
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations();
+  }, []);
+
+  const openAddReservationModal = () => {
+    setAddReservationModalIsOpen(true);
+  };
+  const closeModal = () => {
+    setAddReservationModalIsOpen(false);
+  };
+
+  const reservationWasCreated = (newReservation) => {
+    console.log(newReservation);
+  }
+
+  return (
+    <>
+      {isLoading ? (
+        <div className="loader_overlay">
+          <CircularProgress color="primary" />
+        </div>
+      ) : (
+        <>
+          {addReservationModalIsOpen && (
+            <AddReservationModal onClose={closeModal} reservationWasCreated={reservationWasCreated}/>
+          )}
+          <Box sx={{ textAlign: "center" }}>
+            <h2>Reservations</h2>
+          </Box>
+          <Box sx={{ marginY: 1 }}>
+            <Grid container direction="row" alignItems="center" spacing={2}>
+              <Grid item xs={12} md={9}>
+                <Button variant="text" onClick={openAddReservationModal}>
+                  Add new Reservation
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  id="outlined-basic"
+                  label="Filter"
+                  variant="outlined"
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Id</TableCell>
+                  <TableCell align="center">Hotel</TableCell>
+                  <TableCell align="center">Reservator</TableCell>
+                  <TableCell align="center">Reserved for</TableCell>
+                  <TableCell align="center">Reservation date</TableCell>
+                  <TableCell align="center">Start date</TableCell>
+                  <TableCell align="center">End date</TableCell>
+                  <TableCell align="center">Price</TableCell>
+                  <TableCell align="center">Payment</TableCell>
+                  <TableCell align="center">Edit payment</TableCell>
+                  <TableCell align="center">Cancel</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {reservations.map((reservation) => (
+                  <TableRow
+                    key={reservation.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="center">{reservation.id}</TableCell>
+                    <TableCell align="center">
+                      {reservation.hotel.name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.reservator.name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.reservedFor}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.reserveDate.substring(0, 10)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.startDate.substring(0, 10)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.endDate.substring(0, 10)}
+                    </TableCell>
+                    <TableCell align="center">{reservation.price}</TableCell>
+                    <TableCell align="center">
+                      {reservation.payFullfillment
+                        ? reservation.paymentMethod
+                        : "not been paid"}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button variant="text">
+                        <EditIcon />
+                      </Button>
+                    </TableCell>
+                    <TableCell align="center">
+                      {reservation.isCancelled ? (
+                        "Cancelled"
+                      ) : (
+                        <Button variant="text">
+                          <DisabledByDefaultIcon />
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <ContentPagination />
+        </>
+      )}
+    </>
+  );
+};
+
+export default Reservations;
