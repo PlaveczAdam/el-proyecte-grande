@@ -22,11 +22,6 @@ function GuestModalForm(props) {
         const hotelId = e.target.value !== undefined ? e.target.value : e;
         setGuest({ ...guest, hotelId: hotelId });
         if (hotelId !== "") {
-            //const url = `api/room/hotel/${hotelId}`;
-            //const resp = await fetch(url);
-            //const respJson = await resp.json();
-            //const list = respJson.map((r) => <MenuItem key={r.id} value={r.id}>{r.doorNo}</MenuItem>);
-            //setRoomList(list);
             fetchHotelRooms(hotelId);
         } else {
             setRoomList([]);
