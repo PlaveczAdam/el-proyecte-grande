@@ -12,7 +12,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 function GuestModalForm(props) {
-    console.log("Guest: ", props.guest);
     const [guest, setGuest] = useState(props.guest);
     const [address, setAddress] = useState(props.guest.address);
     const [roomList, setRoomList] = useState([]);
@@ -38,7 +37,7 @@ function GuestModalForm(props) {
 
     useEffect(() => {
         const load = async() => {
-            if (props.guest.hotelId !== "" || props.guest.hotelId !== null) {
+            if (props.guest.hotelId !== "" && props.guest.hotelId != null) {
                 await fetchHotelRooms(props.guest.hotelId);
                 setGuest({ ...guest, roomId: props.guest.roomId });
             }
@@ -61,7 +60,7 @@ function GuestModalForm(props) {
             setGuest({ ...guest, hotelId: "", roomId: "" });
             setShowRoom(false);
         }
-    }, [guest]);
+    }, [guest.status]);
 
     return (
         <Box component="form"
@@ -72,7 +71,7 @@ function GuestModalForm(props) {
         >
             <Box typography="h4" display="flex" gap={4}>
                 {props.title}
-                <Button sx={{ marginLeft: "auto" }} onClick={() => { props.onSave(guest); console.log(guest) }}>Save</Button>
+                <Button sx={{ marginLeft: "auto" }} onClick={() =>  props.onSave(guest) }>Save</Button>
                 <Button onClick={props.onCancel}>Cancel</Button>
             </Box>
             <TextField
