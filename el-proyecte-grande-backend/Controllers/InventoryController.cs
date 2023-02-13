@@ -1,8 +1,8 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Dtos.Inventory;
-using el_proyecte_grande_backend.Repositories.Inventories;
 using Microsoft.AspNetCore.Mvc;
 using el_proyecte_grande_backend.Models.Enums;
+using el_proyecte_grande_backend.Services.InventoryServices;
 
 namespace el_proyecte_grande_backend.Controllers;
 
@@ -10,9 +10,9 @@ namespace el_proyecte_grande_backend.Controllers;
 [ApiController]
 public class InventoryController : ControllerBase
 {
-	private readonly IInventoryRepository _inventoryRepository;
+	private readonly IInventoryService _inventoryRepository;
 
-	public InventoryController(IInventoryRepository inventoryRepository)
+	public InventoryController(IInventoryService inventoryRepository)
 	{
 		_inventoryRepository = inventoryRepository;
 	}

@@ -30,10 +30,5 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Dtos\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 
 </Project>

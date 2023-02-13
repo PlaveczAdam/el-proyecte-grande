@@ -1,10 +1,10 @@
-﻿using el_proyecte_grande_backend.Models.Dtos;
+﻿using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 
-namespace el_proyecte_grande_backend.Repositories.GuestModule
+namespace el_proyecte_grande_backend.Services.GuestServices
 {
-    public interface IGuestRepository
+    public interface IGuestService
     {
         Task<IEnumerable<Guest>> GetAllGuestsAsync();
         Task<IEnumerable<Guest>> GetAllGuestByHotelAsync(long hotelId);

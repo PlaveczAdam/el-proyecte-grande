@@ -2,15 +2,15 @@
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Data;
 using Microsoft.EntityFrameworkCore;
-using el_proyecte_grande_backend.Models.Dtos;
+using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
 
-namespace el_proyecte_grande_backend.Repositories.GuestModule
+namespace el_proyecte_grande_backend.Services.GuestServices
 {
-    public class GuestRepository : IGuestRepository
+    public class GuestService : IGuestService
     {
         private readonly GrandeHotelContext _dbContext;
 
-        public GuestRepository(GrandeHotelContext dbContext)
+        public GuestService(GrandeHotelContext dbContext)
         {
             _dbContext = dbContext;
             Seed();
@@ -86,7 +86,7 @@ namespace el_proyecte_grande_backend.Repositories.GuestModule
         public async Task<Guest?> GetGuestByIdAsync(long guestId)
         {
             IEnumerable<Guest> guests = await GetGuestsWithAllDetails();
-            Guest? guest =  guests.FirstOrDefault(r => r.Id == guestId);
+            Guest? guest = guests.FirstOrDefault(r => r.Id == guestId);
 
             return guest;
         }

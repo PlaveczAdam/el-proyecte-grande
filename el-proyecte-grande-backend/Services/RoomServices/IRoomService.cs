@@ -1,9 +1,9 @@
-﻿using el_proyecte_grande_backend.Models.Dtos;
+﻿using el_proyecte_grande_backend.Models.Dtos.RoomDtos;
 using el_proyecte_grande_backend.Models.Entities;
 
-namespace el_proyecte_grande_backend.Repositories.RoomRepository;
+namespace el_proyecte_grande_backend.Services.RoomServices;
 
-public interface IRoomRepository
+public interface IRoomService
 {
     Task<IEnumerable<RoomDto>> GetAllRooms();
     Task<IEnumerable<RoomDto>> GetAllRooms(long hotelId);
