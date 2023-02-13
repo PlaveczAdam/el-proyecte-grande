@@ -1,7 +1,7 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
-using el_proyecte_grande_backend.Repositories.GuestModule;
+using el_proyecte_grande_backend.Services.GuestServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
@@ -9,9 +9,9 @@ namespace el_proyecte_grande_backend.Controllers
     [ApiController, Route("/api/guest")]
     public class GuestController : ControllerBase
     {
-        private readonly IGuestRepository _repository;
+        private readonly IGuestService _repository;
 
-        public GuestController(IGuestRepository repository)
+        public GuestController(IGuestService repository)
         {
             _repository = repository;
         }

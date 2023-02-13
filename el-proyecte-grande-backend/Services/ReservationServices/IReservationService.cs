@@ -1,8 +1,8 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
 
-namespace el_proyecte_grande_backend.Repositories.Reservations
+namespace el_proyecte_grande_backend.Services.ReservationServices
 {
-    public interface IReservationRepository
+    public interface IReservationService
     {
         Task<IEnumerable<Reservation>> GetAllAsync();
         Task<IEnumerable<Reservation>> GetHotelReservations(long hotelId);

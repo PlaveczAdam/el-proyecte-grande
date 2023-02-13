@@ -3,13 +3,13 @@ using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace el_proyecte_grande_backend.Repositories.Reservations
+namespace el_proyecte_grande_backend.Services.ReservationServices
 {
-    public class ReservationRepository : IReservationRepository
+    public class ReservationService : IReservationService
     {
         private readonly GrandeHotelContext _context;
 
-        public ReservationRepository(GrandeHotelContext context)
+        public ReservationService(GrandeHotelContext context)
         {
             _context = context;
         }
@@ -238,7 +238,7 @@ namespace el_proyecte_grande_backend.Repositories.Reservations
             List<Reservation> notConflictingReservationsInTimePeriod = await _context.Reservations
                     .Include(r => r.Hotel)
                     .Include(r => r.Rooms)
-                    .Where(r => r.Hotel.Id == hotelId && ((r.EndDate <= startDate || r.StartDate >= endDate) || r.isCancelled))
+                    .Where(r => r.Hotel.Id == hotelId && (r.EndDate <= startDate || r.StartDate >= endDate || r.isCancelled))
                     .ToListAsync();
 
             IEnumerable<Reservation> allReservationsInTimePeriod = await _context.Reservations

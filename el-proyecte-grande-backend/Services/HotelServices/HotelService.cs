@@ -3,12 +3,12 @@ using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace el_proyecte_grande_backend.Repositories.HotelNs
+namespace el_proyecte_grande_backend.Services.HotelServices
 {
-    public class HotelRepository : IHotelRepository
+    public class HotelService : IHotelService
     {
         private readonly GrandeHotelContext _context;
-        public HotelRepository(GrandeHotelContext context)
+        public HotelService(GrandeHotelContext context)
         {
             _context = context;
         }
@@ -22,7 +22,7 @@ namespace el_proyecte_grande_backend.Repositories.HotelNs
 
         public async Task<IEnumerable<Hotel>> GetAllHotels()
         {
-            return await _context.Hotels.Include(x => x.Address).OrderBy(x=>x.Id).ToListAsync();
+            return await _context.Hotels.Include(x => x.Address).OrderBy(x => x.Id).ToListAsync();
         }
 
         public async Task<Hotel> GetHotel(long id)

@@ -5,12 +5,12 @@ using el_proyecte_grande_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace el_proyecte_grande_backend.Repositories.RoomRepository;
+namespace el_proyecte_grande_backend.Services.RoomServices;
 
-public class RoomRepository : IRoomRepository
+public class RoomService : IRoomService
 {
     private readonly GrandeHotelContext _context;
-    public RoomRepository(GrandeHotelContext context)
+    public RoomService(GrandeHotelContext context)
     {
         _context = context;
     }
@@ -98,7 +98,7 @@ public class RoomRepository : IRoomRepository
             var dateParsed = DateTime.TryParse(date, out DateTime filterDate);
             if (!dateParsed) return null;
             roomsToFilter = roomsToFilter.Where(r => r.Reservations.Any(res =>
-                (res.StartDate < filterDate) && (res.EndDate > filterDate))).ToList();
+                res.StartDate < filterDate && res.EndDate > filterDate)).ToList();
         }
         if (accessible != null)
         {
