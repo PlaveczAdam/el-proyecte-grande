@@ -1,6 +1,6 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos;
 using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Repositories.RoomRepository;
+using el_proyecte_grande_backend.Services.RoomServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers;
@@ -8,9 +8,9 @@ namespace el_proyecte_grande_backend.Controllers;
 [ApiController, Route("/api/room")]
 public class RoomController : ControllerBase
 {
-    private readonly IRoomRepository _repository;
+    private readonly IRoomService _repository;
 
-    public RoomController(IRoomRepository repository)
+    public RoomController(IRoomService repository)
     {
         _repository = repository;
     }

@@ -1,7 +1,7 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.HotelNs;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
-using el_proyecte_grande_backend.Repositories.HotelNs;
+using el_proyecte_grande_backend.Services.HotelServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
@@ -9,8 +9,8 @@ namespace el_proyecte_grande_backend.Controllers
     [ApiController, Route("/api/hotel")]
     public class HotelController : Controller
     {
-        private readonly IHotelRepository _hotelRepository;
-        public HotelController(IHotelRepository hotelRepository)
+        private readonly IHotelService _hotelRepository;
+        public HotelController(IHotelService hotelRepository)
         {
             _hotelRepository = hotelRepository;
         }

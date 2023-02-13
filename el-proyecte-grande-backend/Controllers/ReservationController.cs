@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using el_proyecte_grande_backend.Models.Dtos.Reservation;
 using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Repositories.Reservations;
+using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +13,10 @@ namespace el_proyecte_grande_backend.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
-        private readonly IReservationRepository _reservationRepository;
+        private readonly IReservationService _reservationRepository;
         private readonly IMapper _mapper;
 
-        public ReservationController(IReservationRepository reservationRepository, IMapper mapper)
+        public ReservationController(IReservationService reservationRepository, IMapper mapper)
         {
             _reservationRepository = reservationRepository;
             _mapper = mapper;

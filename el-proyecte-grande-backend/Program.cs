@@ -1,13 +1,11 @@
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
-
-using el_proyecte_grande_backend.Repositories.Inventories;
-using el_proyecte_grande_backend.Repositories.GuestModule;
-using el_proyecte_grande_backend.Repositories.HotelNs;
-using el_proyecte_grande_backend.Repositories.Reservations;
-using el_proyecte_grande_backend.Repositories.RoomRepository;
-
 using Microsoft.EntityFrameworkCore;
+using el_proyecte_grande_backend.Services.GuestServices;
+using el_proyecte_grande_backend.Services.HotelServices;
+using el_proyecte_grande_backend.Services.ReservationServices;
+using el_proyecte_grande_backend.Services.RoomServices;
+using el_proyecte_grande_backend.Services.InventoryServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,12 +25,12 @@ builder.Services.AddCors(options => options.AddPolicy("AllowAll", builder =>
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
 }));
 
-builder.Services.AddSingleton<IGuestRepository>(x =>
-    new GuestRepository(x.CreateScope().ServiceProvider.GetRequiredService<GrandeHotelContext>()));
-builder.Services.AddScoped<IHotelRepository, HotelRepository>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddSingleton<IGuestService>(x =>
+    new GuestService(x.CreateScope().ServiceProvider.GetRequiredService<GrandeHotelContext>()));
+builder.Services.AddScoped<IHotelService, HotelService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 

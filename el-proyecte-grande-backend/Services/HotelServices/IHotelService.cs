@@ -1,9 +1,9 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 
-namespace el_proyecte_grande_backend.Repositories.HotelNs
+namespace el_proyecte_grande_backend.Services.HotelServices
 {
-    public interface IHotelRepository
+    public interface IHotelService
     {
         public Task<IEnumerable<Hotel>> GetAllHotels();
         public Task<Hotel> GetHotel(long id);
