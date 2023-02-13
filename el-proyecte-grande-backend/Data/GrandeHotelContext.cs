@@ -21,5 +21,8 @@ namespace el_proyecte_grande_backend.Data
         public DbSet<Item> Items { get; set; }
         public DbSet<Reservator> Reservators { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
     }
 }
