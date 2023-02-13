@@ -2,7 +2,7 @@
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Data;
 using Microsoft.EntityFrameworkCore;
-using el_proyecte_grande_backend.Models.Dtos;
+using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
 
 namespace el_proyecte_grande_backend.Services.GuestServices
 {

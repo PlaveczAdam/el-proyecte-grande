@@ -1,4 +1,4 @@
-﻿using el_proyecte_grande_backend.Models.Dtos;
+﻿using el_proyecte_grande_backend.Models.Dtos.RoomDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.RoomServices;
 using Microsoft.AspNetCore.Mvc;

@@ -1,9 +1,9 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 
-namespace el_proyecte_grande_backend.Models.Dtos
+namespace el_proyecte_grande_backend.Models.Dtos.GuestDtos
 {
-    public class GuestDto
+    public class GuestUpdateDto
     {
         public long Id { get; set; }
         public string PersonalId { get; set; }
@@ -16,9 +16,9 @@ namespace el_proyecte_grande_backend.Models.Dtos
         public DateTime BirthDate { get; set; }
         public Gender Gender { get; set; }
         public GuestStatus Status { get; set; }
+        public Address Address { get; set; }
         public long? HotelId { get; set; }
         public long? RoomId { get; set; }
-        public Address Address { get; set; }
-
+        public ICollection<long> ReservationIds { get; set; }
     }
 }
