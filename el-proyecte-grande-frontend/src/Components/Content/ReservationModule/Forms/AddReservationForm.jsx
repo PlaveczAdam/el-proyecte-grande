@@ -51,20 +51,6 @@ const AddReservationForm = ({ reservation, onCreate }) => {
     fetchChoosableBoardTypes();
   }, []);
 
-  const fetchChoosableRooms = async () => {
-    const url = `https://localhost:7027/api/reservation/emptyBetween?startDate=${reservation.StartDate}&endDate=${reservation.EndDate}&hotelId=${reservation.HotelId}`;
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(url);
-      const responseData = await response.json();
-      setIsLoading(false);
-      setChoosableRooms(responseData);
-    } catch (err) {
-      setIsLoading(false);
-    }
-  };
-
   const addRoomToSelectedRooms = (id) => {
     setSelectedRooms((current) => [...current, id]);
     setRoomHasBeenAdded(true);
@@ -75,6 +61,19 @@ const AddReservationForm = ({ reservation, onCreate }) => {
   };
 
   useEffect(() => {
+    const fetchChoosableRooms = async () => {
+      const url = `https://localhost:7027/api/reservation/emptyBetween?startDate=${reservation.StartDate}&endDate=${reservation.EndDate}&hotelId=${reservation.HotelId}`;
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(url);
+        const responseData = await response.json();
+        setIsLoading(false);
+        setChoosableRooms(responseData);
+      } catch (err) {
+        setIsLoading(false);
+      }
+    };
     fetchChoosableRooms();
   }, [reservation.HotelId, reservation.StartDate, reservation.EndDate]);
 
@@ -125,7 +124,9 @@ const AddReservationForm = ({ reservation, onCreate }) => {
             Details of Rooms
           </Typography>
           {selectedRooms.length === 0 && (
-            <FormHelperText error>Please select at least one room</FormHelperText>
+            <FormHelperText error>
+              Please select at least one room
+            </FormHelperText>
           )}
           {roomHasBeenAdded ? (
             <Box
@@ -167,9 +168,7 @@ const AddReservationForm = ({ reservation, onCreate }) => {
         >
           <InputLabel>Board type</InputLabel>
           <Select
-            name="Select a Board Type"
             value={reservationDetails.BoardType}
-            label="Hotel"
             onChange={(e) =>
               setReservationDetails({
                 ...reservationDetails,
@@ -395,7 +394,9 @@ const AddReservationForm = ({ reservation, onCreate }) => {
             />
           </LocalizationProvider>
           {!reservationDetails.ReserveDate && (
-            <FormHelperText error>Date of reservation is required</FormHelperText>
+            <FormHelperText error>
+              Date of reservation is required
+            </FormHelperText>
           )}
         </Box>
       </Box>
