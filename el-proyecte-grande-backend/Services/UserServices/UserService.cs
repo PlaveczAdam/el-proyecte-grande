@@ -1,5 +1,6 @@
 ﻿using el_proyecte_grande_backend.Data;
 using el_proyecte_grande_backend.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace el_proyecte_grande_backend.Services.UserServices
 {
@@ -12,14 +13,21 @@ namespace el_proyecte_grande_backend.Services.UserServices
             _context = context;
         }
 
-        public Task<User> CreateUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            throw new NotImplementedException();
+            var exists = _context.Users.Any(x => x.Id == user.Id);
+            if (exists)
+            {
+                throw new Exception("User already Exists.");
+            }
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
-        public Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            throw new NotImplementedException();
+            return await _context.Users.Include(x => x.Roles).ToListAsync();
         }
 
         public Task<User> GetUserById(long id)
