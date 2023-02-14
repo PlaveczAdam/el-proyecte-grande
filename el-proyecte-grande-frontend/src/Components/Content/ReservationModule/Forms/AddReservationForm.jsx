@@ -9,6 +9,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import FormHelperText from "@mui/material/FormHelperText";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -39,13 +40,10 @@ const AddReservationForm = ({ reservation, onCreate }) => {
     try {
       const response = await fetch(url);
       const responseData = await response.json();
-      console.log(responseData);
       setIsLoading(false);
-
       setChoosableBoardTypes(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
     }
   };
 
@@ -60,13 +58,10 @@ const AddReservationForm = ({ reservation, onCreate }) => {
     try {
       const response = await fetch(url);
       const responseData = await response.json();
-      console.log(responseData);
       setIsLoading(false);
-
       setChoosableRooms(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
     }
   };
 
@@ -83,10 +78,38 @@ const AddReservationForm = ({ reservation, onCreate }) => {
     fetchChoosableRooms();
   }, [reservation.HotelId, reservation.StartDate, reservation.EndDate]);
 
+  const isMinLength = (value, min) => {
+    let isValid = true;
+    isValid = value.trim().length >= min;
+    return isValid;
+  };
+
+  const isValidNumber = (value) => {
+    let isValid = true;
+    isValid = value > 0 && value.match(/^[0-9]+$/) !== null;
+    return isValid;
+  };
+
+  const checkAllFields = () => {
+    let areAllValid = true;
+    areAllValid =
+      selectedRooms.length > 0 &&
+      reservationDetails.BoardType &&
+      isValidNumber(reservationDetails.Price) &&
+      isValidNumber(reservationDetails.ReservedFor) &&
+      isMinLength(reservatorDetails.Address.Country, 1) &&
+      isMinLength(reservatorDetails.Address.City, 1) &&
+      isMinLength(reservatorDetails.Address.AddressLineOne, 1) &&
+      isValidNumber(reservatorDetails.Address.PostalCode) &&
+      reservationDetails.ReserveDate !== null;
+
+    return areAllValid;
+  };
+
   return (
     <div>
       {isLoading ? (
-        <div className="loader_overlay">
+        <div className="">
           <CircularProgress color="primary" />
         </div>
       ) : (
@@ -101,13 +124,23 @@ const AddReservationForm = ({ reservation, onCreate }) => {
           <Typography variant="h6" gutterBottom>
             Details of Rooms
           </Typography>
+          {selectedRooms.length === 0 && (
+            <FormHelperText error>Please select at least one room</FormHelperText>
+          )}
           {roomHasBeenAdded ? (
-            <>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                marginBottom: 4,
+              }}
+            >
               <p>Room has been added successfully</p>
               <Button onClick={addAnotherRoom} variant="outlined" color="info">
-                Add another Room
+                Ok
               </Button>
-            </>
+            </Box>
           ) : (
             <SelectRoom
               choosableRooms={choosableRooms}
@@ -143,6 +176,7 @@ const AddReservationForm = ({ reservation, onCreate }) => {
                 BoardType: e.target.value,
               })
             }
+            error={!reservationDetails.BoardType}
           >
             {Object.entries(choosableBoardTypes.values).map(([name, value]) => (
               <MenuItem value={name} key={value}>
@@ -150,6 +184,9 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               </MenuItem>
             ))}
           </Select>
+          {!reservationDetails.BoardType && (
+            <FormHelperText error>Please select a board type</FormHelperText>
+          )}
 
           <Box
             sx={{
@@ -173,6 +210,11 @@ const AddReservationForm = ({ reservation, onCreate }) => {
                   Price: e.target.value,
                 })
               }
+              error={!isValidNumber(reservationDetails.Price)}
+              helperText={
+                !isValidNumber(reservationDetails.Price) &&
+                "Please enter valid price"
+              }
             />
             <TextField
               number="number"
@@ -186,30 +228,41 @@ const AddReservationForm = ({ reservation, onCreate }) => {
                   ReservedFor: e.target.value,
                 })
               }
+              error={!isValidNumber(reservationDetails.ReservedFor)}
+              helperText={
+                !isValidNumber(reservationDetails.ReservedFor) &&
+                "Please enter valid guest number"
+              }
             />
           </Box>
         </FormControl>
       </Box>
 
+      <Typography variant="h6" gutterBottom sx={{ textAlign: "center" }}>
+        Details of Reservator
+      </Typography>
       <Box
         sx={{
           m: 2,
-          minWidth: 150,
+          minWidth: 200,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
           alignItems: "center",
           gap: "1em",
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Details of Reservator
-        </Typography>
         <TextField
           required
           label="Name"
           value={reservatorDetails.Name}
           onChange={(e) =>
             setReservatorDetails({ ...reservatorDetails, Name: e.target.value })
+          }
+          error={!isMinLength(reservatorDetails.Name, 1)}
+          helperText={
+            !isMinLength(reservatorDetails.Name, 1) && "Name is required"
           }
         />
         <TextField
@@ -225,9 +278,13 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               },
             })
           }
+          error={!isMinLength(reservatorDetails.Address.Country, 1)}
+          helperText={
+            !isMinLength(reservatorDetails.Address.Country, 1) &&
+            "Countryis required"
+          }
         />
         <TextField
-          required
           label="Region"
           value={reservatorDetails.Address.Region}
           onChange={(e) =>
@@ -253,6 +310,11 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               },
             })
           }
+          error={!isMinLength(reservatorDetails.Address.City, 1)}
+          helperText={
+            !isMinLength(reservatorDetails.Address.City, 1) &&
+            "City is required"
+          }
         />
         <TextField
           required
@@ -267,9 +329,13 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               },
             })
           }
+          error={!isMinLength(reservatorDetails.Address.AddressLineOne, 1)}
+          helperText={
+            !isMinLength(reservatorDetails.Address.AddressLineOne, 1) &&
+            "Please enter a valid address"
+          }
         />
         <TextField
-          required
           label="Address Line Two"
           value={reservatorDetails.Address.AddressLineTwo}
           onChange={(e) =>
@@ -295,22 +361,43 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               },
             })
           }
+          error={!isValidNumber(reservatorDetails.Address.PostalCode)}
+          helperText={
+            !isValidNumber(reservatorDetails.Address.PostalCode) &&
+            "Please enter a valid Postal Code"
+          }
         />
-
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DesktopDatePicker
-            label="Date of Reservation"
-            inputFormat="YYYY/MM/DD"
-            value={reservationDetails.ReserveDate}
-            onChange={(newValue) =>
-              setReservationDetails({
-                ...reservationDetails,
-                ReserveDate: newValue,
-              })
-            }
-            renderInput={(params) => <TextField {...params} />}
-          />
-        </LocalizationProvider>
+        <Box
+          mt={3}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DesktopDatePicker
+              label="Date of Reservation"
+              inputFormat="YYYY/MM/DD"
+              value={reservationDetails.ReserveDate}
+              onChange={(newValue) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  ReserveDate: newValue,
+                })
+              }
+              renderInput={(params) => <TextField {...params} />}
+              error={reservationDetails.ReserveDate}
+              helperText={
+                !reservationDetails.ReserveDate &&
+                "Please enter a valid Postal Code"
+              }
+            />
+          </LocalizationProvider>
+          {!reservationDetails.ReserveDate && (
+            <FormHelperText error>Date of reservation is required</FormHelperText>
+          )}
+        </Box>
       </Box>
 
       <Box
@@ -327,6 +414,7 @@ const AddReservationForm = ({ reservation, onCreate }) => {
               Reservator: { ...reservatorDetails },
             })
           }
+          disabled={checkAllFields() === false}
         >
           Create reservation
         </Button>
@@ -334,5 +422,4 @@ const AddReservationForm = ({ reservation, onCreate }) => {
     </div>
   );
 };
-
 export default AddReservationForm;

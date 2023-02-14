@@ -16,19 +16,24 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
+
 import "./Reservations.css";
 import AddReservationModal from "./Modals/AddReservationModal";
+
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
+
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
 
+
   const fetchReservations = async () => {
     const url = "https://localhost:7027/api/reservation";
+
 
     try {
       setIsLoading(true);
@@ -37,12 +42,14 @@ const Reservations = () => {
       console.log(responseData);
       setIsLoading(false);
 
+
       if (!response.ok) {
         const error = response.message;
         setError(error);
         console.log(error);
         return;
       }
+
 
       setReservations(responseData);
     } catch (err) {
@@ -52,9 +59,11 @@ const Reservations = () => {
     }
   };
 
+
   useEffect(() => {
     fetchReservations();
   }, []);
+
 
   const openAddReservationModal = () => {
     setAddReservationModalIsOpen(true);
@@ -63,9 +72,12 @@ const Reservations = () => {
     setAddReservationModalIsOpen(false);
   };
 
+
   const reservationWasCreated = (newReservation) => {
     console.log(newReservation);
+    fetchReservations()
   }
+
 
   return (
     <>
@@ -172,4 +184,7 @@ const Reservations = () => {
   );
 };
 
+
 export default Reservations;
+
+
