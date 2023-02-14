@@ -16,8 +16,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Check from "@mui/icons-material/Check";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -25,6 +23,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
 
 const Rooms = () => {
   const [hotels, setHotels] = useState(null);
@@ -239,24 +238,19 @@ const Rooms = () => {
                     </TableCell>
 
                     <TableCell align="center">
-                      <FormGroup>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              onClick={() => handleRoomStatusChange(room)}
-                              disabled={room.status === null}
-                              checked={room.status ? true : false}
-                            />
-                          }
-                          label={
-                            enums
-                              ? Object.keys(enums.roomStatus.values)[
-                                  room.status
-                                ]
-                              : "..."
-                          }
+                      <Tooltip
+                        title={
+                          enums
+                            ? Object.keys(enums.roomStatus.values)[room.status]
+                            : "..."
+                        }
+                      >
+                        <Switch
+                          onClick={() => handleRoomStatusChange(room)}
+                          disabled={room.status === null}
+                          checked={room.status ? true : false}
                         />
-                      </FormGroup>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))
