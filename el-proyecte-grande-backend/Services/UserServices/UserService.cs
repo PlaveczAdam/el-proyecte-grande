@@ -34,7 +34,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return await _context.Users.Include(x => x.Roles).ToListAsync();
+            return await _context.Users.Include(x => x.Roles).Where(x => x.IsActive).ToListAsync();
         }
 
         public async Task<User> GetUserById(long id)
