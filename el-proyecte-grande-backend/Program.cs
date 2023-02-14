@@ -1,16 +1,17 @@
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
-using Microsoft.EntityFrameworkCore;
 using el_proyecte_grande_backend.Services.GuestServices;
 using el_proyecte_grande_backend.Services.HotelServices;
+using el_proyecte_grande_backend.Services.InventoryServices;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Services.RoomServices;
-using el_proyecte_grande_backend.Services.InventoryServices;
+using el_proyecte_grande_backend.Services.UserServices;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-string connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
+var connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
 
 
 builder.Services.AddControllers();
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 
