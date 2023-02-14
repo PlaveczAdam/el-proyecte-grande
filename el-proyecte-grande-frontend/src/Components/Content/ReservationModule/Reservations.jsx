@@ -38,6 +38,7 @@ const Reservations = () => {
 
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
+  const [filtersAreOpen, setFiltersAreOpen] = useState(false);
 
   const fetchReservations = async () => {
     const url = "/api/reservation";
@@ -161,12 +162,22 @@ const Reservations = () => {
               </Grid>
             </Grid>
           </Box>
-
-          <ReservationsFilters
-            filterState={filters}
-            onFilter={reservationFiltersChanged}
-            onClearFilters={clearAllFilters}
-          />
+          
+          <Box sx={{ textAlign: "center", mb: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => setFiltersAreOpen(!filtersAreOpen)}
+            >
+              {filtersAreOpen ? "Close filters" : "Open filters"}
+            </Button>
+          </Box>
+          {filtersAreOpen && (
+            <ReservationsFilters
+              filterState={filters}
+              onFilter={reservationFiltersChanged}
+              onClearFilters={clearAllFilters}
+            />
+          )}
 
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
