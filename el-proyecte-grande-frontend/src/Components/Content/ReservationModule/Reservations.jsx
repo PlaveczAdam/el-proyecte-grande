@@ -25,8 +25,7 @@ const Reservations = () => {
   const [error, setError] = useState();
 
   const [reservatorNameSearch, setReservatorNameSearch] = useState("");
-
-  const [filters, setFilters] = useState({
+  const emptyFilters = {
     boardType: "",
     paymentMethod: "",
     reservedFor: "",
@@ -34,7 +33,8 @@ const Reservations = () => {
     startDate: "",
     endDate: "",
     hotelId: "",
-  });
+  };
+  const [filters, setFilters] = useState(emptyFilters);
 
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
@@ -86,20 +86,35 @@ const Reservations = () => {
 
   useEffect(() => {
     async function getFilteredReservations() {
-      const response = await fetch(
-        `/api/reservation/filter?boardType=${filters.boardType}&paymentMethod=${
-          filters.paymentMethod
-        }&reservedFor=${filters.reservedFor}&payFulfillment=${
-          filters.payFulfillment ? true : ""
-        }&startDate=${
-          filters.startDate === null ? "" : filters.startDate
-        }&endDate=${filters.endDate === null ? "" : filters.endDate}&hotelId=${
-          filters.hotelId
-        }`
-      );
-      const responseData = await response.json();
-      console.log(responseData);
-      setReservations(responseData);
+      const url = `/api/reservation/filter?boardType=${
+        filters.boardType
+      }&paymentMethod=${filters.paymentMethod}&reservedFor=${
+        filters.reservedFor
+      }&payFulfillment=${filters.payFulfillment ? true : ""}&startDate=${
+        filters.startDate === null ? "" : filters.startDate
+      }&endDate=${filters.endDate === null ? "" : filters.endDate}&hotelId=${
+        filters.hotelId
+      }`;
+      try {
+        setIsLoading(true);
+        const response = await fetch(url);
+        const responseData = await response.json();
+        console.log(responseData);
+        setIsLoading(false);
+
+        if (!response.ok) {
+          const error = response.message;
+          setError(error);
+          console.log(error);
+          return;
+        }
+
+        setReservations(responseData);
+      } catch (err) {
+        setIsLoading(false);
+        setError(err.message);
+        console.log(err);
+      }
     }
     getFilteredReservations();
   }, [filters]);
@@ -107,6 +122,10 @@ const Reservations = () => {
   const reservationFiltersChanged = (filters) => {
     setFilters(filters);
     console.log(filters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters(emptyFilters);
   };
 
   return (
@@ -146,6 +165,7 @@ const Reservations = () => {
           <ReservationsFilters
             filterState={filters}
             onFilter={reservationFiltersChanged}
+            onClearFilters={clearAllFilters}
           />
 
           <TableContainer component={Paper}>

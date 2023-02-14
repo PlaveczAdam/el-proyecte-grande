@@ -16,7 +16,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import FormHelperText from "@mui/material/FormHelperText";
 
-const ReservationsFilters = ({ filterState, onFilter }) => {
+const ReservationsFilters = ({ filterState, onFilter, onClearFilters }) => {
   const [filters, setFilters] = useState(filterState);
 
   const [choosableHotels, setChoosableHotels] = useState([]);
@@ -121,7 +121,7 @@ const ReservationsFilters = ({ filterState, onFilter }) => {
               name="payFulfillment"
             />
           }
-          label="Has been paid for"
+          label="Payment fulfilled"
         />
       </FormGroup>
 
@@ -230,19 +230,37 @@ const ReservationsFilters = ({ filterState, onFilter }) => {
 
       <Box
         mt={3}
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-around",
+          width: "70%",
+        }}
       >
         <Button
           variant="contained"
-          color="success"
+          color="secondary"
           onClick={() =>
             onFilter({
               ...filters,
             })
           }
-          disabled={startDate !== null && endDate !== null && startDate > endDate}
+          disabled={
+            startDate !== null && endDate !== null && startDate > endDate
+          }
         >
           Filter reservations
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={onClearFilters}
+          disabled={
+            startDate !== null && endDate !== null && startDate > endDate
+          }
+        >
+          Clear all filters
         </Button>
       </Box>
     </FormControl>
