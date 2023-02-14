@@ -24,7 +24,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
             {
                 throw new Exception("User already Exists.");
             }
-            var roles = _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
+            var roles = GetOriginalRoles(user);
             user.Roles = roles.ToList();
             user.Password = _passwordHasher.HashPassword(user, user.Password);
             _context.Users.Add(user);
@@ -66,11 +66,13 @@ namespace el_proyecte_grande_backend.Services.UserServices
         public async Task<User> UpdateUser(long userId, User user)
         {
             var foundUser = GetUserById(userId).Result;
+            var roles = GetOriginalRoles(user);
+
             foundUser.Name = user.Name;
             foundUser.Email = user.Email;
             foundUser.Password = _passwordHasher.HashPassword(user, user.Password);
             foundUser.IsActive = user.IsActive;
-            foundUser.Roles = user.Roles;
+            foundUser.Roles = roles.ToList();
 
             await _context.SaveChangesAsync();
             return foundUser;
@@ -82,6 +84,11 @@ namespace el_proyecte_grande_backend.Services.UserServices
             foundUser.IsActive = activity;
             await _context.SaveChangesAsync();
             return foundUser;
+        }
+
+        private IEnumerable<Role> GetOriginalRoles(User user)
+        {
+            return _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
         }
 
         private void Seed()
