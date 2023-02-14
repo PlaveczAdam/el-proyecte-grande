@@ -146,7 +146,17 @@ const ReservationsFilters = ({ filterState, onFilter, onClearFilters }) => {
               reservedFor: e.target.value,
             })
           }
+          error={
+            reservedFor !== "" &&
+            (reservedFor < 0 || reservedFor.match(/^[0-9]+$/) === null)
+          }
+          helperText={
+            reservedFor !== "" &&
+            (reservedFor <= 0 || reservedFor.match(/^[0-9]+$/) === null) &&
+            "Please enter a number"
+          }
         />
+
         <FormControl
           sx={{
             m: 1,
@@ -261,7 +271,9 @@ const ReservationsFilters = ({ filterState, onFilter, onClearFilters }) => {
             })
           }
           disabled={
-            startDate !== null && endDate !== null && startDate > endDate
+            (startDate !== null && endDate !== null && startDate > endDate) ||
+            (reservedFor !== "" &&
+              (reservedFor <= 0 || reservedFor.match(/^[0-9]+$/) === null))
           }
         >
           Filter reservations
