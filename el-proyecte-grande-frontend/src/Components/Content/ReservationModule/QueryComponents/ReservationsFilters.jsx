@@ -153,23 +153,31 @@ const ReservationsFilters = ({ filterState, onFilter, onClearFilters }) => {
             minWidth: 200,
           }}
         >
-          <InputLabel>Board type</InputLabel>
-          <Select
-            value={boardType}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                boardType: e.target.value,
-              })
-            }
-          >
-            <MenuItem value={""}>Select a Board type</MenuItem>
-            {Object.entries(choosableBoardTypes.values).map(([name, value]) => (
-              <MenuItem value={name} key={value}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>{" "}
+          {Object.entries(choosableBoardTypes.values).length > 0 ? (
+            <>
+              <InputLabel>Board type</InputLabel>
+              <Select
+                value={boardType}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    boardType: e.target.value,
+                  })
+                }
+              >
+                <MenuItem value={""}>Select a Board type</MenuItem>
+                {Object.entries(choosableBoardTypes.values).map(
+                  ([name, value]) => (
+                    <MenuItem value={name} key={value}>
+                      {name}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </>
+          ) : (
+            "No Board types to chose from"
+          )}
         </FormControl>
 
         <FormControl
@@ -178,25 +186,31 @@ const ReservationsFilters = ({ filterState, onFilter, onClearFilters }) => {
             minWidth: 200,
           }}
         >
-          <InputLabel>Payment method</InputLabel>
-          <Select
-            value={paymentMethod}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                paymentMethod: e.target.value,
-              })
-            }
-          >
-            <MenuItem value={""}>Select a Payment method</MenuItem>
-            {Object.entries(choosablePaymentMethods.values).map(
-              ([name, value]) => (
-                <MenuItem value={name} key={value}>
-                  {name}
-                </MenuItem>
-              )
-            )}
-          </Select>
+          {Object.entries(choosablePaymentMethods.values).length > 0 ? (
+            <>
+              <InputLabel>Payment method</InputLabel>
+              <Select
+                value={paymentMethod}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              >
+                <MenuItem value={""}>Select a Payment method</MenuItem>
+                {Object.entries(choosablePaymentMethods.values).map(
+                  ([name, value]) => (
+                    <MenuItem value={name} key={value}>
+                      {name}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </>
+          ) : (
+            "No Payment methods to choose from"
+          )}
         </FormControl>
       </Box>
 
