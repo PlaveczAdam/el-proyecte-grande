@@ -100,30 +100,29 @@ const Reservations = () => {
     setReservatorNameSearch(searchedName);
   };
 
-  useEffect(() => {
-    console.log(reservations);
-    if (reservations.length > 0) {
-      const newReservations = reservations.filter((res) =>
-        res.reservator.name
-          .toLowerCase()
-          .includes(reservatorNameSearch.toLowerCase())
-      );
-      setFilteredReservations(newReservations);
-    }
-  }, [reservatorNameSearch, reservations]);
+  // useEffect(() => {
+  //   console.log(reservations);
+  //   if (reservations.length > 0) {
+  //     const newReservations = reservations.filter((res) =>
+  //       res.reservator.name
+  //         .toLowerCase()
+  //         .includes(reservatorNameSearch.toLowerCase())
+  //     );
+  //     setFilteredReservations(newReservations);
+  //   }
+  // }, [reservatorNameSearch, reservations]);
 
   useEffect(() => {
     if (chosenHotel !== "") {
-      
       async function getHotelFilteredReservations() {
         const response = await fetch(`/api/reservation/hotel/${chosenHotel}`);
         const responseData = await response.json();
         setReservations(responseData);
-        console.log(responseData);
       }
       getHotelFilteredReservations();
+    } else {
+      fetchReservations();
     }
-    
   }, [chosenHotel]);
 
   return (
@@ -163,6 +162,7 @@ const Reservations = () => {
                         label="Hotel"
                         onChange={(e) => setChosenHotel(e.target.value)}
                       >
+                        <MenuItem value={""}>Select a hotel</MenuItem>
                         {choosableHotels.map((h) => (
                           <MenuItem key={h.id} value={h.id}>
                             {h.name}
