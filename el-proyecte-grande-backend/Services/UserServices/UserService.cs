@@ -24,6 +24,8 @@ namespace el_proyecte_grande_backend.Services.UserServices
             {
                 throw new Exception("User already Exists.");
             }
+            var roles = _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
+            user.Roles = roles.ToList();
             user.Password = _passwordHasher.HashPassword(user, user.Password);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -73,7 +75,8 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return foundUser;
         }
 
-        private void Seed() {
+        private void Seed()
+        {
             if (_context.Roles.Any())
             {
                 return;

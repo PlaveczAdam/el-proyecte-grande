@@ -21,6 +21,12 @@ namespace el_proyecte_grande_backend.Controllers
             return (await _userService.GetAllUsers()).Select(MapUserToDto);
         }
 
+        [HttpGet("{userId}")]
+        public async Task<UserDto> GetUserById(long userId)
+        {
+            return MapUserToDto(await _userService.GetUserById(userId));
+        }
+
         [HttpPost]
         public async Task<UserDto> CreateUser([FromBody] UserDto userDto)
         {
@@ -35,7 +41,7 @@ namespace el_proyecte_grande_backend.Controllers
                 Email: user.Email,
                 Password: "",
                 IsActive: user.IsActive,
-                Roles: user.Roles.ToList()
+                Roles: user.Roles.Select(MapRoleToDto).ToList()
             );
         }
 
@@ -47,7 +53,22 @@ namespace el_proyecte_grande_backend.Controllers
                 Email = userDto.Email,
                 Password = userDto.Password,
                 IsActive = userDto.IsActive,
-                Roles = userDto.Roles
+                Roles = userDto.Roles.Select(MapDtoToRole).ToList()
+            };
+        }
+
+        private static RoleDto MapRoleToDto(Role role)
+        {
+            return new RoleDto(
+                Name: role.Name
+            );
+        }
+
+        private static Role MapDtoToRole(RoleDto roleDto)
+        {
+            return new Role()
+            {
+                Name = roleDto.Name
             };
         }
     }
