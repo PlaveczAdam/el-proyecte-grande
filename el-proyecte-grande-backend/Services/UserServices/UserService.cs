@@ -15,7 +15,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
 
         public async Task<User> CreateUser(User user)
         {
-            var exists = _context.Users.Any(x => x.Id == user.Id);
+            var exists = _context.Users.Any(x => x.Name == user.Name);
             if (exists)
             {
                 throw new Exception("User already Exists.");
@@ -30,9 +30,9 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return await _context.Users.Include(x => x.Roles).ToListAsync();
         }
 
-        public Task<User> GetUserById(long id)
+        public async Task<User> GetUserById(long id)
         {
-            throw new NotImplementedException();
+            return await _context.Users.Include(x => x.Roles).SingleAsync(x => x.Id == id);
         }
 
         public Task<User> SetUserRole(long userId, string role)
