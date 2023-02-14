@@ -11,34 +11,36 @@ import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import ContentPagination from "../../Shared/Pagination";
-import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
-
 import "./Reservations.css";
 import AddReservationModal from "./Modals/AddReservationModal";
 import Searchbar from "./Searchbar";
-
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
-
   const [reservatorNameSearch, setReservatorNameSearch] = useState("");
-  const [filteredReservations, setFilteredReservations] = useState(reservations)
+  const [filteredReservations, setFilteredReservations] =
+    useState(reservations);
 
+  const [choosableHotels, setChoosableHotels] = useState([]);
+  const [chosenHotel, setChosenHotel] = useState("");
 
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
 
-
   const fetchReservations = async () => {
-    const url = "https://localhost:7027/api/reservation";
-
+    const url = "/api/reservation";
 
     try {
       setIsLoading(true);
@@ -47,14 +49,12 @@ const Reservations = () => {
       console.log(responseData);
       setIsLoading(false);
 
-
       if (!response.ok) {
         const error = response.message;
         setError(error);
         console.log(error);
         return;
       }
-
 
       setReservations(responseData);
     } catch (err) {
@@ -64,11 +64,25 @@ const Reservations = () => {
     }
   };
 
+  const fetchHotels = async () => {
+    const url = `/api/hotel`;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(url);
+      const responseData = await response.json();
+      setIsLoading(false);
+      setChoosableHotels(responseData);
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     fetchReservations();
+    fetchHotels();
   }, []);
-
 
   const openAddReservationModal = () => {
     setAddReservationModalIsOpen(true);
@@ -77,25 +91,40 @@ const Reservations = () => {
     setAddReservationModalIsOpen(false);
   };
 
-
   const reservationWasCreated = (newReservation) => {
     console.log(newReservation);
     fetchReservations();
   };
 
-
   const reservatorNameChangedHandler = (searchedName) => {
     setReservatorNameSearch(searchedName);
   };
 
-
   useEffect(() => {
-    const newReservations = reservations.filter((res) =>
-      res.reservator.name.toLowerCase().includes(reservatorNameSearch.toLowerCase())
-    );
-    setFilteredReservations(newReservations);
+    console.log(reservations);
+    if (reservations.length > 0) {
+      const newReservations = reservations.filter((res) =>
+        res.reservator.name
+          .toLowerCase()
+          .includes(reservatorNameSearch.toLowerCase())
+      );
+      setFilteredReservations(newReservations);
+    }
   }, [reservatorNameSearch, reservations]);
 
+  useEffect(() => {
+    if (chosenHotel !== "") {
+      
+      async function getHotelFilteredReservations() {
+        const response = await fetch(`/api/reservation/hotel/${chosenHotel}`);
+        const responseData = await response.json();
+        setReservations(responseData);
+        console.log(responseData);
+      }
+      getHotelFilteredReservations();
+    }
+    
+  }, [chosenHotel]);
 
   return (
     <>
@@ -116,10 +145,35 @@ const Reservations = () => {
           </Box>
           <Box sx={{ marginY: 1 }}>
             <Grid container direction="row" alignItems="center" spacing={2}>
-              <Grid item xs={12} md={9}>
+              <Grid item xs={12} md={3}>
                 <Button variant="text" onClick={openAddReservationModal}>
                   Add new Reservation
                 </Button>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  {choosableHotels.length > 0 ? (
+                    <>
+                      <InputLabel id="demo-simple-select-label">
+                        Hotels
+                      </InputLabel>
+                      <Select
+                        name="Select a Hotel"
+                        value={chosenHotel}
+                        label="Hotel"
+                        onChange={(e) => setChosenHotel(e.target.value)}
+                      >
+                        {choosableHotels.map((h) => (
+                          <MenuItem key={h.id} value={h.id}>
+                            {h.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </>
+                  ) : (
+                    "There are no hotels to choose from"
+                  )}
+                </FormControl>
               </Grid>
               <Grid item xs={12} md={3}>
                 <Searchbar
@@ -147,52 +201,58 @@ const Reservations = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredReservations.map((reservation) => (
-                  <TableRow
-                    key={reservation.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell align="center">{reservation.id}</TableCell>
-                    <TableCell align="center">
-                      {reservation.hotel.name}
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.reservator.name}
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.reservedFor}
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.reserveDate.substring(0, 10)}
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.startDate.substring(0, 10)}
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.endDate.substring(0, 10)}
-                    </TableCell>
-                    <TableCell align="center">{reservation.price}</TableCell>
-                    <TableCell align="center">
-                      {reservation.payFullfillment
-                        ? reservation.paymentMethod
-                        : "not been paid"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button variant="text">
-                        <EditIcon />
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      {reservation.isCancelled ? (
-                        "Cancelled"
-                      ) : (
+                {reservations
+                  .filter((res) =>
+                    res.reservator.name
+                      .toLowerCase()
+                      .includes(reservatorNameSearch.toLowerCase())
+                  )
+                  .map((reservation) => (
+                    <TableRow
+                      key={reservation.id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell align="center">{reservation.id}</TableCell>
+                      <TableCell align="center">
+                        {reservation.hotel.name}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.reservator.name}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.reservedFor}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.reserveDate.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.startDate.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.endDate.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="center">{reservation.price}</TableCell>
+                      <TableCell align="center">
+                        {reservation.payFullfillment
+                          ? reservation.paymentMethod
+                          : "not been paid"}
+                      </TableCell>
+                      <TableCell align="center">
                         <Button variant="text">
-                          <DisabledByDefaultIcon />
+                          <EditIcon />
                         </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.isCancelled ? (
+                          "Cancelled"
+                        ) : (
+                          <Button variant="text">
+                            <DisabledByDefaultIcon />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -202,6 +262,5 @@ const Reservations = () => {
     </>
   );
 };
-
 
 export default Reservations;
