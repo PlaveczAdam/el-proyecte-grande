@@ -7,6 +7,6 @@ namespace el_proyecte_grande_backend.Models.Dtos.UserNs
         string Email,
         string Password,
         bool IsActive,
-        ICollection<Role> Roles
+        List<Role> Roles
         );
 }

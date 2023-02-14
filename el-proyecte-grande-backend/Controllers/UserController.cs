@@ -21,18 +21,25 @@ namespace el_proyecte_grande_backend.Controllers
             return (await _userService.GetAllUsers()).Select(MapUserToDto);
         }
 
+        [HttpPost]
+        public async Task<UserDto> CreateUser([FromBody] UserDto userDto)
+        {
+            var user = await _userService.CreateUser(MapDtoToUser(userDto));
+            return MapUserToDto(user);
+        }
+
         private static UserDto MapUserToDto(User user)
         {
             return new UserDto(
                 Name: user.Name,
                 Email: user.Email,
-                Password: user.Password,
+                Password: "",
                 IsActive: user.IsActive,
-                Roles: user.Roles
+                Roles: user.Roles.ToList()
             );
         }
 
-        private static User MapDtoToHotel(UserDto userDto)
+        private static User MapDtoToUser(UserDto userDto)
         {
             return new User()
             {
