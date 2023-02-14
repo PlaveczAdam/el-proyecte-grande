@@ -37,8 +37,8 @@ export const Auth = () => {
 
   async function sendLogout() {
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
+      const response = await fetch("/api/auth/logout", {
+        method: "GET",
         mode: "cors",
         headers: {
           "Content-type": "application/json",
