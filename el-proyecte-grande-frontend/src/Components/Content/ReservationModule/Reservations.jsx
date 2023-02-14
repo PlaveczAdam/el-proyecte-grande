@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,11 +10,6 @@ import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import ContentPagination from "../../Shared/Pagination";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,6 +17,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import "./Reservations.css";
 import AddReservationModal from "./Modals/AddReservationModal";
 import Searchbar from "./Searchbar";
+import ReservationsFilters from "./QueryComponents/ReservationsFilters";
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -30,11 +25,16 @@ const Reservations = () => {
   const [error, setError] = useState();
 
   const [reservatorNameSearch, setReservatorNameSearch] = useState("");
-  const [filteredReservations, setFilteredReservations] =
-    useState(reservations);
 
-  const [choosableHotels, setChoosableHotels] = useState([]);
-  const [chosenHotel, setChosenHotel] = useState("");
+  const [filters, setFilters] = useState({
+    boardType: "",
+    paymentMethod: "",
+    reservedFor: "",
+    payFulfillment: false,
+    startDate: "",
+    endDate: "",
+    hotelId: "",
+  });
 
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
@@ -64,26 +64,6 @@ const Reservations = () => {
     }
   };
 
-  const fetchHotels = async () => {
-    const url = `/api/hotel`;
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(url);
-      const responseData = await response.json();
-      setIsLoading(false);
-      setChoosableHotels(responseData);
-    } catch (err) {
-      setIsLoading(false);
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchReservations();
-    fetchHotels();
-  }, []);
-
   const openAddReservationModal = () => {
     setAddReservationModalIsOpen(true);
   };
@@ -100,30 +80,34 @@ const Reservations = () => {
     setReservatorNameSearch(searchedName);
   };
 
-  // useEffect(() => {
-  //   console.log(reservations);
-  //   if (reservations.length > 0) {
-  //     const newReservations = reservations.filter((res) =>
-  //       res.reservator.name
-  //         .toLowerCase()
-  //         .includes(reservatorNameSearch.toLowerCase())
-  //     );
-  //     setFilteredReservations(newReservations);
-  //   }
-  // }, [reservatorNameSearch, reservations]);
+  useEffect(() => {
+    fetchReservations();
+  }, []);
 
   useEffect(() => {
-    if (chosenHotel !== "") {
-      async function getHotelFilteredReservations() {
-        const response = await fetch(`/api/reservation/hotel/${chosenHotel}`);
-        const responseData = await response.json();
-        setReservations(responseData);
-      }
-      getHotelFilteredReservations();
-    } else {
-      fetchReservations();
+    async function getFilteredReservations() {
+      const response = await fetch(
+        `/api/reservation/filter?boardType=${filters.boardType}&paymentMethod=${
+          filters.paymentMethod
+        }&reservedFor=${filters.reservedFor}&payFulfillment=${
+          filters.payFulfillment ? true : ""
+        }&startDate=${
+          filters.startDate === null ? "" : filters.startDate
+        }&endDate=${filters.endDate === null ? "" : filters.endDate}&hotelId=${
+          filters.hotelId
+        }`
+      );
+      const responseData = await response.json();
+      console.log(responseData);
+      setReservations(responseData);
     }
-  }, [chosenHotel]);
+    getFilteredReservations();
+  }, [filters]);
+
+  const reservationFiltersChanged = (filters) => {
+    setFilters(filters);
+    console.log(filters);
+  };
 
   return (
     <>
@@ -144,37 +128,12 @@ const Reservations = () => {
           </Box>
           <Box sx={{ marginY: 1 }}>
             <Grid container direction="row" alignItems="center" spacing={2}>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={9}>
                 <Button variant="text" onClick={openAddReservationModal}>
                   Add new Reservation
                 </Button>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  {choosableHotels.length > 0 ? (
-                    <>
-                      <InputLabel id="demo-simple-select-label">
-                        Hotels
-                      </InputLabel>
-                      <Select
-                        name="Select a Hotel"
-                        value={chosenHotel}
-                        label="Hotel"
-                        onChange={(e) => setChosenHotel(e.target.value)}
-                      >
-                        <MenuItem value={""}>Select a hotel</MenuItem>
-                        {choosableHotels.map((h) => (
-                          <MenuItem key={h.id} value={h.id}>
-                            {h.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </>
-                  ) : (
-                    "There are no hotels to choose from"
-                  )}
-                </FormControl>
-              </Grid>
+
               <Grid item xs={12} md={3}>
                 <Searchbar
                   onSearch={reservatorNameChangedHandler}
@@ -183,6 +142,12 @@ const Reservations = () => {
               </Grid>
             </Grid>
           </Box>
+
+          <ReservationsFilters
+            filterState={filters}
+            onFilter={reservationFiltersChanged}
+          />
+
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
