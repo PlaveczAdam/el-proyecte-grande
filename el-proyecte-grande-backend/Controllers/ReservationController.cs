@@ -50,10 +50,11 @@ namespace el_proyecte_grande_backend.Controllers
             uint? reservedFor,
             bool? payFulfillment,
             DateTime? startDate,
-            DateTime? endDate
+            DateTime? endDate,
+            long? hotelId
             )
         {
-            IEnumerable<Reservation> reservations = await _reservationRepository.GetFilteredReservations(boardType, paymentMethod, reservedFor, payFulfillment, startDate, endDate);
+            IEnumerable<Reservation> reservations = await _reservationRepository.GetFilteredReservations(boardType, paymentMethod, reservedFor, payFulfillment, startDate, endDate, hotelId);
             IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
             return Ok(reservationDTOs);
         }
