@@ -46,6 +46,12 @@ namespace el_proyecte_grande_backend.Controllers
             return MapUserToDto(await _userService.UpdateUser(userId, MapDtoToUser(user)));
         }
 
+        [HttpDelete("{userId}")]
+        public async void UpdateUserActivity(long userId)
+        {
+            await _userService.UpdateUserActivity(userId, false);
+        }
+
         private static UserDto MapUserToDto(User user)
         {
             return new UserDto(
