@@ -47,9 +47,17 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return user;
         }
 
-        public Task<User> UpdateUser(long userId, User user)
+        public async Task<User> UpdateUser(long userId, User user)
         {
-            throw new NotImplementedException();
+            var foundUser = GetUserById(userId).Result;
+            foundUser.Name = user.Name;
+            foundUser.Email = user.Email;
+            foundUser.Password = user.Password;
+            foundUser.IsActive = user.IsActive;
+            foundUser.Roles = user.Roles;
+
+            await _context.SaveChangesAsync();
+            return foundUser;
         }
 
         public Task<User> UpdateUserActivity(long userId)
