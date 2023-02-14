@@ -35,9 +35,16 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return await _context.Users.Include(x => x.Roles).SingleAsync(x => x.Id == id);
         }
 
-        public Task<User> SetUserRole(long userId, string role)
+        public async Task<User> SetUserRole(long userId, Role role)
         {
-            throw new NotImplementedException();
+            var user = GetUserById(userId).Result;
+            if (user is null)
+            {
+                throw new Exception("There is no such user.");
+            }
+            user.Roles.Add(role);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public Task<User> UpdateUser(long userId, User user)
