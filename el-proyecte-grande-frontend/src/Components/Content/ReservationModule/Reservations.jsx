@@ -19,12 +19,17 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import "./Reservations.css";
 import AddReservationModal from "./Modals/AddReservationModal";
+import Searchbar from "./Searchbar";
 
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+
+
+  const [reservatorNameSearch, setReservatorNameSearch] = useState("");
+  const [filteredReservations, setFilteredReservations] = useState(reservations)
 
 
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
@@ -75,8 +80,21 @@ const Reservations = () => {
 
   const reservationWasCreated = (newReservation) => {
     console.log(newReservation);
-    fetchReservations()
-  }
+    fetchReservations();
+  };
+
+
+  const reservatorNameChangedHandler = (searchedName) => {
+    setReservatorNameSearch(searchedName);
+  };
+
+
+  useEffect(() => {
+    const newReservations = reservations.filter((res) =>
+      res.reservator.name.toLowerCase().includes(reservatorNameSearch.toLowerCase())
+    );
+    setFilteredReservations(newReservations);
+  }, [reservatorNameSearch, reservations]);
 
 
   return (
@@ -88,7 +106,10 @@ const Reservations = () => {
       ) : (
         <>
           {addReservationModalIsOpen && (
-            <AddReservationModal onClose={closeModal} reservationWasCreated={reservationWasCreated}/>
+            <AddReservationModal
+              onClose={closeModal}
+              reservationWasCreated={reservationWasCreated}
+            />
           )}
           <Box sx={{ textAlign: "center" }}>
             <h2>Reservations</h2>
@@ -101,11 +122,9 @@ const Reservations = () => {
                 </Button>
               </Grid>
               <Grid item xs={12} md={3}>
-                <TextField
-                  id="outlined-basic"
-                  label="Filter"
-                  variant="outlined"
-                  size="small"
+                <Searchbar
+                  onSearch={reservatorNameChangedHandler}
+                  searchName="Reservator's name"
                 />
               </Grid>
             </Grid>
@@ -128,7 +147,7 @@ const Reservations = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {reservations.map((reservation) => (
+                {filteredReservations.map((reservation) => (
                   <TableRow
                     key={reservation.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -186,5 +205,3 @@ const Reservations = () => {
 
 
 export default Reservations;
-
-
