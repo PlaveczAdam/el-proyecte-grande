@@ -49,7 +49,16 @@ namespace el_proyecte_grande_backend.Services.UserServices
             {
                 throw new Exception("There is no such user.");
             }
-            user.Roles.Add(role);
+            var foundRole = _context.Roles.Single(x => x.Name == role.Name);
+
+            if (user.Roles.Contains(foundRole))
+            {
+                user.Roles.Remove(foundRole);
+            }
+            else
+            {
+                user.Roles.Add(foundRole);
+            }
             await _context.SaveChangesAsync();
             return user;
         }

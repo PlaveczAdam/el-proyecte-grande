@@ -34,6 +34,12 @@ namespace el_proyecte_grande_backend.Controllers
             return MapUserToDto(user);
         }
 
+        [HttpPut("{userId}")]
+        public async Task<UserDto> SetUserRole(long userId, [FromBody] RoleDto role)
+        {
+            return MapUserToDto(await _userService.SetUserRole(userId, MapDtoToRole(role)));
+        }
+
         private static UserDto MapUserToDto(User user)
         {
             return new UserDto(
