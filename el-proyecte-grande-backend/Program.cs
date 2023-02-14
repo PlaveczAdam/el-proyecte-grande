@@ -6,6 +6,8 @@ using el_proyecte_grande_backend.Services.HotelServices;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Services.RoomServices;
 using el_proyecte_grande_backend.Services.InventoryServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using el_proyecte_grande_backend.Services.AuthServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,9 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddTransient<DbInitializer>();
@@ -54,6 +59,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
