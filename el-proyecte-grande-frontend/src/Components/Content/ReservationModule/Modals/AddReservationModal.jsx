@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ReservationModalBase from "./ReservationModalBase";
 import AddReservation from "../Forms/AddReservation";
+import ChildModal from "./ChildModal";
 
 const style = {
   display: "flex",
@@ -24,12 +24,44 @@ const style = {
   overflowY: "auto",
 };
 
-const AddReservationModal = ({ onClose, buttonText = "Close", reservationWasCreated }) => {
+const AddReservationModal = ({
+  onClose,
+  buttonText = "Close",
+  reservationWasCreated,
+}) => {
   const [open, setOpen] = useState(true);
+  const [message, setMessage] = useState(null);
+  const [childModalIsOpen, setChildModalIsOpen] = useState(false);
 
   const handleClose = () => {
     onClose();
     setOpen(false);
+  };
+
+  const handleAddReservationError = (error) => {
+    let errorMessage = "An unexpected problem occured, please try again later";
+    if (error.status === 400) {
+      errorMessage =
+        error.title +
+        "\n Please check if all required fields have been filled out correctly";
+    }
+    openChildModal(errorMessage);
+  };
+
+  const handleAddReservationSuccess = () => {
+    openChildModal("Reservation has been successfully created");
+  };
+
+  const openChildModal = (message) => {
+    console.log(message);
+    setMessage(message);
+    setChildModalIsOpen(true);
+  };
+
+  const childModalWasClosed = () => {
+    setMessage(null);
+    setChildModalIsOpen(false);
+    reservationWasCreated()
   };
 
   return (
@@ -38,11 +70,18 @@ const AddReservationModal = ({ onClose, buttonText = "Close", reservationWasCrea
       handleClose={handleClose}
       boxStyle={style}
     >
+      {/* <Button onClick={() => openChildModal("x")}>Open Child Modal</Button> */}
+      {childModalIsOpen && (
+        <ChildModal message={message} modalWasClosed={childModalWasClosed} />
+      )}
       <Typography id="transition-modal-title" variant="h5" component="h2">
         Add new Reservation
       </Typography>
 
-      <AddReservation onCreated={reservationWasCreated} />
+      <AddReservation
+        onError={handleAddReservationError}
+        onSuccess={handleAddReservationSuccess}
+      />
 
       <div className="modal-buttons-container">
         <Button onClick={handleClose} variant="outlined" color="error">
