@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import ReservationModalBase from "./ReservationModalBase";
 import AddReservation from "../Forms/AddReservation";
 import ChildModal from "./ChildModal";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const style = {
   display: "flex",
@@ -26,8 +27,8 @@ const style = {
 
 const AddReservationModal = ({
   onClose,
-  buttonText = "Close",
-  reservationWasCreated,
+  buttonText = "Cancel",
+  onReservationWasCreated,
 }) => {
   const [open, setOpen] = useState(true);
   const [message, setMessage] = useState(null);
@@ -61,7 +62,7 @@ const AddReservationModal = ({
   const childModalWasClosed = () => {
     setMessage(null);
     setChildModalIsOpen(false);
-    reservationWasCreated()
+    onReservationWasCreated();
   };
 
   return (
@@ -70,20 +71,28 @@ const AddReservationModal = ({
       handleClose={handleClose}
       boxStyle={style}
     >
+      <Button
+        onClick={handleClose}
+        sx={{
+          position: "absolute",
+          top: (style.p * 8) / 2,
+          right: (style.p * 8) / 2,
+        }}
+      >
+        <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
+      </Button>
       {childModalIsOpen && (
         <ChildModal message={message} modalWasClosed={childModalWasClosed} />
       )}
       <Typography id="transition-modal-title" variant="h5" component="h2">
         Add new Reservation
       </Typography>
-
       <AddReservation
         onError={handleAddReservationError}
         onSuccess={handleAddReservationSuccess}
       />
-
       <div className="modal-buttons-container">
-        <Button onClick={handleClose} variant="outlined" color="error">
+        <Button onClick={handleClose} variant="contained" color="primary">
           {buttonText}
         </Button>
       </div>
