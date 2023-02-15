@@ -109,9 +109,9 @@ const RoomModalForm = (props) => {
       </FormControl>
 
       <FormControl fullWidth>
-        <InputLabel id="roomStatusSelect">Hotel</InputLabel>
+        <InputLabel id="roomHotelSelect">Hotel</InputLabel>
         <Select
-          id="roomStatusSelect"
+          id="roomHotelSelect"
           value={room.hotelId}
           label="Hotel"
           onChange={(e) => setRoom({ ...room, hotelId: e.target.value })}
@@ -129,9 +129,9 @@ const RoomModalForm = (props) => {
       </FormControl>
 
       <FormControl fullWidth>
-        <InputLabel id="roomStatusSelect">Room Type</InputLabel>
+        <InputLabel id="roomTypeSelect">Room Type</InputLabel>
         <Select
-          id="roomStatusSelect"
+          id="roomTypeSelect"
           value={room.roomTypeId}
           label="Room Type"
           onChange={(e) => setRoom({ ...room, roomTypeId: e.target.value })}
