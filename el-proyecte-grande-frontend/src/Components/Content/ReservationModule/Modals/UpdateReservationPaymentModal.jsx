@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import UpdateReservationPaymentForm from "../Forms/UpdateReservationPaymentForm";
 import ReservationDetails from "../ReservationDetails";
@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
 import ChildModal from "./ChildModal";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const style = {
   display: "flex",
@@ -28,25 +29,48 @@ const style = {
 
 const UpdateReservationPaymentModal = ({
   reservation,
-  reservationWasUpdated,
+  onReservationWasUpdated,
 }) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState(null);
   const [childModalIsOpen, setChildModalIsOpen] = useState(false);
-  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleReservationPaymentUpdate = async (paymentMethod) => {
+    const response = await fetch(`/api/reservation/status/${reservation.id}`, {
+      method: "PUT",
+      body: JSON.stringify({ paymentMethod: paymentMethod }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const responseData = await response.json();
+
+    onReservationWasUpdated(responseData);
+  };
 
   return (
     <>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-
+          <Button
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              top: (style.p * 8) / 2,
+              right: (style.p * 8) / 2,
+            }}
+          >
+            <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
+          </Button>
           <ReservationDetails reservation={reservation} />
-          <UpdateReservationPaymentForm />
-          
+          <UpdateReservationPaymentForm
+            onCancel={handleClose}
+            onSave={handleReservationPaymentUpdate}
+          />
         </Box>
       </Modal>
+
       <Button variant="text" onClick={handleOpen}>
         <EditIcon />
       </Button>
