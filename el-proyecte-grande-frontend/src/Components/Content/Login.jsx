@@ -102,6 +102,11 @@ export default function Login() {
                     type="text"
                     value={loginUser}
                     onChange={(e) => setLoginUser(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleLogin();
+                      }
+                    }}
                   />
                 </Grid>
 
@@ -115,6 +120,11 @@ export default function Login() {
                     type="password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleLogin();
+                      }
+                    }}
                   />
                 </Grid>
 
