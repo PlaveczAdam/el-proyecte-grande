@@ -41,7 +41,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
+    .AddCookie(o =>
+    {
+        o.AccessDeniedPath = "/api/error/forbidden";
+    });
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddTransient<DbInitializer>();
