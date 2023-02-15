@@ -24,6 +24,10 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Tooltip from "@mui/material/Tooltip";
+import Button from "@mui/material/Button";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 const Rooms = () => {
   const [hotels, setHotels] = useState(null);
@@ -33,8 +37,18 @@ const Rooms = () => {
 
   const [enums, setEnums] = useState(null);
 
-  const [hotelFilter, setHotelFilter] = useState("");
   const [textFilter, setTextFilter] = useState("");
+
+  const emptyFilters = {
+    hotelId: "",
+    status: "",
+    date: null,
+    roomTypeId: "",
+    maxPrice: "",
+    accessible: "",
+  };
+
+  const [filters, setFilters] = useState(emptyFilters);
 
   useEffect(() => {
     async function getHotels() {
@@ -82,13 +96,27 @@ const Rooms = () => {
 
   useEffect(() => {
     async function getFilteredRooms() {
-      const response = await fetch(`/api/room/filter?hotelId=${hotelFilter}`);
+      const filterDateString = filters.date === null ? "" : filters.date;
+      const filterAddress =
+        "/api/room/filter?hotelId=" +
+        filters.hotelId +
+        "&status=" +
+        filters.status +
+        "&date=" +
+        filterDateString +
+        "&roomTypeId=" +
+        filters.roomTypeId +
+        "&maxPrice=" +
+        filters.maxPrice +
+        "&accessible=" +
+        filters.accessible;
+      const response = await fetch(filterAddress);
       const responseBody = await response.json();
       setRooms(responseBody);
       //console.log(responseBody);
     }
     getFilteredRooms();
-  }, [hotelFilter]);
+  }, [filters]);
 
   const handleNewRoom = (room) => {
     setRooms([...rooms, room]);
@@ -100,11 +128,6 @@ const Rooms = () => {
     newRooms[indexOfRoom] = room;
     setRooms(newRooms);
   };
-
-  async function handleHotelSelectChange(e) {
-    console.log(e.target.value);
-    setHotelFilter(e.target.value);
-  }
 
   async function handleRoomStatusChange(room) {
     const newStatus =
@@ -127,6 +150,26 @@ const Rooms = () => {
     return roomType;
   }
 
+  function handleFiltersChange(e) {
+    const { name, value } = e.target;
+    setFilters((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+  function handleFiltersChangeManual(name, value) {
+    setFilters((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+  function handleFiltersReset() {
+    setFilters(emptyFilters);
+    setTextFilter("");
+  }
+
   return (
     <>
       <Box sx={{ textAlign: "center" }}>
@@ -136,6 +179,7 @@ const Rooms = () => {
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
             <AddRoomModal onNewRoom={handleNewRoom} />
+            <Button onClick={handleFiltersReset}>Reset filters</Button>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
@@ -143,8 +187,9 @@ const Rooms = () => {
               <Select
                 labelId="RoomHotelSelect"
                 id="RoomHotelSelect"
-                value={hotelFilter}
-                onChange={handleHotelSelectChange}
+                name="hotelId"
+                value={filters.hotelId}
+                onChange={handleFiltersChange}
                 label="Hotels"
               >
                 <MenuItem value={""}>Select a hotel...</MenuItem>
@@ -162,11 +207,106 @@ const Rooms = () => {
           </Grid>
           <Grid item xs={12} md={3}>
             <TextField
+              fullWidth
               id="outlined-basic"
               label="Filter room number"
               variant="outlined"
+              value={textFilter}
               onChange={(e) => setTextFilter(e.target.value)}
             />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter1">Room Status</InputLabel>
+                  <Select
+                    id="filter1"
+                    name="status"
+                    value={filters.status}
+                    label="Room Status"
+                    onChange={handleFiltersChange}
+                  >
+                    {" "}
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    {enums
+                      ? Object.entries(enums.roomStatus.values).map(
+                          ([key, value]) => (
+                            <MenuItem value={value} key={value}>
+                              {key}
+                            </MenuItem>
+                          )
+                        )
+                      : ""}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    id="filter2"
+                    label="Date"
+                    inputFormat="YYYY/MM/DD"
+                    value={filters.date}
+                    onChange={(newValue) =>
+                      handleFiltersChangeManual("date", newValue)
+                    }
+                    renderInput={(params) => (
+                      <TextField fullWidth {...params} />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter3">Room Type</InputLabel>
+                  <Select
+                    id="filter3"
+                    label="Room Type"
+                    name="roomTypeId"
+                    value={filters.roomTypeId}
+                    onChange={handleFiltersChange}
+                  >
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    {roomTypes
+                      ? roomTypes.map((roomType) => (
+                          <MenuItem value={roomType.id} key={roomType.id}>
+                            {roomType.name}
+                          </MenuItem>
+                        ))
+                      : ""}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  id="filter4"
+                  label="Maximum Price"
+                  variant="outlined"
+                  type="number"
+                  name="maxPrice"
+                  value={filters.maxPrice}
+                  onChange={handleFiltersChange}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter5">Accessible Room</InputLabel>
+                  <Select
+                    id="filter5"
+                    label="Accessible Room"
+                    name="accessible"
+                    value={filters.accessible}
+                    onChange={handleFiltersChange}
+                  >
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    <MenuItem value={true}>Yes</MenuItem>
+                    <MenuItem value={false}>No</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
@@ -175,14 +315,14 @@ const Rooms = () => {
           <TableHead>
             <TableRow>
               <TableCell align="center">Id</TableCell>
-              {hotelFilter === "" ? (
+              {filters.hotelId === "" ? (
                 <TableCell align="center">Hotel</TableCell>
               ) : (
                 ""
               )}
               <TableCell align="center">Room number</TableCell>
               <TableCell align="center">Room Type</TableCell>
-              <TableCell align="center">Comfort</TableCell>
+              <TableCell align="center">Price</TableCell>
               <TableCell align="center">Accessible</TableCell>
               <TableCell align="center">Edit</TableCell>
               <TableCell align="center">Status</TableCell>
@@ -200,7 +340,7 @@ const Rooms = () => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="center">{room.id}</TableCell>
-                    {hotelFilter === "" ? (
+                    {filters.hotelId === "" ? (
                       <TableCell align="center">
                         {hotels
                           ? getHotelfromId(room.hotelId).name
@@ -219,10 +359,13 @@ const Rooms = () => {
                     </TableCell>
 
                     <TableCell align="center">
-                      {roomTypes && enums
-                        ? Object.keys(enums.roomQuality.values)[
-                            getRoomTypefromId(room.roomTypeId).roomQuality
-                          ]
+                      {roomTypes
+                        ? getRoomTypefromId(
+                            room.roomTypeId
+                          ).price.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "EUR",
+                          })
                         : "..."}
                     </TableCell>
 

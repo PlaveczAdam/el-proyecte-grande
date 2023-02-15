@@ -58,7 +58,7 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
               <TableCell align="center">Id</TableCell>
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Price</TableCell>
-              <TableCell align="center">Comfort</TableCell>
+              <TableCell align="center">Comfort level</TableCell>
               <TableCell align="center">Edit</TableCell>
             </TableRow>
           </TableHead>
@@ -77,7 +77,12 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
 
                     <TableCell align="center">{roomType.name}</TableCell>
 
-                    <TableCell align="center">{roomType.price}</TableCell>
+                    <TableCell align="center">
+                      {roomType.price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "EUR",
+                      })}
+                    </TableCell>
 
                     <TableCell align="center">
                       {roomTypes && enums
