@@ -1,18 +1,23 @@
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
-using Microsoft.EntityFrameworkCore;
+using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.GuestServices;
 using el_proyecte_grande_backend.Services.HotelServices;
+using el_proyecte_grande_backend.Services.InventoryServices;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Services.RoomServices;
+using el_proyecte_grande_backend.Services.UserServices;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using el_proyecte_grande_backend.Services.InventoryServices;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using el_proyecte_grande_backend.Services.AuthServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
+var connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
 // Add services to the container.
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -32,6 +37,8 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
