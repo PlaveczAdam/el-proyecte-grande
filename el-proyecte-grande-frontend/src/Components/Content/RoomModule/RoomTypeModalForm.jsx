@@ -11,18 +11,7 @@ import InputLabel from "@mui/material/InputLabel";
 const RoomTypeModalForm = (props) => {
   const [roomType, setRoomType] = useState(props.roomType);
   const [validRoomType, setValidRoomType] = useState(false);
-
-  const [enums, setEnums] = useState(null);
-
-  useEffect(() => {
-    async function getEnums() {
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomQuality });
-    }
-
-    getEnums();
-  }, []);
+  const enums = props.enums;
 
   useEffect(() => {
     function validateRoomType() {

@@ -38,7 +38,7 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
-            <AddRoomTypeModal onNewRoomType={handleNewRoomType} />
+            <AddRoomTypeModal enums={enums} onNewRoomType={handleNewRoomType} />
           </Grid>
           <Grid item xs={12} md={6}></Grid>
           <Grid item xs={12} md={3}>
@@ -95,6 +95,7 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
                     <TableCell align="center">
                       <EditRoomTypeModal
                         roomType={roomType}
+                        enums={enums}
                         onRoomTypeUpdate={handleRoomTypeUpdate}
                       />
                     </TableCell>

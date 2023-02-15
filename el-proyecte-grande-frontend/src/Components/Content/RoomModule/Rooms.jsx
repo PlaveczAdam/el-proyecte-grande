@@ -178,7 +178,12 @@ const Rooms = () => {
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
-            <AddRoomModal onNewRoom={handleNewRoom} />
+            <AddRoomModal
+              onNewRoom={handleNewRoom}
+              hotels={hotels}
+              roomTypes={roomTypes}
+              enums={enums}
+            />
             <Button onClick={handleFiltersReset}>Reset filters</Button>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -376,6 +381,9 @@ const Rooms = () => {
                     <TableCell align="center">
                       <EditRoomModal
                         room={room}
+                        hotels={hotels}
+                        roomTypes={roomTypes}
+                        enums={enums}
                         onRoomUpdate={handleRoomUpdate}
                       />
                     </TableCell>

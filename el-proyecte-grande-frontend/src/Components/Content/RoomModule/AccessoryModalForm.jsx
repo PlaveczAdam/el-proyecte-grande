@@ -11,17 +11,7 @@ import InputLabel from "@mui/material/InputLabel";
 const AccessoryModalForm = (props) => {
   const [accessory, setAccessory] = useState(props.accessory);
   const [validAccessory, setValidAccessory] = useState(false);
-  const [roomTypes, setRoomTypes] = useState(null);
-
-  useEffect(() => {
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
-    }
-
-    getRoomTypes();
-  }, []);
+  const roomTypes = props.roomTypes;
 
   useEffect(() => {
     function validateAccessory() {

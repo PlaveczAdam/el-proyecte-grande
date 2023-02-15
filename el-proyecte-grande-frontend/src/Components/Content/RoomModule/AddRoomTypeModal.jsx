@@ -35,6 +35,7 @@ const AddRoomTypeModal = (props) => {
             <RoomTypeModalForm
               roomType={roomType}
               title={"Add Room Type"}
+              enums={props.enums}
               onCancel={handleClose}
               onSave={handleSave}
             />

@@ -14,35 +14,9 @@ import InputLabel from "@mui/material/InputLabel";
 const RoomModalForm = (props) => {
   const [room, setRoom] = useState(props.room);
   const [validRoom, setValidRoom] = useState(false);
-  const [hotels, setHotels] = useState(null);
-  const [roomTypes, setRoomTypes] = useState(null);
-
-  const [enums, setEnums] = useState(null);
-  useEffect(() => {
-    async function getHotels() {
-      const response = await fetch(`/api/hotel`);
-      const responseBody = await response.json();
-      setHotels(responseBody);
-    }
-
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
-    }
-
-    async function getEnums() {
-      const roomStatusResponse = await fetch("/api/enum/RoomStatus");
-      const roomStatus = await roomStatusResponse.json();
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomStatus, roomQuality });
-    }
-
-    getHotels();
-    getRoomTypes();
-    getEnums();
-  }, []);
+  const hotels = props.hotels;
+  const roomTypes = props.roomTypes;
+  const enums = props.enums;
 
   useEffect(() => {
     function validateRoom() {
@@ -100,7 +74,7 @@ const RoomModalForm = (props) => {
       <FormGroup>
         <FormControlLabel
           control={<Checkbox checked={room.accessible} />}
-          label="Accessible"
+          label="Accessible Room"
           onChange={(e) => setRoom({ ...room, accessible: e.target.checked })}
         />
       </FormGroup>
