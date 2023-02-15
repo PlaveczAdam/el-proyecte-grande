@@ -221,7 +221,7 @@ const Reservations = () => {
                   )
                   .sort((a, b) => a.id - b.id)
                   .map((reservation) => (
-                    <>
+                    
                       <TableRow
                         key={reservation.id}
                         sx={{
@@ -284,7 +284,7 @@ const Reservations = () => {
                           </FormGroup>
                         </TableCell>
                       </TableRow>
-                    </>
+                    
                   ))}
               </TableBody>
             </Table>
