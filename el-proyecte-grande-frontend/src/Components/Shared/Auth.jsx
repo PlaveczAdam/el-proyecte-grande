@@ -45,14 +45,14 @@ export const Auth = () => {
         },
         credentials: "include",
       });
-      const responseBody = await response.json();
 
       if (!response.ok) {
-        const errorMessage = responseBody;
+        const errorMessage = `Error: ${response.status} - ${response.statusText}`;
         console.log(errorMessage);
         return;
       }
-      console.log("Logged Out.");
+
+      console.log("Logout successful.");
     } catch (err) {
       console.log("Logout failed: ", err);
     }
