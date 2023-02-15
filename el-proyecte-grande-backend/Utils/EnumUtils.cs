@@ -41,8 +41,9 @@ namespace el_proyecte_grande_backend.Utils
             EnumDetails paymentMethodEnumDetails = new("PaymentMethod", GetDictionaryOfEnum<PaymentMethod>());
             EnumDetails roomQualityEnumDetails = new("RoomQuality", GetDictionaryOfEnum<RoomQuality>());
             EnumDetails roomStatusEnumDetails = new("RoomStatus", GetDictionaryOfEnum<RoomStatus>());
+            EnumDetails userRoleEnumDetails = new("UserRoles", GetDictionaryOfEnum<UserRole>());
 
-            return new List<EnumDetails> { boardTypeEnumDetails, classificationEnumDetails, genderEnumDetails, guestStatusEnumDetails, hotelStatusEnumDetails, itemTypeEnumDetails, paymentMethodEnumDetails, roomQualityEnumDetails, roomStatusEnumDetails };
+            return new List<EnumDetails> { boardTypeEnumDetails, classificationEnumDetails, genderEnumDetails, guestStatusEnumDetails, hotelStatusEnumDetails, itemTypeEnumDetails, paymentMethodEnumDetails, roomQualityEnumDetails, roomStatusEnumDetails, userRoleEnumDetails };
         }
     }
 
