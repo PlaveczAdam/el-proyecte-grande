@@ -9,11 +9,14 @@ using el_proyecte_grande_backend.Services.RoomServices;
 using el_proyecte_grande_backend.Services.UserServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using el_proyecte_grande_backend.Services.InventoryServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using el_proyecte_grande_backend.Services.AuthServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
+// Add services to the container.
 
 
 builder.Services.AddControllers();
@@ -36,8 +39,13 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<PasswordHasher<User>>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
+builder.Services.AddTransient<DbInitializer>();
+
 
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -49,10 +57,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using var scope = app.Services.CreateScope();
+IServiceProvider services = scope.ServiceProvider;
+var initializer = services.GetRequiredService<DbInitializer>();
+initializer.Seed();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
