@@ -19,7 +19,7 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
 
         Task<Reservation> AddAsync(Reservation reservation, long[] roomIds);
         Task<Reservation?> UpdateAsync(Reservation reservation, long[] roomIds);
-        Task<Reservation?> SetReservationToBeCancelled(long id);
+        Task<Reservation?> SetReservationToBeCancelled(long id, bool isCancelled);
         Task<Reservation?> SetReservationPayFulfillment(long id, int paymentMethod);
         Task DeleteAsync(long id);
         Task<bool> Exists(long id);

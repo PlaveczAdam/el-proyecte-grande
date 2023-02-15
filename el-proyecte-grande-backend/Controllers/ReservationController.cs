@@ -104,20 +104,19 @@ namespace el_proyecte_grande_backend.Controllers
             return CreatedAtAction("GetReservation", new { id = createdReservation.Id }, createdReservationDTO);
         }
 
-        // PUT: api/Reservation/5
+        // PUT: api/Reservation/5?isCancelled=true
         [HttpPut("{id}")]
-        public async Task<IActionResult> SetReservationToBeCancelled(long id)  // sets isCancelled to true
+        public async Task<IActionResult> SetReservationToBeCancelled(long id, [FromQuery] bool isCancelled)  // sets isCancelled to true or false
         {
             Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-
             Reservation? updatedReservation;
             try
             {
-                updatedReservation = await _reservationRepository.SetReservationToBeCancelled(id);
+                updatedReservation = await _reservationRepository.SetReservationToBeCancelled(id, isCancelled);
             }
             catch (DbUpdateConcurrencyException)
             {
