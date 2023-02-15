@@ -1,11 +1,13 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.UserNs;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
 {
     [ApiController, Route("/api/user")]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
