@@ -30,7 +30,8 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
             uint? reservedFor,
             bool? payFulfillment,
             DateTime? startDate,
-            DateTime? endDate)
+            DateTime? endDate, 
+            long? hotelId)
         {
             IEnumerable<Reservation> reservations = await GetAllAsync();
 
@@ -58,6 +59,10 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
             {
                 reservations = reservations.Where(r => r.EndDate <= endDate);
             }
+            if (hotelId != null)
+            {
+                reservations = reservations.Where(r => r.Hotel.Id == hotelId);
+            }
 
             return reservations;
         }
@@ -66,6 +71,8 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
         {
             IEnumerable<Reservation> reservations = await _context.Reservations
                     .Include(r => r.Hotel)
+                    .Include(r => r.Reservator)
+                    .AsNoTracking()
                     .ToListAsync();
 
             return reservations.Where(r => r.Hotel.Id == hotelId);
@@ -110,6 +117,7 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
 
             ICollection<Room> rooms = await GetRoomsFromIds(roomIds);
             reservation.Rooms = rooms;
+            reservation.PaymentMethod = null;
 
             await _context.AddAsync(reservation);
             await _context.SaveChangesAsync();
