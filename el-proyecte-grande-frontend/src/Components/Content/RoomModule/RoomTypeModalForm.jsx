@@ -75,7 +75,7 @@ const RoomTypeModalForm = (props) => {
           }
         >
           {enums ? (
-            Object.entries(enums.roomQuality.values).map(([key, value]) => (
+            Object.entries(enums.RoomQuality.values).map(([key, value]) => (
               <MenuItem value={value} key={value}>
                 {key}
               </MenuItem>

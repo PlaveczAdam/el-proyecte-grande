@@ -86,7 +86,7 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
 
                     <TableCell align="center">
                       {roomTypes && enums
-                        ? Object.keys(enums.roomQuality.values)[
+                        ? Object.keys(enums.RoomQuality.values)[
                             roomType.roomQuality
                           ]
                         : "..."}

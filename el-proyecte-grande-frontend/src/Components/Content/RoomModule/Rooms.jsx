@@ -5,6 +5,7 @@ import RoomTypes from "./RoomTypes";
 import Accessories from "./Accessories";
 import AddRoomModal from "./AddRoomModal";
 import EditRoomModal from "./EditRoomModal";
+import AlertMessage from "../../Shared/AlertMessage";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -34,9 +35,9 @@ const Rooms = () => {
   const [rooms, setRooms] = useState(null);
   const [roomTypes, setRoomTypes] = useState(null);
   const [accessories, setAccessories] = useState(null);
+  const [enums, setEnums] = useState();
 
-  const [enums, setEnums] = useState(null);
-
+  const [errorText, setErrorText] = useState("");
   const [textFilter, setTextFilter] = useState("");
 
   const emptyFilters = {
@@ -51,69 +52,95 @@ const Rooms = () => {
   const [filters, setFilters] = useState(emptyFilters);
 
   useEffect(() => {
-    async function getHotels() {
-      const response = await fetch(`/api/hotel`);
-      const responseBody = await response.json();
-      setHotels(responseBody);
-      //console.log(responseBody);
+    async function getData(dataPath) {
+      try {
+        const response = await fetch(`/api/${dataPath}`);
+        if (!response.ok) {
+          const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+          console.log(errorMessage);
+          setErrorText(errorMessage);
+          return;
+        }
+        const responseBody = await response.json();
+        //console.log(responseBody);
+        switch (dataPath) {
+          case "hotel":
+            setHotels(responseBody);
+            break;
+          case "room":
+            setRooms(responseBody);
+            break;
+          case "room/roomtype":
+            setRoomTypes(responseBody);
+            break;
+          case "room/accessory":
+            setAccessories(responseBody);
+            break;
+          default:
+            break;
+        }
+      } catch (err) {
+        console.log(err);
+        setErrorText(`Failed to get ${dataPath}.`);
+      }
     }
 
-    async function getRooms() {
-      const response = await fetch(`/api/room`);
-      const responseBody = await response.json();
-      setRooms(responseBody);
-      //console.log(responseBody);
-    }
-
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
-      //console.log(responseBody);
-    }
-
-    async function getAccessories() {
-      const response = await fetch(`/api/room/accessory`);
-      const responseBody = await response.json();
-      setAccessories(responseBody);
-      //console.log(responseBody);
+    async function getEnum(enumName) {
+      try {
+        const response = await fetch(`/api/enum/${enumName}`);
+        const responseEnum = await response.json();
+        return responseEnum;
+      } catch (err) {
+        console.log(err);
+        setErrorText(`Failed to get ${enumName} enum.`);
+      }
     }
 
     async function getEnums() {
-      const roomStatusResponse = await fetch("/api/enum/RoomStatus");
-      const roomStatus = await roomStatusResponse.json();
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomStatus, roomQuality });
+      const RoomStatus = await getEnum("RoomStatus");
+      const RoomQuality = await getEnum("RoomQuality");
+      setEnums({ RoomStatus, RoomQuality });
     }
 
-    getHotels();
-    getRooms();
-    getRoomTypes();
-    getAccessories();
     getEnums();
+    getData("hotel");
+    getData("room");
+    getData("room/roomtype");
+    getData("room/accessory");
   }, []);
 
   useEffect(() => {
     async function getFilteredRooms() {
-      const filterDateString = filters.date === null ? "" : filters.date;
-      const filterAddress =
-        "/api/room/filter?hotelId=" +
-        filters.hotelId +
-        "&status=" +
-        filters.status +
-        "&date=" +
-        filterDateString +
-        "&roomTypeId=" +
-        filters.roomTypeId +
-        "&maxPrice=" +
-        filters.maxPrice +
-        "&accessible=" +
-        filters.accessible;
-      const response = await fetch(filterAddress);
-      const responseBody = await response.json();
-      setRooms(responseBody);
-      //console.log(responseBody);
+      try {
+        setErrorText("");
+        const filterDateString = filters.date === null ? "" : filters.date;
+        const filterAddress =
+          "/api/room/filter?hotelId=" +
+          filters.hotelId +
+          "&status=" +
+          filters.status +
+          "&date=" +
+          filterDateString +
+          "&roomTypeId=" +
+          filters.roomTypeId +
+          "&maxPrice=" +
+          filters.maxPrice +
+          "&accessible=" +
+          filters.accessible;
+        const response = await fetch(filterAddress);
+        if (!response.ok) {
+          const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+          console.log(errorMessage);
+          setErrorText(errorMessage);
+          return;
+        }
+        const responseBody = await response.json();
+        setRooms(responseBody);
+        //console.log(responseBody);
+      } catch (err) {
+        console.log(err);
+        setErrorText("Failed to get filtered Rooms.");
+      }
     }
     getFilteredRooms();
   }, [filters]);
@@ -177,6 +204,9 @@ const Rooms = () => {
       </Box>
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
+          <Grid item xs={12} md={12}>
+            {errorText && <AlertMessage type="error" message={errorText} />}
+          </Grid>
           <Grid item xs={12} md={3}>
             <AddRoomModal
               onNewRoom={handleNewRoom}
@@ -235,7 +265,7 @@ const Rooms = () => {
                     {" "}
                     <MenuItem value={""}>Not filtered</MenuItem>
                     {enums
-                      ? Object.entries(enums.roomStatus.values).map(
+                      ? Object.entries(enums.RoomStatus.values).map(
                           ([key, value]) => (
                             <MenuItem value={value} key={value}>
                               {key}
@@ -392,7 +422,7 @@ const Rooms = () => {
                       <Tooltip
                         title={
                           enums
-                            ? Object.keys(enums.roomStatus.values)[room.status]
+                            ? Object.keys(enums.RoomStatus.values)[room.status]
                             : "..."
                         }
                       >

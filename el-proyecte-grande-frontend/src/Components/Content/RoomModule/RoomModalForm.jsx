@@ -88,7 +88,7 @@ const RoomModalForm = (props) => {
           onChange={(e) => setRoom({ ...room, status: e.target.value })}
         >
           {enums ? (
-            Object.entries(enums.roomStatus.values).map(([key, value]) => (
+            Object.entries(enums.RoomStatus.values).map(([key, value]) => (
               <MenuItem value={value} key={value}>
                 {key}
               </MenuItem>
