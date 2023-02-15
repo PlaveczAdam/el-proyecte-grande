@@ -1,4 +1,5 @@
 ﻿using el_proyecte_grande_backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -6,6 +7,7 @@ namespace el_proyecte_grande_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EnumController : ControllerBase
     {
 

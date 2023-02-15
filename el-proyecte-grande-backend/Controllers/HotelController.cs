@@ -2,6 +2,7 @@
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Services.HotelServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
@@ -16,18 +17,21 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IEnumerable<HotelDto>> GetAllHotels()
         {
             return (await _hotelRepository.GetAllHotels()).Select(MapHotelToDto);
         }
 
         [HttpGet("{hotelId}")]
+        [Authorize]
         public async Task<HotelDto> GetHotelById(long hotelId)
         {
             return MapHotelToDto(await _hotelRepository.GetHotel(hotelId));
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<HotelDto> AddHotel([FromBody] HotelDto hotelDto)
         {
             var hotel = await _hotelRepository.AddHotel(MapDtoToHotel(hotelDto));
@@ -35,6 +39,7 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpPut("{hotelId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<HotelDto> UpdateHotel(long hotelId, [FromBody] HotelDto hotelDto)
         {
             var hotel = await _hotelRepository.UpdateHotel(hotelId, MapDtoToHotel(hotelDto));
@@ -42,6 +47,7 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpPut("{hotelId}/{hotelStatus}")]
+        [Authorize(Roles = "Admin")]
         public async Task UpdateStatus(long hotelId, HotelStatus hotelStatus)
         {
             await _hotelRepository.SetHotelStatus(hotelId, hotelStatus);

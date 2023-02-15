@@ -3,6 +3,7 @@ using el_proyecte_grande_backend.Models.Dtos.Reservation;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace el_proyecte_grande_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager,Receptionist")]
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationRepository;

@@ -1,6 +1,7 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.RoomDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.RoomServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers;
@@ -18,12 +19,14 @@ public class RoomController : ControllerBase
     //Room
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Room>>> GetAllRooms()
     {
         return Ok(await _repository.GetAllRooms());
     }
 
     [HttpGet("/api/room/filter")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Room>>> GetFilteredRooms(
         [FromQuery] string? hotelId,
         [FromQuery] string? status,
@@ -51,6 +54,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet("/api/room/{roomId}")]
+    [Authorize]
     public async Task<ActionResult<Room?>> GetRoomById(long roomId)
     {
         var returnedRoom = await _repository.GetRoomById(roomId);
@@ -65,12 +69,14 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet("/api/room/hotel/{hotelId}")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Room>>> GetRoomsByHotel(long hotelId)
     {
         return Ok(await _repository.GetAllRooms(hotelId));
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<Room?>> PostRoom([FromBody] NewRoom room)
     {
         var returnedRoom = await _repository.AddRoom(room);
@@ -85,6 +91,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPut("/api/room/{roomId}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<Room?>> PutRoom(long roomId, [FromBody] NewRoom room)
     {
         var returnedRoom = await _repository.UpdateRoom(roomId, room);
@@ -99,6 +106,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPut("/api/room/status/{roomId}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<Room?>> PutRoomStatus(long roomId, [FromQuery] int status)
     {
         var returnedRoom = await _repository.SetRoomStatus(roomId, status);
@@ -115,12 +123,14 @@ public class RoomController : ControllerBase
     //RoomType
 
     [HttpGet("/api/room/roomtype")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<RoomTypeDto>>> GetAllRoomTypes()
     {
         return Ok(await _repository.GetAllRoomTypes());
     }
 
     [HttpGet("/api/room/roomtype/{roomTypeId}")]
+    [Authorize]
     public async Task<ActionResult<RoomTypeDto?>> GetRoomTypeById(long roomTypeId)
     {
         var returnedRoomType = await _repository.GetRoomTypeById(roomTypeId);
@@ -135,6 +145,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost("/api/room/roomtype")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<RoomTypeDto?>> PostRoomType([FromBody] NewRoomType roomType)
     {
         var returnedRoomType = await _repository.AddRoomType(roomType);
@@ -149,6 +160,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPut("/api/room/roomtype/{roomTypeId}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<RoomTypeDto?>> PutRoomType(long roomTypeId, [FromBody] NewRoomType roomType)
     {
         var returnedRoomType = await _repository.UpdateRoomType(roomTypeId, roomType);
@@ -165,12 +177,14 @@ public class RoomController : ControllerBase
     //Accessory
 
     [HttpGet("/api/room/accessory")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<AccessoryDto>>> GetAllAccessories()
     {
         return Ok(await _repository.GetAllAccessories());
     }
 
     [HttpGet("/api/room/accessory/{accessoryId}")]
+    [Authorize]
     public async Task<ActionResult<AccessoryDto?>> GetaccessoryById(long accessoryId)
     {
         var returnedAccessory = await _repository.GetAccessoryById(accessoryId);
@@ -185,6 +199,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost("/api/room/accessory")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<AccessoryDto?>> PostAccessory([FromBody] NewAccessory accessory)
     {
         var returnedAccessory = await _repository.AddAccessory(accessory);
@@ -199,6 +214,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPut("/api/room/accessory/{accessoryId}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<ActionResult<AccessoryDto?>> PutAccessory(long accessoryId, [FromBody] NewAccessory accessory)
     {
         var returnedAccessory = await _repository.UpdateAccessory(accessoryId, accessory);
