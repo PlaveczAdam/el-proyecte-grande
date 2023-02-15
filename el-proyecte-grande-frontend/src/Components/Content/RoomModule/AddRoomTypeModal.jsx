@@ -24,7 +24,6 @@ const AddRoomTypeModal = (props) => {
   const roomType = {
     name: "",
     price: "",
-    accessible: false,
     roomQuality: "",
   };
 
