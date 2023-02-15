@@ -70,7 +70,6 @@ const AddReservationModal = ({
       handleClose={handleClose}
       boxStyle={style}
     >
-      {/* <Button onClick={() => openChildModal("x")}>Open Child Modal</Button> */}
       {childModalIsOpen && (
         <ChildModal message={message} modalWasClosed={childModalWasClosed} />
       )}
