@@ -7,7 +7,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import EditIcon from "@mui/icons-material/Edit";
 import ContentPagination from "../../Shared/Pagination";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -42,11 +41,6 @@ const Reservations = () => {
   const [addReservationModalIsOpen, setAddReservationModalIsOpen] =
     useState(false);
 
-  const [
-    updateReservationPaymentModalIsOpen,
-    setUpdateReservationPaymentModalIsOpen,
-  ] = useState(false);
-
   const [filtersAreOpen, setFiltersAreOpen] = useState(false);
 
   const fetchReservations = async () => {
@@ -73,7 +67,7 @@ const Reservations = () => {
     }
   };
 
-  const reservationWasCreated = (newReservation) => {
+  const reservationWasCreatedOrUpdated = (newReservation) => {
     console.log(newReservation);
     fetchReservations();
   };
@@ -105,17 +99,14 @@ const Reservations = () => {
         setIsLoading(false);
 
         if (!response.ok) {
-          const error = response.message;
-          setError(error);
-          console.log(error);
+          setError("Cannot load Reservations, please try again later");
           return;
         }
 
         setReservations(responseData);
       } catch (err) {
         setIsLoading(false);
-        setError(err.message);
-        console.log(err);
+        setError("Cannot load Reservations, please try again later");
       }
     };
     getFilteredReservations();
@@ -139,21 +130,10 @@ const Reservations = () => {
         method: "PUT",
       }
     );
-    const responseData = await response.json();
+    await response.json();
 
-    // handleReservationUpdate({ ...reservation, status: newStatus });
     fetchReservations();
   };
-
-  // const handleReservationUpdate = (reservation) => {
-  //   const newReservations = [...reservations];
-  //   const indexOfReservation = newReservations.findIndex(
-  //     (r) => r.id === reservation.id
-  //   );
-  //   newReservations[indexOfReservation] = reservation;
-  //   setReservations(newReservations);
-  //   console.log(newReservations);
-  // };
 
   return (
     <>
@@ -161,6 +141,8 @@ const Reservations = () => {
         <div className="loader_overlay">
           <CircularProgress color="primary" />
         </div>
+      ) : error ? (
+        <h2>{error}</h2>
       ) : (
         <>
           {addReservationModalIsOpen && (
@@ -168,7 +150,7 @@ const Reservations = () => {
               onClose={() => {
                 setAddReservationModalIsOpen(false);
               }}
-              reservationWasCreated={reservationWasCreated}
+              onReservationWasCreated={reservationWasCreatedOrUpdated}
             />
           )}
 
@@ -221,7 +203,6 @@ const Reservations = () => {
                   <TableCell align="center">Hotel</TableCell>
                   <TableCell align="center">Reservator</TableCell>
                   <TableCell align="center">Reserved for</TableCell>
-                  <TableCell align="center">Reservation date</TableCell>
                   <TableCell align="center">Start date</TableCell>
                   <TableCell align="center">End date</TableCell>
                   <TableCell align="center">Board type</TableCell>
@@ -258,9 +239,6 @@ const Reservations = () => {
                           {reservation.reservedFor}
                         </TableCell>
                         <TableCell align="center">
-                          {reservation.reserveDate.substring(0, 10)}
-                        </TableCell>
-                        <TableCell align="center">
                           {reservation.startDate.substring(0, 10)}
                         </TableCell>
                         <TableCell align="center">
@@ -277,29 +255,14 @@ const Reservations = () => {
                             ? reservation.paymentMethod
                             : "not been paid"}
                         </TableCell>
-                        <TableCell align="center">
-                      <UpdateReservationPaymentModal
-                        reservation={reservation}
-                      />
-                          {/* <Button
-                            variant="text"
-                            onClick={() =>
-                              setUpdateReservationPaymentModalIsOpen(true)
-                            }
-                          >
-                            <EditIcon />
-                          </Button>
 
-                          {updateReservationPaymentModalIsOpen && (
+                        <TableCell align="center">
                           <UpdateReservationPaymentModal
                             reservation={reservation}
-                            onClose={() =>
-                              setUpdateReservationPaymentModalIsOpen(false)
+                            onReservationWasUpdated={
+                              reservationWasCreatedOrUpdated
                             }
-                            // reservationWasUpdated={reservationWasCreated}
                           />
-                        )} */}
-                        
                         </TableCell>
                         <TableCell align="center">
                           <FormGroup>
@@ -320,7 +283,6 @@ const Reservations = () => {
                             />
                           </FormGroup>
                         </TableCell>
-                       
                       </TableRow>
                     </>
                   ))}
