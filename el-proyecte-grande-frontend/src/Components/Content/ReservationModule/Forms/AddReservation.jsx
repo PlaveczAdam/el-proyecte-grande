@@ -51,7 +51,7 @@ const AddReservation = ({ onError, onSuccess }) => {
 
     try {
       setIsLoading(true);
-      const response = await fetch(`https://localhost:7027/api/reservation/`, {
+      const response = await fetch(`/api/reservation/`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -78,7 +78,7 @@ const AddReservation = ({ onError, onSuccess }) => {
   };
 
   const fetchChoosableHotels = async () => {
-    const url = `https://localhost:7027/api/hotel`;
+    const url = `/api/hotel`;
     setIsLoading(true);
 
     try {
