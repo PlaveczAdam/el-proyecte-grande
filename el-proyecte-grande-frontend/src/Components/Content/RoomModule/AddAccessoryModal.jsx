@@ -36,6 +36,7 @@ const AddAccessoryModal = (props) => {
             <AccessoryModalForm
               accessory={accessory}
               title={"Add Room Accessory"}
+              roomTypes={props.roomTypes}
               onCancel={handleClose}
               onSave={handleSave}
             />

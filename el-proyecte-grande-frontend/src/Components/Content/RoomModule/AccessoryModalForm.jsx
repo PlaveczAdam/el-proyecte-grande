@@ -10,17 +10,23 @@ import InputLabel from "@mui/material/InputLabel";
 
 const AccessoryModalForm = (props) => {
   const [accessory, setAccessory] = useState(props.accessory);
-  const [roomTypes, setRoomTypes] = useState(null);
+  const [validAccessory, setValidAccessory] = useState(false);
+  const roomTypes = props.roomTypes;
 
   useEffect(() => {
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
+    function validateAccessory() {
+      if (
+        accessory.name.length < 1 ||
+        accessory.quantity.length < 1 ||
+        accessory.roomTypeId === ""
+      ) {
+        setValidAccessory(false);
+        return;
+      }
+      setValidAccessory(true);
     }
-
-    getRoomTypes();
-  }, []);
+    validateAccessory();
+  }, [accessory]);
 
   return (
     <Box
@@ -35,6 +41,7 @@ const AccessoryModalForm = (props) => {
         <Button
           sx={{ marginLeft: "auto" }}
           onClick={() => props.onSave({ ...accessory })}
+          disabled={!validAccessory}
         >
           Save
         </Button>

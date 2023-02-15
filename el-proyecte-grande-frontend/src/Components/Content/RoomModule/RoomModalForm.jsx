@@ -13,35 +13,27 @@ import InputLabel from "@mui/material/InputLabel";
 
 const RoomModalForm = (props) => {
   const [room, setRoom] = useState(props.room);
-  const [hotels, setHotels] = useState(null);
-  const [roomTypes, setRoomTypes] = useState(null);
+  const [validRoom, setValidRoom] = useState(false);
+  const hotels = props.hotels;
+  const roomTypes = props.roomTypes;
+  const enums = props.enums;
 
-  const [enums, setEnums] = useState(null);
   useEffect(() => {
-    async function getHotels() {
-      const response = await fetch(`/api/hotel`);
-      const responseBody = await response.json();
-      setHotels(responseBody);
+    function validateRoom() {
+      if (
+        room.floor.length < 1 ||
+        room.doorNo.length < 1 ||
+        room.status === "" ||
+        room.hotelId === "" ||
+        room.roomTypeId === ""
+      ) {
+        setValidRoom(false);
+        return;
+      }
+      setValidRoom(true);
     }
-
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
-    }
-
-    async function getEnums() {
-      const roomStatusResponse = await fetch("/api/enum/RoomStatus");
-      const roomStatus = await roomStatusResponse.json();
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomStatus, roomQuality });
-    }
-
-    getHotels();
-    getRoomTypes();
-    getEnums();
-  }, []);
+    validateRoom();
+  }, [room]);
 
   return (
     <Box
@@ -56,6 +48,7 @@ const RoomModalForm = (props) => {
         <Button
           sx={{ marginLeft: "auto" }}
           onClick={() => props.onSave({ ...room })}
+          disabled={!validRoom}
         >
           Save
         </Button>
@@ -81,7 +74,7 @@ const RoomModalForm = (props) => {
       <FormGroup>
         <FormControlLabel
           control={<Checkbox checked={room.accessible} />}
-          label="Accessible"
+          label="Accessible Room"
           onChange={(e) => setRoom({ ...room, accessible: e.target.checked })}
         />
       </FormGroup>
@@ -95,7 +88,7 @@ const RoomModalForm = (props) => {
           onChange={(e) => setRoom({ ...room, status: e.target.value })}
         >
           {enums ? (
-            Object.entries(enums.roomStatus.values).map(([key, value]) => (
+            Object.entries(enums.RoomStatus.values).map(([key, value]) => (
               <MenuItem value={value} key={value}>
                 {key}
               </MenuItem>
@@ -109,9 +102,9 @@ const RoomModalForm = (props) => {
       </FormControl>
 
       <FormControl fullWidth>
-        <InputLabel id="roomStatusSelect">Hotel</InputLabel>
+        <InputLabel id="roomHotelSelect">Hotel</InputLabel>
         <Select
-          id="roomStatusSelect"
+          id="roomHotelSelect"
           value={room.hotelId}
           label="Hotel"
           onChange={(e) => setRoom({ ...room, hotelId: e.target.value })}
@@ -129,9 +122,9 @@ const RoomModalForm = (props) => {
       </FormControl>
 
       <FormControl fullWidth>
-        <InputLabel id="roomStatusSelect">Room Type</InputLabel>
+        <InputLabel id="roomTypeSelect">Room Type</InputLabel>
         <Select
-          id="roomStatusSelect"
+          id="roomTypeSelect"
           value={room.roomTypeId}
           label="Room Type"
           onChange={(e) => setRoom({ ...room, roomTypeId: e.target.value })}

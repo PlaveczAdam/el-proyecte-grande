@@ -10,17 +10,23 @@ import InputLabel from "@mui/material/InputLabel";
 
 const RoomTypeModalForm = (props) => {
   const [roomType, setRoomType] = useState(props.roomType);
-  const [enums, setEnums] = useState(null);
+  const [validRoomType, setValidRoomType] = useState(false);
+  const enums = props.enums;
 
   useEffect(() => {
-    async function getEnums() {
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomQuality });
+    function validateRoomType() {
+      if (
+        roomType.name.length < 1 ||
+        roomType.price.length < 1 ||
+        roomType.roomQuality === ""
+      ) {
+        setValidRoomType(false);
+        return;
+      }
+      setValidRoomType(true);
     }
-
-    getEnums();
-  }, []);
+    validateRoomType();
+  }, [roomType]);
 
   return (
     <Box
@@ -35,6 +41,7 @@ const RoomTypeModalForm = (props) => {
         <Button
           sx={{ marginLeft: "auto" }}
           onClick={() => props.onSave({ ...roomType })}
+          disabled={!validRoomType}
         >
           Save
         </Button>
@@ -68,7 +75,7 @@ const RoomTypeModalForm = (props) => {
           }
         >
           {enums ? (
-            Object.entries(enums.roomQuality.values).map(([key, value]) => (
+            Object.entries(enums.RoomQuality.values).map(([key, value]) => (
               <MenuItem value={value} key={value}>
                 {key}
               </MenuItem>
