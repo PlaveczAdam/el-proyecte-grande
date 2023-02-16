@@ -27,7 +27,8 @@ public class RoomService : IRoomService
         var roomDtos = new List<RoomDto>();
         foreach (var room in rooms)
         {
-            roomDtos.Add(CreateRoomDto(room));
+            var roomDto = CreateRoomDto(room);
+            if (roomDto != null) roomDtos.Add(roomDto);
         }
         return roomDtos;
     }
