@@ -14,7 +14,6 @@ namespace el_proyecte_grande_backend.Services.UserServices
         {
             _context = context;
             _passwordHasher = passwordHasher;
-            Seed();
         }
 
         public async Task<User> CreateUser(User user)
@@ -44,7 +43,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
 
         public async Task<User> SetUserRole(long userId, Role role)
         {
-            var user = GetUserById(userId).Result;
+            var user = await GetUserById(userId);
             if (user is null)
             {
                 throw new Exception("There is no such user.");
@@ -65,7 +64,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
 
         public async Task<User> UpdateUser(long userId, User user)
         {
-            var foundUser = GetUserById(userId).Result;
+            var foundUser = await GetUserById(userId);
             var roles = GetOriginalRoles(user);
 
             foundUser.Name = user.Name;
@@ -80,7 +79,7 @@ namespace el_proyecte_grande_backend.Services.UserServices
 
         public async Task<User> UpdateUserActivity(long userId, bool activity)
         {
-            var foundUser = GetUserById(userId).Result;
+            var foundUser = await GetUserById(userId);
             foundUser.IsActive = activity;
             await _context.SaveChangesAsync();
             return foundUser;
@@ -91,30 +90,5 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
         }
 
-        private void Seed()
-        {
-            if (_context.Roles.Any())
-            {
-                return;
-            }
-
-            _context.Roles.Add(new Role()
-            {
-                Name = "Admin"
-            });
-            _context.Roles.Add(new Role()
-            {
-                Name = "Manager"
-            });
-            _context.Roles.Add(new Role()
-            {
-                Name = "Receptionist"
-            });
-            _context.Roles.Add(new Role()
-            {
-                Name = "Staff"
-            });
-            _context.SaveChanges();
-        }
     }
 }

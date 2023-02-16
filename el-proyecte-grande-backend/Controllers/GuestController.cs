@@ -2,11 +2,13 @@
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Services.GuestServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
 {
     [ApiController, Route("/api/guest")]
+    [Authorize(Roles = "Admin,Manager,Receptionist")]
     public class GuestController : ControllerBase
     {
         private readonly IGuestService _repository;

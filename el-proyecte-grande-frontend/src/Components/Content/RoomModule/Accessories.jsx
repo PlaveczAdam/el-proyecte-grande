@@ -40,7 +40,10 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
-            <AddAccessoryModal onAccessory={handleNewAccessory} />
+            <AddAccessoryModal
+              roomTypes={roomTypes}
+              onAccessory={handleNewAccessory}
+            />
           </Grid>
           <Grid item xs={12} md={6}></Grid>
           <Grid item xs={12} md={3}>
@@ -91,6 +94,7 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
                     <TableCell align="center">
                       <EditAccessoryModal
                         accessory={accessory}
+                        roomTypes={roomTypes}
                         onAccessoryUpdate={handleAccessoryUpdate}
                       />
                     </TableCell>

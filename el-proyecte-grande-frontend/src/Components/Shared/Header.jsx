@@ -24,10 +24,12 @@ const Header = () => {
               >
                 <span>
                   <b>{auth.user.username ? auth.user.username : "N/A"}</b> (
-                  {auth.user.email ? auth.user.email : "N/A"})
+                  {auth.user.email ? auth.user.email : "N/A"}){" "}
                 </span>
               </Tooltip>
-              <Button onClick={auth.logout}>Logout</Button>
+              <Button variant="outlined" size="small" onClick={auth.logout}>
+                Logout
+              </Button>
             </div>
           </Grid>
         </Grid>

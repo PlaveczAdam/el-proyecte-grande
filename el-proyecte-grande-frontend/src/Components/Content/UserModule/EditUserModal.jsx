@@ -1,42 +1,40 @@
-import React from "react";
-import RoomModalForm from "./RoomModalForm";
-
 import { Modal } from "@mui/material";
 import Button from "@mui/material/Button";
+import React from "react";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/Edit";
+import UserModalForm from "./UserModalForm";
 import Paper from "@mui/material/Paper";
 
-const EditRoomModal = (props) => {
+const EditUserModal = (props) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleSave = async (room) => {
-    const response = await fetch(`/api/room/${room.id}`, {
+  const handleSave = async (user) => {
+    const response = await fetch(`/api/user/${user.id}`, {
       method: "PUT",
-      body: JSON.stringify(room),
+      body: JSON.stringify(user),
       headers: { "Content-Type": "application/json" },
     });
-    const updatedRoom = await response.json();
-    props.onRoomUpdate(updatedRoom);
+    const updatedUser = await response.json();
+    props.onUserUpdate(updatedUser);
     handleClose();
   };
+
+  
 
   return (
     <>
       <Modal open={open} onClose={handleClose}>
         <Box height="100vh" display="flex" sx={{ overflowY: "auto" }}>
           <Paper sx={{ margin: "auto" }}>
-            <RoomModalForm
-              room={props.room}
-              title={"Edit Room"}
-              hotels={props.hotels}
-              roomTypes={props.roomTypes}
-              enums={props.enums}
+            <UserModalForm
+              user={props.user}
+              title={"Edit User"}
               onCancel={handleClose}
               onSave={handleSave}
-            />
+            ></UserModalForm>
           </Paper>
         </Box>
       </Modal>
@@ -47,4 +45,4 @@ const EditRoomModal = (props) => {
   );
 };
 
-export default EditRoomModal;
+export default EditUserModal;

@@ -1,11 +1,13 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.UserNs;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
 {
     [ApiController, Route("/api/user")]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -46,15 +48,16 @@ namespace el_proyecte_grande_backend.Controllers
             return MapUserToDto(await _userService.UpdateUser(userId, MapDtoToUser(user)));
         }
 
-        [HttpDelete("{userId}")]
-        public async void UpdateUserActivity(long userId)
+        [HttpPut("{userId}/{activity}")]
+        public async Task UpdateUserActivity(long userId, bool activity)
         {
-            await _userService.UpdateUserActivity(userId, false);
+            await _userService.UpdateUserActivity(userId, activity);
         }
 
         private static UserDto MapUserToDto(User user)
         {
             return new UserDto(
+                Id: user.Id,
                 Name: user.Name,
                 Email: user.Email,
                 Password: "",
@@ -67,6 +70,7 @@ namespace el_proyecte_grande_backend.Controllers
         {
             return new User()
             {
+                Id = userDto.Id,
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,

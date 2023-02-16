@@ -9,10 +9,12 @@ import Footer from "./Components/Shared/Footer.jsx";
 import Home from "./Components/Content/Home.jsx";
 import Hotel from "./Components/Content/HotelModule/Hotels.jsx";
 import HotelContextProvider from "./Components/Content/HotelModule/HotelContextProvider.jsx";
+import UserContextProvider from "./Components/Content/UserModule/UserContextProvider.jsx";
 import Room from "./Components/Content/RoomModule/Rooms.jsx";
 import Reservation from "./Components/Content/ReservationModule/Reservations.jsx";
 import Inventory from "./Components/Content/InventoryModule/Inventories.jsx";
 import Guest from "./Components/Content/GuestModule/Guests.jsx";
+import User from "./Components/Content/UserModule/Users.jsx";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
@@ -59,6 +61,12 @@ function App() {
                           <Route path="/room" element={<Room />} />
                           <Route path="/guest" element={<Guest />} />
                           <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/user" element={
+                              <UserContextProvider>
+                                {() => <User />}
+                              </UserContextProvider>
+                              } 
+                            />
                           <Route
                             path="/reservation"
                             element={<Reservation />}

@@ -30,6 +30,7 @@ const EditAccessoryModal = (props) => {
           <Paper sx={{ margin: "auto" }}>
             <AccessoryModalForm
               accessory={props.accessory}
+              roomTypes={props.roomTypes}
               title={"Edit Room Accessory"}
               onCancel={handleClose}
               onSave={handleSave}
