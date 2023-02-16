@@ -96,8 +96,10 @@ public class RoomService : IRoomService
         }
         if (date != null)
         {
-            var dateParsed = DateTime.TryParse(date, out DateTime filterDate);
+            var dateParsed = double.TryParse(date, out double filterDateInMs);
             if (!dateParsed) return null;
+            var unix = DateTime.UnixEpoch.ToUniversalTime();
+            DateTime filterDate = unix.AddMilliseconds(filterDateInMs).ToLocalTime();
             roomsToFilterQuery = roomsToFilterQuery.Where(r => r.Reservations.Any(res =>
                 res.StartDate < filterDate && res.EndDate > filterDate));
         }
