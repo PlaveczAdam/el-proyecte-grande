@@ -27,7 +27,8 @@ public class RoomService : IRoomService
         var roomDtos = new List<RoomDto>();
         foreach (var room in rooms)
         {
-            roomDtos.Add(CreateRoomDto(room));
+            var roomDto = CreateRoomDto(room);
+            if (roomDto != null) roomDtos.Add(roomDto);
         }
         return roomDtos;
     }
@@ -45,7 +46,8 @@ public class RoomService : IRoomService
         var roomDtos = new List<RoomDto>();
         foreach (var room in rooms)
         {
-            roomDtos.Add(CreateRoomDto(room));
+            var roomDto = CreateRoomDto(room);
+            if (roomDto != null) roomDtos.Add(roomDto);
         }
         return roomDtos;
     }
@@ -58,18 +60,18 @@ public class RoomService : IRoomService
         string? date,
         string? accessible)
     {
-        var roomsToFilter = await _context.Rooms
+        var roomsToFilterQuery = _context.Rooms
             .Include(r => r.Hotel)
             .Include(r => r.RoomType)
             .Include(r => r.Reservations)
-            .AsNoTracking()
-            .ToListAsync();
+            .AsNoTracking();
+
 
         if (hotelId != null)
         {
             var hotelIdParsed = long.TryParse(hotelId, out long filterHotelId);
             if (!hotelIdParsed) return null;
-            roomsToFilter = roomsToFilter.Where(r => r.Hotel.Id == filterHotelId).ToList();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.Hotel.Id == filterHotelId);
         }
         if (status != null)
         {
@@ -79,38 +81,42 @@ public class RoomService : IRoomService
             {
                 return null;
             }
-            roomsToFilter = roomsToFilter.Where(r => (int)r.Status == filterRoomStatus).ToList();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => (int)r.Status == filterRoomStatus);
         }
         if (roomTypeId != null)
         {
             var roomTypeIdParsed = long.TryParse(roomTypeId, out long filterRoomTypeId);
             if (!roomTypeIdParsed) return null;
-            roomsToFilter = roomsToFilter.Where(r => r.RoomType.Id == filterRoomTypeId).ToList();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.RoomType.Id == filterRoomTypeId);
         }
         if (maxPrice != null)
         {
             var maxPriceParsed = double.TryParse(maxPrice, out double filterPrice);
             if (!maxPriceParsed) return null;
-            roomsToFilter = roomsToFilter.Where(r => r.RoomType.Price <= filterPrice).ToList();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.RoomType.Price <= filterPrice);
         }
         if (date != null)
         {
-            var dateParsed = DateTime.TryParse(date, out DateTime filterDate);
+            var dateParsed = double.TryParse(date, out double filterDateInMs);
             if (!dateParsed) return null;
-            roomsToFilter = roomsToFilter.Where(r => r.Reservations.Any(res =>
-                res.StartDate < filterDate && res.EndDate > filterDate)).ToList();
+            var unix = DateTime.UnixEpoch.ToUniversalTime();
+            DateTime filterDate = unix.AddMilliseconds(filterDateInMs).ToLocalTime();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.Reservations.Any(res =>
+                res.StartDate < filterDate && res.EndDate > filterDate));
         }
         if (accessible != null)
         {
             var accessibleParsed = bool.TryParse(accessible, out bool filterAccessible);
             if (!accessibleParsed) return null;
-            roomsToFilter = roomsToFilter.Where(r => r.Accessible == filterAccessible).ToList();
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.Accessible == filterAccessible);
         }
 
+        var roomsToFilter = await roomsToFilterQuery.ToListAsync();
         var roomDtos = new List<RoomDto>();
-        foreach (var room in roomsToFilter)
+        foreach (var room in roomsToFilterQuery)
         {
-            roomDtos.Add(CreateRoomDto(room));
+            var roomDto = CreateRoomDto(room);
+            if (roomDto != null) roomDtos.Add(roomDto);
         }
         return roomDtos;
     }
@@ -214,7 +220,8 @@ public class RoomService : IRoomService
         var roomTypeDtos = new List<RoomTypeDto>();
         foreach (var roomType in roomTypes)
         {
-            roomTypeDtos.Add(CreateRoomTypeDto(roomType));
+            var roomTypeDto = CreateRoomTypeDto(roomType);
+            if (roomTypeDto != null) roomTypeDtos.Add(roomTypeDto);
         }
         return roomTypeDtos;
     }
@@ -283,7 +290,8 @@ public class RoomService : IRoomService
         var accessoryDtos = new List<AccessoryDto>();
         foreach (var accessory in accesories)
         {
-            accessoryDtos.Add(CreateAccessoryDto(accessory));
+            var accessoryDto = CreateAccessoryDto(accessory);
+            if (accessoryDto != null) accessoryDtos.Add(accessoryDto);
         }
         return accessoryDtos;
     }
