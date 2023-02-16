@@ -39,6 +39,10 @@ const initialReservation = {
   },
 };
 
+const addOneDay = (date) => {
+  return new Date(new Date(date).setDate(new Date(date).getDate() + 1));
+};
+
 const AddReservation = ({ onError, onSuccess }) => {
   const [choosableHotels, setChoosableHotels] = useState([]);
   const [reservation, setReservation] = useState(initialReservation);
@@ -47,20 +51,23 @@ const AddReservation = ({ onError, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const addReservation = async (reservation) => {
-    console.log(reservation);
+    const adjustedReservation = {
+      ...reservation,
+      StartDate: addOneDay(reservation.StartDate),
+      EndDate: addOneDay(reservation.EndDate),
+      ReserveDate: addOneDay(reservation.ReserveDate),
+    };
 
     try {
       setIsLoading(true);
-      const response = await fetch(`https://localhost:7027/api/reservation/`, {
+      const response = await fetch(`/api/reservation/`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(reservation),
+        body: JSON.stringify(adjustedReservation),
       });
       const responseData = await response.json();
-      console.log(responseData);
-      console.log(reservation);
       setIsLoading(false);
 
       if (!response.ok) {
@@ -72,25 +79,22 @@ const AddReservation = ({ onError, onSuccess }) => {
       onSuccess(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
       onError(err);
     }
   };
 
   const fetchChoosableHotels = async () => {
-    const url = `https://localhost:7027/api/hotel`;
+    const url = `/api/hotel`;
     setIsLoading(true);
 
     try {
       const response = await fetch(url);
       const responseData = await response.json();
-      console.log(responseData);
       setIsLoading(false);
 
       setChoosableHotels(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
     }
   };
 
@@ -144,7 +148,10 @@ const AddReservation = ({ onError, onSuccess }) => {
                 inputFormat="YYYY/MM/DD"
                 value={reservation.StartDate}
                 onChange={(newValue) =>
-                  setReservation({ ...reservation, StartDate: newValue })
+                  setReservation({
+                    ...reservation,
+                    StartDate: newValue,
+                  })
                 }
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -153,7 +160,10 @@ const AddReservation = ({ onError, onSuccess }) => {
                 inputFormat="YYYY/MM/DD"
                 value={reservation.EndDate}
                 onChange={(newValue) =>
-                  setReservation({ ...reservation, EndDate: newValue })
+                  setReservation({
+                    ...reservation,
+                    EndDate: newValue,
+                  })
                 }
                 renderInput={(params) => <TextField {...params} />}
               />

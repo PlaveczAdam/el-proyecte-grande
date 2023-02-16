@@ -165,13 +165,13 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
             return await GetWithDetailsAsync(reservation.Id); // return with details for the frontend to show
         }
 
-        public async Task<Reservation?> SetReservationToBeCancelled(long id)
+        public async Task<Reservation?> SetReservationToBeCancelled(long id, bool isCAncelled)
         {
             Reservation? reservationToUpdate = await GetAsync(id);
             if (reservationToUpdate == null)
                 return null;
 
-            reservationToUpdate.isCancelled = true;
+            reservationToUpdate.isCancelled = isCAncelled;
 
             _context.Update(reservationToUpdate);
             await _context.SaveChangesAsync();

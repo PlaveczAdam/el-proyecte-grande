@@ -34,7 +34,7 @@ const AddReservationForm = ({ reservation, onCreate }) => {
   );
 
   const fetchChoosableBoardTypes = async () => {
-    const url = `https://localhost:7027/api/enum/BoardType`;
+    const url = `/api/enum/BoardType`;
     setIsLoading(true);
 
     try {
@@ -62,7 +62,7 @@ const AddReservationForm = ({ reservation, onCreate }) => {
 
   useEffect(() => {
     const fetchChoosableRooms = async () => {
-      const url = `https://localhost:7027/api/reservation/emptyBetween?startDate=${reservation.StartDate}&endDate=${reservation.EndDate}&hotelId=${reservation.HotelId}`;
+      const url = `/api/reservation/emptyBetween?startDate=${reservation.StartDate}&endDate=${reservation.EndDate}&hotelId=${reservation.HotelId}`;
       setIsLoading(true);
 
       try {
