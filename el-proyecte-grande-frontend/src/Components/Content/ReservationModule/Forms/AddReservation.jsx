@@ -39,6 +39,10 @@ const initialReservation = {
   },
 };
 
+const addOneDay = (date) => {
+  return new Date(new Date(date).setDate(new Date(date).getDate() + 1));
+};
+
 const AddReservation = ({ onError, onSuccess }) => {
   const [choosableHotels, setChoosableHotels] = useState([]);
   const [reservation, setReservation] = useState(initialReservation);
@@ -47,6 +51,12 @@ const AddReservation = ({ onError, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const addReservation = async (reservation) => {
+    const adjustedReservation = {
+      ...reservation,
+      StartDate: addOneDay(reservation.StartDate),
+      EndDate: addOneDay(reservation.EndDate),
+      ReserveDate: addOneDay(reservation.ReserveDate),
+    };
 
     try {
       setIsLoading(true);
@@ -55,7 +65,7 @@ const AddReservation = ({ onError, onSuccess }) => {
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(reservation),
+        body: JSON.stringify(adjustedReservation),
       });
       const responseData = await response.json();
       setIsLoading(false);
@@ -138,7 +148,10 @@ const AddReservation = ({ onError, onSuccess }) => {
                 inputFormat="YYYY/MM/DD"
                 value={reservation.StartDate}
                 onChange={(newValue) =>
-                  setReservation({ ...reservation, StartDate: newValue })
+                  setReservation({
+                    ...reservation,
+                    StartDate: newValue,
+                  })
                 }
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -147,7 +160,10 @@ const AddReservation = ({ onError, onSuccess }) => {
                 inputFormat="YYYY/MM/DD"
                 value={reservation.EndDate}
                 onChange={(newValue) =>
-                  setReservation({ ...reservation, EndDate: newValue })
+                  setReservation({
+                    ...reservation,
+                    EndDate: newValue,
+                  })
                 }
                 renderInput={(params) => <TextField {...params} />}
               />

@@ -66,7 +66,6 @@ const Reservations = () => {
   };
 
   const reservationWasCreatedOrUpdated = (newReservation) => {
-    console.log(newReservation);
     fetchReservations();
   };
 
