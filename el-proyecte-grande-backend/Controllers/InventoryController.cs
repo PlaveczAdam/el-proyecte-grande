@@ -1,12 +1,11 @@
 ﻿using el_proyecte_grande_backend.Models.Entities;
-using el_proyecte_grande_backend.Models.Dtos.Inventory;
 using el_proyecte_grande_backend.Repositories.Inventories;
 using Microsoft.AspNetCore.Mvc;
-using el_proyecte_grande_backend.Models.Enums;
+
 
 namespace el_proyecte_grande_backend.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/inventory")]
 [ApiController]
 public class InventoryController : ControllerBase
 {
