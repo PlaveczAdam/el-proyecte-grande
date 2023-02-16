@@ -25,7 +25,7 @@ const AddUserModal = (props) => {
     const user = {
         "name": "",
         "email": "",
-        "roles": 3,
+        "roles": [],
         "IsActive":true
     };
 
