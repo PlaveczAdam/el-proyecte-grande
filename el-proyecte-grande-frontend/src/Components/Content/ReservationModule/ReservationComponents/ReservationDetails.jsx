@@ -314,7 +314,7 @@ const ReservationDetails = ({ reservationId }) => {
     </>
   );
 };
-function getKeyByValue(object, value) {
+const getKeyByValue = (object, value) =>{
   return Object.keys(object).find((key) => object[key] === value);
 }
 const RoomDetails = ({ room }) => {
