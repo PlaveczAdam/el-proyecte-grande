@@ -47,7 +47,6 @@ const AddReservation = ({ onError, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const addReservation = async (reservation) => {
-    console.log(reservation);
 
     try {
       setIsLoading(true);
@@ -59,8 +58,6 @@ const AddReservation = ({ onError, onSuccess }) => {
         body: JSON.stringify(reservation),
       });
       const responseData = await response.json();
-      console.log(responseData);
-      console.log(reservation);
       setIsLoading(false);
 
       if (!response.ok) {
@@ -72,7 +69,6 @@ const AddReservation = ({ onError, onSuccess }) => {
       onSuccess(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
       onError(err);
     }
   };
@@ -84,13 +80,11 @@ const AddReservation = ({ onError, onSuccess }) => {
     try {
       const response = await fetch(url);
       const responseData = await response.json();
-      console.log(responseData);
       setIsLoading(false);
 
       setChoosableHotels(responseData);
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
     }
   };
 

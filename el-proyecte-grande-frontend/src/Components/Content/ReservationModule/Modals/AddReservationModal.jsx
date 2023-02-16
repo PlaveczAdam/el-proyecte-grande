@@ -54,7 +54,6 @@ const AddReservationModal = ({
   };
 
   const openChildModal = (message) => {
-    console.log(message);
     setMessage(message);
     setChildModalIsOpen(true);
   };
