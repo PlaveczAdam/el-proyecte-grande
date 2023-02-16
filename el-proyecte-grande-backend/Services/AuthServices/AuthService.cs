@@ -38,7 +38,7 @@ namespace el_proyecte_grande_backend.Services.AuthServices
         {
             PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
             PasswordVerificationResult match = passwordHasher.VerifyHashedPassword(user, user.Password, password);
-            return user.Name == username && match != PasswordVerificationResult.Failed;
+            return user.Name == username && match != PasswordVerificationResult.Failed && user.IsActive;
         }
     }
 }
