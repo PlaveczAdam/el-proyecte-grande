@@ -6,9 +6,10 @@ import ReservationDetails from "../ReservationComponents/ReservationDetails";
 import { Modal } from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import EditIcon from "@mui/icons-material/Edit";
-import ChildModal from "./ChildModal";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const style = {
   display: "flex",
@@ -24,17 +25,17 @@ const style = {
   border: "2px solid black",
   boxShadow: 24,
   p: 4,
-  height: "90vh",
+  maxHeight: "90vh",
   overflowY: "auto",
 };
 
-const UpdateReservationPaymentModal = ({
+const ReservationDetailsModal = ({
   reservation,
   onReservationWasUpdated,
+  updatePaymentMode,
 }) => {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [childModalIsOpen, setChildModalIsOpen] = useState(false);
+  const [detailsAreShown, setDetailsAreShown] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -52,8 +53,8 @@ const UpdateReservationPaymentModal = ({
 
   return (
     <>
-      <Modal open={open} onClose={handleClose} >
-        <Box sx={style} >
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
           <Button
             onClick={handleClose}
             sx={{
@@ -64,21 +65,42 @@ const UpdateReservationPaymentModal = ({
           >
             <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
           </Button>
-          <UpdateReservationPaymentForm
-            onCancel={handleClose}
-            onSave={handleReservationPaymentUpdate}
-          />
 
-          <ReservationDetails reservationId={reservation.id} />
+          {updatePaymentMode && (
+            <UpdateReservationPaymentForm
+              onCancel={handleClose}
+              onSave={handleReservationPaymentUpdate}
+            />
+          )}
 
+          {updatePaymentMode ? (
+            <>
+              <Button
+                variant="outlined"
+                onClick={() => setDetailsAreShown(!detailsAreShown)}
+              >
+                {detailsAreShown ? "Hide" : "Show"} details
+                {detailsAreShown ? (
+                  <VisibilityOffIcon sx={{ ml: 2 }} />
+                ) : (
+                  <InfoIcon sx={{ ml: 2 }} />
+                )}
+              </Button>
+              {detailsAreShown && (
+                <ReservationDetails reservationId={reservation.id} />
+              )}
+            </>
+          ) : (
+            <ReservationDetails reservationId={reservation.id} />
+          )}
         </Box>
       </Modal>
 
       <Button variant="text" onClick={handleOpen}>
-        <EditIcon />
+        {updatePaymentMode ? <EditIcon /> : <InfoIcon />}
       </Button>
     </>
   );
 };
 
-export default UpdateReservationPaymentModal;
+export default ReservationDetailsModal;

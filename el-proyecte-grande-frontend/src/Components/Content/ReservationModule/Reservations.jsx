@@ -19,7 +19,7 @@ import "./Reservations.css";
 import AddReservationModal from "./Modals/AddReservationModal";
 import Searchbar from "./QueryComponents/Searchbar";
 import ReservationsFilters from "./QueryComponents/ReservationsFilters";
-import UpdateReservationPaymentModal from "./Modals/UpdateReservationPaymentModal";
+import ReservationDetailsModal from "./Modals/ReservationDetailsModal";
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -111,7 +111,6 @@ const Reservations = () => {
 
   const reservationFiltersChanged = (filters) => {
     setFilters(filters);
-    console.log(filters);
   };
 
   const clearAllFilters = () => {
@@ -199,14 +198,13 @@ const Reservations = () => {
                   <TableCell align="center">Id</TableCell>
                   <TableCell align="center">Hotel</TableCell>
                   <TableCell align="center">Reservator</TableCell>
-                  <TableCell align="center">Reserved for</TableCell>
                   <TableCell align="center">Start date</TableCell>
                   <TableCell align="center">End date</TableCell>
-                  <TableCell align="center">Board type</TableCell>
                   <TableCell align="center">Price</TableCell>
                   <TableCell align="center">Payment</TableCell>
                   <TableCell align="center">Edit payment</TableCell>
                   <TableCell align="center">Cancellation status</TableCell>
+                  <TableCell align="center">Details</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -218,70 +216,67 @@ const Reservations = () => {
                   )
                   .sort((a, b) => a.id - b.id)
                   .map((reservation) => (
-                    
-                      <TableRow
-                        key={reservation.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell align="center">{reservation.id}</TableCell>
-                        <TableCell align="center">
-                          {reservation.hotel.name}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.reservator.name}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.reservedFor}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.startDate.substring(0, 10)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.endDate.substring(0, 10)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.boardType}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.price}
-                        </TableCell>
-                        <TableCell align="center">
-                          {reservation.payFullfillment
-                            ? reservation.paymentMethod
-                            : "not been paid"}
-                        </TableCell>
+                    <TableRow
+                      key={reservation.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell align="center">{reservation.id}</TableCell>
+                      <TableCell align="center">
+                        {reservation.hotel.name}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.reservator.name}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.startDate.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {reservation.endDate.substring(0, 10)}
+                      </TableCell>
+                      <TableCell align="center">{reservation.price}</TableCell>
+                      <TableCell align="center">
+                        {reservation.payFullfillment
+                          ? reservation.paymentMethod
+                          : "not been paid"}
+                      </TableCell>
 
-                        <TableCell align="center">
-                          <UpdateReservationPaymentModal
-                            reservation={reservation}
-                            onReservationWasUpdated={
-                              reservationWasCreatedOrUpdated
+                      <TableCell align="center">
+                        <ReservationDetailsModal
+                          reservation={reservation}
+                          updatePaymentMode
+                          onReservationWasUpdated={
+                            reservationWasCreatedOrUpdated
+                          }
+                        />
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                onClick={() =>
+                                  handleReservationCancellation(reservation)
+                                }
+                                checked={reservation.isCancelled ? false : true}
+                              />
+                            }
+                            label={
+                              reservation.isCancelled ? "Cancelled" : "Active"
                             }
                           />
-                        </TableCell>
-                        <TableCell align="center">
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  onClick={() =>
-                                    handleReservationCancellation(reservation)
-                                  }
-                                  checked={
-                                    reservation.isCancelled ? false : true
-                                  }
-                                />
-                              }
-                              label={
-                                reservation.isCancelled ? "Cancelled" : "Active"
-                              }
-                            />
-                          </FormGroup>
-                        </TableCell>
-                      </TableRow>
-                    
+                        </FormGroup>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <ReservationDetailsModal
+                          reservation={reservation}
+                          updatePaymentMode={false}
+                        />
+                      </TableCell>
+                    </TableRow>
                   ))}
               </TableBody>
             </Table>
