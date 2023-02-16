@@ -14,19 +14,32 @@ import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import ContentPagination from '../../Shared/Pagination';
 import TextField from '@mui/material/TextField';
 
-function createData(id, item_name, item_type, amount, required_amount) {
-    return { id, item_name, item_type, amount, required_amount };
-}
-
-const rows = [
-    createData(1, 'Mop', 'Cleaning equipement', '8', '10'),
-    createData(2, 'Towel', 'Room appliance', '90', '70'),
-    createData(3, 'Bed sheet set', 'Room appliance', '40', '40'),
-    createData(4, 'Bottle of bleach', 'Cleaning equipement', '10', '30'),
-    createData(5, 'Television', 'Room appliance', '23', '25'),
-];
-
 const Inventories = () => {
+    const [rows, setRows] = React.useState([]);
+    const [filteredRows, setFilteredRows] = React.useState([]);
+    const [filter, setFilter] = React.useState("");
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/inventory');
+                const data = await response.json();
+                setRows(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+    const handleFilterChange = (event) => {
+        const filterText = event.target.value;
+        setFilter(filterText);
+        setFilteredRows(rows.filter(row => row.item_name.toLowerCase().includes(filterText.toLowerCase())));
+    }
+
     return (
         <div className="Inventory">
             <Box sx={{ textAlign: 'center' }}>
@@ -42,7 +55,7 @@ const Inventories = () => {
                         <Button variant="text">Add new</Button>
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" />
+                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" value={filter} onChange={handleFilterChange} />
                     </Grid>
                 </Grid>
             </Box>
@@ -60,7 +73,7 @@ const Inventories = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {filteredRows.map((row) => (
                             <TableRow
                                 key={row.name}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -79,7 +92,7 @@ const Inventories = () => {
             </TableContainer>
             <ContentPagination />
         </div>
-    )
-}
+    );
+};
 
-export default Inventories
+export default Inventories;
