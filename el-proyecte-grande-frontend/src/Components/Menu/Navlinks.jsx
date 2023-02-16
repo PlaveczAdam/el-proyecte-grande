@@ -23,6 +23,9 @@ function Navlinks() {
                     <Button variant="contained" component={RouterLink} sx={{ width: '100%' }} to="/guest">Guest</Button>
                 </ListItem >
                 <ListItem sx={{justifyContent:"center"}}>
+                    <Button variant="contained" component={RouterLink} sx={{ width: '100%' }} to="/user">User</Button>
+                </ListItem >
+                <ListItem sx={{justifyContent:"center"}}>
                     <Button variant="contained" component={RouterLink} sx={{ width: '100%' }} to="/inventory">Inventory</Button>
                 </ListItem >
                 <ListItem sx={{justifyContent:"center"}}>

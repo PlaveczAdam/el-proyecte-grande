@@ -48,15 +48,16 @@ namespace el_proyecte_grande_backend.Controllers
             return MapUserToDto(await _userService.UpdateUser(userId, MapDtoToUser(user)));
         }
 
-        [HttpDelete("{userId}")]
-        public async void UpdateUserActivity(long userId)
+        [HttpPut("{userId}/{activity}")]
+        public async Task UpdateUserActivity(long userId, bool activity)
         {
-            await _userService.UpdateUserActivity(userId, false);
+            await _userService.UpdateUserActivity(userId, activity);
         }
 
         private static UserDto MapUserToDto(User user)
         {
             return new UserDto(
+                Id: user.Id,
                 Name: user.Name,
                 Email: user.Email,
                 Password: "",
@@ -69,6 +70,7 @@ namespace el_proyecte_grande_backend.Controllers
         {
             return new User()
             {
+                Id = userDto.Id,
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
