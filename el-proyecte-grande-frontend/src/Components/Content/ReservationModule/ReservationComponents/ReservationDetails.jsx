@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 
+import ReservationRoomDetails from "./ReservationRoomDetails";
+import ReservationsHotelDetails from "./ReservationsHotelDetails";
+import ReservationReservatorDetails from "./ReservationReservatorDetails";
+
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const cardBoxStyles = {
   minWidth: "90%",
@@ -16,14 +24,23 @@ const cardBoxStyles = {
   gap: "1em",
 };
 
+const centerStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "1em",
+};
+
 const ReservationDetails = ({ reservationId }) => {
   const [detailedReservation, setDetailedReservation] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [hotelClassifications, setHotelClassifications] = useState([]);
-  const [hotelStatuses, setHotelStatuses] = useState([]);
+  const [roomDetailsAreOpen, setRoomDetailsAreOpen] = useState(false);
+  const [hotelDetailsAreOpen, setHotelDetailsAreOpen] = useState(false);
+  const [reservatorDetailsAreOpen, setReservatorDetailsAreOpen] =
+    useState(false);
 
   const fetchReservationDetails = async () => {
     const url = `/api/reservation/${reservationId}`;
@@ -33,7 +50,6 @@ const ReservationDetails = ({ reservationId }) => {
       const response = await fetch(url);
       const responseData = await response.json();
       setIsLoading(false);
-      console.log(responseData);
 
       if (!response.ok) {
         setError(
@@ -48,43 +64,14 @@ const ReservationDetails = ({ reservationId }) => {
     }
   };
 
-  const fetchHotelClassifications = async () => {
-    const url = `/api/enum/Classification`;
-
-    try {
-      const response = await fetch(url);
-      const responseData = await response.json();
-      setHotelClassifications(responseData);
-      console.log(responseData);
-    } catch (err) {}
-  };
-
-  const fetchHotelStatuses = async () => {
-    const url = `/api/enum/HotelStatus`;
-
-    try {
-      const response = await fetch(url);
-      const responseData = await response.json();
-      setHotelStatuses(responseData);
-    } catch (err) {}
-  };
-
   useEffect(() => {
     fetchReservationDetails();
-    fetchHotelClassifications();
-    fetchHotelStatuses();
   }, []);
 
   return (
     <>
       {isLoading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <Box sx={centerStyle}>
           <CircularProgress />
         </Box>
       ) : error ? (
@@ -104,240 +91,175 @@ const ReservationDetails = ({ reservationId }) => {
             <Typography variant="h5" component="div">
               Details of Reservation {detailedReservation.id}
             </Typography>
-            <Card sx={{ minWidth: "80%" }}>
-              <CardContent>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Board type
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.boardType}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Cancelled?
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.isCancelled ? "Cancelled" : "Active"}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Pay fulfillment
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.payFulfillment
-                      ? "Settled"
-                      : "Unresolved"}
-                  </Typography>
-                </Box>
-                {detailedReservation.payFulfillment && (
-                  <Box sx={cardBoxStyles}>
-                    <Typography sx={{ mb: 1 }} color="text.secondary">
-                      Payment method
-                    </Typography>
-                    <Typography variant="body2">
-                      {detailedReservation.paymentMethod}
-                    </Typography>
-                  </Box>
-                )}
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Price
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.price}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Reserved for
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reservedFor}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Reservation date
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reserveDate.substring(0, 10)}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Start date
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.startDate.substring(0, 10)}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    End date
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.endDate.substring(0, 10)}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
 
-            <div>
+            <Typography variant="h6" component="h6">
+              Reservation
+            </Typography>
+            <ReservationReservationDetails reservation={detailedReservation} />
+
+            <Box
+              sx={
+                (centerStyle,
+                {
+                  width: "80%",
+                })
+              }
+            >
+              <Box sx={centerStyle}>
+                <Typography variant="h6" component="h6">
+                  Rooms' details
+                </Typography>
+                <Button
+                  onClick={() => setRoomDetailsAreOpen(!roomDetailsAreOpen)}
+                >
+                  {roomDetailsAreOpen ? (
+                    <ArrowDropUpIcon />
+                  ) : (
+                    <ArrowDropDownIcon />
+                  )}
+                </Button>
+              </Box>
+
+              {roomDetailsAreOpen && (
+                <>
+                  <Typography
+                    sx={{ fontSize: "0.9rem", textAlign: "center" }}
+                    color="text.secondary"
+                  >
+                    Number of rooms: {detailedReservation.rooms.length}
+                  </Typography>
+                  {detailedReservation.rooms.map((r) => (
+                    <ReservationRoomDetails
+                      key={r.id}
+                      room={r}
+                      cardBoxStyles={cardBoxStyles}
+                    />
+                  ))}
+                </>
+              )}
+            </Box>
+
+            <Box sx={centerStyle}>
               <Typography variant="h6" component="div">
-                Rooms' details
+                Reservator's details
               </Typography>
-              <Typography sx={{ fontSize: "0.9rem" }} color="text.secondary">
-                Number of rooms: {detailedReservation.rooms.length}
-              </Typography>
-            </div>
-            {detailedReservation.rooms.map((r) => (
-              <RoomDetails key={r.id} room={r} />
-            ))}
-
-            <Typography variant="h6" component="div">
-              Reservator's details
-            </Typography>
-            <Card sx={{ minWidth: "80%" }}>
-              <CardContent>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Name
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reservator.name}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Country
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reservator.address.country}
-                  </Typography>
-                </Box>
-                {detailedReservation.reservator.address.region && (
-                  <Box sx={cardBoxStyles}>
-                    <Typography sx={{ mb: 1 }} color="text.secondary">
-                      Region
-                    </Typography>
-                    <Typography variant="body2">
-                      {detailedReservation.reservator.address.region}
-                    </Typography>
-                  </Box>
+              <Button
+                onClick={() =>
+                  setReservatorDetailsAreOpen(!reservatorDetailsAreOpen)
+                }
+              >
+                {reservatorDetailsAreOpen ? (
+                  <ArrowDropUpIcon />
+                ) : (
+                  <ArrowDropDownIcon />
                 )}
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    City
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reservator.address.city}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Address
-                  </Typography>
-                  <Typography variant="body2">
-                    {`${detailedReservation.reservator.address.addressLineOne} ${detailedReservation.reservator.address.addressLineTwo}`}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Postal code
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.reservator.address.postalCode}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+              </Button>
+            </Box>
 
-            <Typography variant="h6" component="div">
-              Hotel's details
-            </Typography>
-            <Card sx={{ minWidth: "80%" }}>
-              <CardContent>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Id
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.hotel.id}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Name
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.hotel.name}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Number of rooms
-                  </Typography>
-                  <Typography variant="body2">
-                    {detailedReservation.hotel.rooms}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Status
-                  </Typography>
-                  <Typography variant="body2">
-                    {getKeyByValue(
-                      hotelStatuses.values,
-                      detailedReservation.hotel.status
-                    )}
-                  </Typography>
-                </Box>
-                <Box sx={cardBoxStyles}>
-                  <Typography sx={{ mb: 1 }} color="text.secondary">
-                    Classification
-                  </Typography>
-                  <Typography variant="body2">
-                    {getKeyByValue(
-                      hotelClassifications.values,
-                      detailedReservation.hotel.classification
-                    )}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+            {reservatorDetailsAreOpen && (
+              <ReservationReservatorDetails
+                reservator={detailedReservation.reservator}
+                cardBoxStyles={cardBoxStyles}
+              />
+            )}
+
+            <Box sx={centerStyle}>
+              <Typography variant="h6" component="div">
+                Hotel's details
+              </Typography>
+              <Button
+                onClick={() => setHotelDetailsAreOpen(!hotelDetailsAreOpen)}
+              >
+                {hotelDetailsAreOpen ? (
+                  <ArrowDropUpIcon />
+                ) : (
+                  <ArrowDropDownIcon />
+                )}
+              </Button>
+            </Box>
+
+            {hotelDetailsAreOpen && (
+              <ReservationsHotelDetails
+                hotel={detailedReservation.hotel}
+                cardBoxStyles={cardBoxStyles}
+              />
+            )}
           </Box>
         )
       )}
     </>
   );
 };
-const getKeyByValue = (object, value) =>{
-  return Object.keys(object).find((key) => object[key] === value);
-}
-const RoomDetails = ({ room }) => {
+
+const ReservationReservationDetails = ({ reservation }) => {
   return (
-    <Card sx={{ minWidth: "80%" }}>
+    <Card sx={{ minWidth: "90%" }}>
       <CardContent>
         <Box sx={cardBoxStyles}>
           <Typography sx={{ mb: 1 }} color="text.secondary">
-            Id
+            Board type
           </Typography>
-          <Typography variant="body2">{room.id}</Typography>
+          <Typography variant="body2">{reservation.boardType}</Typography>
         </Box>
         <Box sx={cardBoxStyles}>
           <Typography sx={{ mb: 1 }} color="text.secondary">
-            Floor
+            Cancelled?
           </Typography>
-          <Typography variant="body2">{room.floor}</Typography>
+          <Typography variant="body2">
+            {reservation.isCancelled ? "Cancelled" : "Active"}
+          </Typography>
         </Box>
         <Box sx={cardBoxStyles}>
           <Typography sx={{ mb: 1 }} color="text.secondary">
-            Door
+            Pay fulfillment
           </Typography>
-          <Typography variant="body2">{room.doorNo}</Typography>
+          <Typography variant="body2">
+            {reservation.payFulfillment ? "Settled" : "Unresolved"}
+          </Typography>
+        </Box>
+        {reservation.payFulfillment && (
+          <Box sx={cardBoxStyles}>
+            <Typography sx={{ mb: 1 }} color="text.secondary">
+              Payment method
+            </Typography>
+            <Typography variant="body2">{reservation.paymentMethod}</Typography>
+          </Box>
+        )}
+        <Box sx={cardBoxStyles}>
+          <Typography sx={{ mb: 1 }} color="text.secondary">
+            Price
+          </Typography>
+          <Typography variant="body2">{reservation.price}</Typography>
+        </Box>
+        <Box sx={cardBoxStyles}>
+          <Typography sx={{ mb: 1 }} color="text.secondary">
+            Reserved for
+          </Typography>
+          <Typography variant="body2">{reservation.reservedFor}</Typography>
+        </Box>
+        <Box sx={cardBoxStyles}>
+          <Typography sx={{ mb: 1 }} color="text.secondary">
+            Reservation date
+          </Typography>
+          <Typography variant="body2">
+            {reservation.reserveDate.substring(0, 10)}
+          </Typography>
+        </Box>
+        <Box sx={cardBoxStyles}>
+          <Typography sx={{ mb: 1 }} color="text.secondary">
+            Start date
+          </Typography>
+          <Typography variant="body2">
+            {reservation.startDate.substring(0, 10)}
+          </Typography>
+        </Box>
+        <Box sx={cardBoxStyles}>
+          <Typography sx={{ mb: 1 }} color="text.secondary">
+            End date
+          </Typography>
+          <Typography variant="body2">
+            {reservation.endDate.substring(0, 10)}
+          </Typography>
         </Box>
       </CardContent>
     </Card>
