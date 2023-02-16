@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import ContentPagination from "../../../Shared/Pagination";
+import ContentPagination from "../../Shared/Pagination";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Switch from "@mui/material/Switch";
@@ -16,10 +16,10 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import "./Reservations.css";
-import AddReservationModal from "../Modals/AddReservationModal";
-import Searchbar from "../QueryComponents/Searchbar";
-import ReservationsFilters from "../QueryComponents/ReservationsFilters";
-import UpdateReservationPaymentModal from "../Modals/UpdateReservationPaymentModal";
+import AddReservationModal from "./Modals/AddReservationModal";
+import Searchbar from "./QueryComponents/Searchbar";
+import ReservationsFilters from "./QueryComponents/ReservationsFilters";
+import UpdateReservationPaymentModal from "./Modals/UpdateReservationPaymentModal";
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -55,7 +55,6 @@ const Reservations = () => {
       if (!response.ok) {
         const error = response.message;
         setError(error);
-        console.log(error);
         return;
       }
 
@@ -63,7 +62,6 @@ const Reservations = () => {
     } catch (err) {
       setIsLoading(false);
       setError(err.message);
-      console.log(err);
     }
   };
 
@@ -95,7 +93,6 @@ const Reservations = () => {
         setIsLoading(true);
         const response = await fetch(url);
         const responseData = await response.json();
-        console.log(responseData);
         setIsLoading(false);
 
         if (!response.ok) {

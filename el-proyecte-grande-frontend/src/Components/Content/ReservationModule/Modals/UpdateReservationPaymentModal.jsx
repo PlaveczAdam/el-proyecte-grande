@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import UpdateReservationPaymentForm from "../Forms/UpdateReservationPaymentForm";
-import ReservationDetails from "../ReservationDetails";
+import ReservationDetails from "../ReservationComponents/ReservationDetails";
 
 import { Modal } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -19,11 +19,12 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 500,
+  width: 600,
   bgcolor: "background.paper",
   border: "2px solid black",
   boxShadow: 24,
   p: 4,
+  height: "90vh",
   overflowY: "auto",
 };
 
@@ -51,8 +52,8 @@ const UpdateReservationPaymentModal = ({
 
   return (
     <>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
+      <Modal open={open} onClose={handleClose} >
+        <Box sx={style} >
           <Button
             onClick={handleClose}
             sx={{
@@ -63,11 +64,13 @@ const UpdateReservationPaymentModal = ({
           >
             <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
           </Button>
-          <ReservationDetails reservation={reservation} />
           <UpdateReservationPaymentForm
             onCancel={handleClose}
             onSave={handleReservationPaymentUpdate}
           />
+
+          <ReservationDetails reservationId={reservation.id} />
+
         </Box>
       </Modal>
 
