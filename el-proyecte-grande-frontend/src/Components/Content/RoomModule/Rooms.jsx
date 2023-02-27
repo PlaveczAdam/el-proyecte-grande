@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import ContentPagination from "../../Shared/Pagination";
 import RoomTypes from "./RoomTypes";
@@ -29,8 +29,10 @@ import Button from "@mui/material/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { AuthContext } from "../../Shared/AuthContext";
 
 const Rooms = () => {
+  const auth = useContext(AuthContext);
   const [hotels, setHotels] = useState(null);
   const [rooms, setRooms] = useState(null);
   const [roomTypes, setRoomTypes] = useState(null);
@@ -208,12 +210,17 @@ const Rooms = () => {
             {errorText && <AlertMessage type="error" message={errorText} />}
           </Grid>
           <Grid item xs={12} md={3}>
-            <AddRoomModal
-              onNewRoom={handleNewRoom}
-              hotels={hotels}
-              roomTypes={roomTypes}
-              enums={enums}
-            />
+            {auth.user.roles.some((el) =>
+              ["Admin", "Manager"].includes(el)
+            ) && (
+              <AddRoomModal
+                onNewRoom={handleNewRoom}
+                hotels={hotels}
+                roomTypes={roomTypes}
+                enums={enums}
+              />
+            )}
+
             <Button onClick={handleFiltersReset}>Reset filters</Button>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -359,8 +366,14 @@ const Rooms = () => {
               <TableCell align="center">Room Type</TableCell>
               <TableCell align="center">Price</TableCell>
               <TableCell align="center">Accessible</TableCell>
-              <TableCell align="center">Edit</TableCell>
-              <TableCell align="center">Status</TableCell>
+              {auth.user.roles.some((el) =>
+                ["Admin", "Manager"].includes(el)
+              ) && (
+                <>
+                  <TableCell align="center">Edit</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -408,31 +421,39 @@ const Rooms = () => {
                       {room.accessible ? <Check color="primary" /> : ""}
                     </TableCell>
 
-                    <TableCell align="center">
-                      <EditRoomModal
-                        room={room}
-                        hotels={hotels}
-                        roomTypes={roomTypes}
-                        enums={enums}
-                        onRoomUpdate={handleRoomUpdate}
-                      />
-                    </TableCell>
+                    {auth.user.roles.some((el) =>
+                      ["Admin", "Manager"].includes(el)
+                    ) && (
+                      <>
+                        <TableCell align="center">
+                          <EditRoomModal
+                            room={room}
+                            hotels={hotels}
+                            roomTypes={roomTypes}
+                            enums={enums}
+                            onRoomUpdate={handleRoomUpdate}
+                          />
+                        </TableCell>
 
-                    <TableCell align="center">
-                      <Tooltip
-                        title={
-                          enums
-                            ? Object.keys(enums.RoomStatus.values)[room.status]
-                            : "..."
-                        }
-                      >
-                        <Switch
-                          onClick={() => handleRoomStatusChange(room)}
-                          disabled={room.status === null}
-                          checked={room.status ? true : false}
-                        />
-                      </Tooltip>
-                    </TableCell>
+                        <TableCell align="center">
+                          <Tooltip
+                            title={
+                              enums
+                                ? Object.keys(enums.RoomStatus.values)[
+                                    room.status
+                                  ]
+                                : "..."
+                            }
+                          >
+                            <Switch
+                              onClick={() => handleRoomStatusChange(room)}
+                              disabled={room.status === null}
+                              checked={room.status ? true : false}
+                            />
+                          </Tooltip>
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 ))
             ) : (

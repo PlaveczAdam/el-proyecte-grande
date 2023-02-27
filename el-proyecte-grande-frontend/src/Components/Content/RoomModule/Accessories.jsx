@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import ContentPagination from "../../Shared/Pagination";
 import AddAccessoryModal from "./AddAccessoryModal";
@@ -15,8 +15,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
+import { AuthContext } from "../../Shared/AuthContext";
 
 const Accessories = ({ accessories, setAccessories, roomTypes }) => {
+  const auth = useContext(AuthContext);
   const [textFilter, setTextFilter] = useState("");
 
   const handleNewAccessory = (accessory) => {
@@ -40,10 +42,14 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
-            <AddAccessoryModal
-              roomTypes={roomTypes}
-              onAccessory={handleNewAccessory}
-            />
+            {auth.user.roles.some((el) =>
+              ["Admin", "Manager"].includes(el)
+            ) && (
+              <AddAccessoryModal
+                roomTypes={roomTypes}
+                onAccessory={handleNewAccessory}
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={6}></Grid>
           <Grid item xs={12} md={3}>
@@ -64,7 +70,9 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Quantity</TableCell>
               <TableCell align="center">Room Type</TableCell>
-              <TableCell align="center">Edit</TableCell>
+              {auth.user.roles.some((el) =>
+                ["Admin", "Manager"].includes(el)
+              ) && <TableCell align="center">Edit</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,14 +98,17 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
                             .name
                         : accessory.roomTypeId}
                     </TableCell>
-
-                    <TableCell align="center">
-                      <EditAccessoryModal
-                        accessory={accessory}
-                        roomTypes={roomTypes}
-                        onAccessoryUpdate={handleAccessoryUpdate}
-                      />
-                    </TableCell>
+                    {auth.user.roles.some((el) =>
+                      ["Admin", "Manager"].includes(el)
+                    ) && (
+                      <TableCell align="center">
+                        <EditAccessoryModal
+                          accessory={accessory}
+                          roomTypes={roomTypes}
+                          onAccessoryUpdate={handleAccessoryUpdate}
+                        />
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
             ) : (

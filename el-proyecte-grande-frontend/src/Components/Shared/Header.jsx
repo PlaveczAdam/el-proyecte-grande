@@ -6,9 +6,17 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const auth = useContext(AuthContext);
+
+  const userLogout = () => {
+    auth.logout();
+    navigate("/");
+  };
+
   return (
     <div className="Header">
       <Paper>
@@ -27,7 +35,7 @@ const Header = () => {
                   {auth.user.email ? auth.user.email : "N/A"}){" "}
                 </span>
               </Tooltip>
-              <Button variant="outlined" size="small" onClick={auth.logout}>
+              <Button variant="outlined" size="small" onClick={userLogout}>
                 Logout
               </Button>
             </div>
