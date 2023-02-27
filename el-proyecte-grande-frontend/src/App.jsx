@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes } from "react-router-dom";
 import { AuthContext } from "./Components/Shared/AuthContext";
@@ -15,11 +15,13 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Login from "./Components/Content/Login";
+import AppError from "./Components/Shared/AppError";
 
 function App() {
   const { user, login, logout } = Auth();
   const { staffRoutes, receptionistRoutes, managerRoutes, adminRoutes } =
     RolesRoutes();
+  const [error, setError] = useState(null);
 
   let routes;
   if (user.roles.includes("Admin")) {
@@ -32,39 +34,65 @@ function App() {
     routes = staffRoutes;
   }
 
+  const getHealth = async () => {
+    const url = "/api/health";
+
+    try {
+      const response = await fetch(url);
+      const responseData = await response.json();
+
+      if (responseData.status !== "Healthy") {
+        setError("App needs maintenance, please consult with IT");
+        return;
+      }
+
+      console.log(responseData);
+    } catch (err) {
+      setError("App is currently down, please try again later");
+    }
+  };
+
+  useEffect(() => {
+    // getHealth();
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="App">
         <ThemeProvider theme={Theme}>
           <CssBaseline enableColorScheme />
-          <AuthContext.Provider
-            value={{
-              user: user,
-              login: login,
-              logout: logout,
-            }}
-          >
-            <Container>
-              {user.username ? (
-                <>
-                  <Header />
-                  <Grid container direction="row" spacing={2}>
-                    <Grid item xs={12} md={2}>
-                      <Menu />
+          {error ? (
+            <AppError error={error}/>
+          ) : (
+            <AuthContext.Provider
+              value={{
+                user: user,
+                login: login,
+                logout: logout,
+              }}
+            >
+              <Container>
+                {user.username ? (
+                  <>
+                    <Header />
+                    <Grid container direction="row" spacing={2}>
+                      <Grid item xs={12} md={2}>
+                        <Menu />
+                      </Grid>
+                      <Grid item xs={12} md={10}>
+                        <Paper sx={{ padding: "10px" }}>
+                          <Routes>{routes}</Routes>
+                        </Paper>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} md={10}>
-                      <Paper sx={{ padding: "10px" }}>
-                        <Routes>{routes}</Routes>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                  <Footer />
-                </>
-              ) : (
-                <Login />
-              )}
-            </Container>
-          </AuthContext.Provider>
+                    <Footer />
+                  </>
+                ) : (
+                  <Login />
+                )}
+              </Container>
+            </AuthContext.Provider>
+          )}
         </ThemeProvider>
       </div>
     </BrowserRouter>
