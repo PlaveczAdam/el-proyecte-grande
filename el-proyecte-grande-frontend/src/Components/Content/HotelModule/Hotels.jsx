@@ -16,8 +16,11 @@ import HotelDataCell from "./HotelDataCell";
 import AddHotelModal from "./AddHotelModal";
 import EditHotelModal from "./EditHotelModal";
 import { HotelContext } from "./HotelContextProvider";
+import { AuthContext } from "../../Shared/AuthContext";
 
 const Hotels = () => {
+  const auth = useContext(AuthContext);
+
   const [rows, setRows] = useState([]);
   const [filter, setFilter] = useState("");
   const handleNewHotel = (hotel) => {
@@ -30,9 +33,9 @@ const Hotels = () => {
         ? context.enums.hotelStatus.values.RenovationInProgress
         : context.enums.hotelStatus.values.InUse;
     await fetch(`/api/hotel/${row.id}/${status}`, {
-        method:"PUT"
+      method: "PUT",
     });
-    handleHotelUpdate({...row, hotelStatus:status});
+    handleHotelUpdate({ ...row, hotelStatus: status });
   }
   const context = useContext(HotelContext);
   const handleHotelUpdate = (hotel) => {
@@ -61,16 +64,18 @@ const Hotels = () => {
       </Box>
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
-          <Grid item xs={12} md={9}>
-            <AddHotelModal onNewHotel={handleNewHotel} />
-          </Grid>
+          {auth.user.roles.includes("Admin") && (
+            <Grid item xs={12} md={9}>
+              <AddHotelModal onNewHotel={handleNewHotel} />
+            </Grid>
+          )}
           <Grid item xs={12} md={3}>
             <TextField
               id="outlined-basic"
               label="Filter"
               variant="outlined"
               size="small"
-              onChange={(e)=>setFilter(e.target.value)}
+              onChange={(e) => setFilter(e.target.value)}
               value={filter}
             />
           </Grid>
@@ -87,50 +92,68 @@ const Hotels = () => {
               <TableCell align="center">Stars</TableCell>
               <TableCell align="center">Floors</TableCell>
               <TableCell align="center">Rooms</TableCell>
-              <TableCell align="center">Edit</TableCell>
-              <TableCell align="center">Set status</TableCell>
+              {auth.user.roles.includes("Admin") && (
+                <>
+                  <TableCell align="center">Edit</TableCell>
+                  <TableCell align="center">Set status</TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.filter(x => x.name.toLowerCase().includes(filter.toLowerCase())).map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <HotelDataCell data={row.id}></HotelDataCell>
-                <HotelDataCell data={row.name}></HotelDataCell>
-                <HotelDataCell
-                  data={getAddressString(row.address)}
-                ></HotelDataCell>
-                <HotelDataCell data={Object.keys(context.enums.hotelStatus.values)[row.hotelStatus]}></HotelDataCell>
-                <HotelDataCell data={row.classification}></HotelDataCell>
-                <HotelDataCell data={row.floor}></HotelDataCell>
-                <HotelDataCell data={row.rooms}></HotelDataCell>
+            {rows
+              .filter((x) =>
+                x.name.toLowerCase().includes(filter.toLowerCase())
+              )
+              .map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <HotelDataCell data={row.id}></HotelDataCell>
+                  <HotelDataCell data={row.name}></HotelDataCell>
+                  <HotelDataCell
+                    data={getAddressString(row.address)}
+                  ></HotelDataCell>
+                  <HotelDataCell
+                    data={
+                      Object.keys(context.enums.hotelStatus.values)[
+                        row.hotelStatus
+                      ]
+                    }
+                  ></HotelDataCell>
+                  <HotelDataCell data={row.classification}></HotelDataCell>
+                  <HotelDataCell data={row.floor}></HotelDataCell>
+                  <HotelDataCell data={row.rooms}></HotelDataCell>
 
-                <TableCell align="center">
-                  <EditHotelModal
-                    hotel={row}
-                    onHotelUpdate={handleHotelUpdate}
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Button
-                    variant="text"
-                    onClick={() => handleStatusChange(row)}
-                  >
-                    <DisabledByDefaultIcon
-                      sx={{
-                        color:
-                          row.hotelStatus ===
-                          context.enums.hotelStatus.values.InUse
-                            ? "red"
-                            : "green",
-                      }}
-                    />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  {auth.user.roles.includes("Admin") && (
+                    <>
+                      <TableCell align="center">
+                        <EditHotelModal
+                          hotel={row}
+                          onHotelUpdate={handleHotelUpdate}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="text"
+                          onClick={() => handleStatusChange(row)}
+                        >
+                          <DisabledByDefaultIcon
+                            sx={{
+                              color:
+                                row.hotelStatus ===
+                                context.enums.hotelStatus.values.InUse
+                                  ? "red"
+                                  : "green",
+                            }}
+                          />
+                        </Button>
+                      </TableCell>
+                    </>
+                  )}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
