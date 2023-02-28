@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes } from "react-router-dom";
 import { AuthContext } from "./Components/Shared/AuthContext";
@@ -6,6 +6,8 @@ import { Auth } from "./Components/Shared/Auth";
 import Menu from "./Components/Menu/Menu.jsx";
 import Header from "./Components/Shared/Header.jsx";
 import Footer from "./Components/Shared/Footer.jsx";
+import Login from "./Components/Content/Login";
+import AppError from "./Components/Shared/AppError";
 
 import { RolesRoutes } from "./RolesRoutes.jsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,13 +16,13 @@ import Theme from "./Theme.jsx";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import Login from "./Components/Content/Login";
-import AppError from "./Components/Shared/AppError";
+import WarningSnackbar from "./Components/Shared/WarningSnackbar";
 
 function App() {
   const { user, login, logout } = Auth();
   const { staffRoutes, receptionistRoutes, managerRoutes, adminRoutes } =
     RolesRoutes();
+  const [appStatus, setAppStatus] = useState(null);
   const [error, setError] = useState(null);
 
   let routes;
@@ -42,7 +44,7 @@ function App() {
       const responseData = await response.json();
 
       if (responseData.status !== "Healthy") {
-        setError("App needs maintenance, please consult with IT");
+        setAppStatus("App needs maintenance, please consult with IT");
         return;
       }
 
@@ -54,6 +56,7 @@ function App() {
 
   useEffect(() => {
     // getHealth();
+    setAppStatus("App needs maintenance, please consult with IT");
   }, []);
 
   return (
@@ -62,7 +65,7 @@ function App() {
         <ThemeProvider theme={Theme}>
           <CssBaseline enableColorScheme />
           {error ? (
-            <AppError error={error}/>
+            <AppError error={error} />
           ) : (
             <AuthContext.Provider
               value={{
@@ -90,6 +93,7 @@ function App() {
                 ) : (
                   <Login />
                 )}
+                <WarningSnackbar opened={appStatus} message={appStatus} />
               </Container>
             </AuthContext.Provider>
           )}
