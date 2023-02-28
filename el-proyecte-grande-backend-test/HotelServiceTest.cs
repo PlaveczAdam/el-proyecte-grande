@@ -100,6 +100,13 @@ namespace el_proyecte_grande_backend_test
             });
         }
 
+        [Test]
+        public void UpdateHotelStatusThrowsExceptionWhenHotelNotFound()
+        {
+            var x = Assert.ThrowsAsync<Exception>(() => _hotelService.SetHotelStatus(1, HotelStatus.RenovationInProgress));
+            Assert.That(x.Message, Is.EqualTo("There is no hotel."));
+        }
+
         private Hotel CreateTestHotel(int id)
         {
             var hotel = new Hotel()
