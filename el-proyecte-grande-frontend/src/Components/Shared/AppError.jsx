@@ -14,9 +14,11 @@ const AppError = ({ error }) => {
         position: "fixed",
         top: 0,
         left: 0,
+        padding: "1.5em",
       }}
     >
       <Card
+        raised
         sx={{
           borderRadius: "10px",
           display: "flex",
@@ -26,7 +28,7 @@ const AppError = ({ error }) => {
       >
         <Box sx={{ padding: "1em" }}>
           <Typography
-            sx={{ fontSize: "1.5em" }}
+            sx={{ fontSize: "1.3em", fontWeight: "700" }}
             color="text.secondary"
             gutterBottom
           >

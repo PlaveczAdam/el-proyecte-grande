@@ -47,7 +47,6 @@ function App() {
         setAppStatus("App needs maintenance, please consult with IT");
         return;
       }
-
       console.log(responseData);
     } catch (err) {
       setError("App is currently down, please try again later");
@@ -55,8 +54,7 @@ function App() {
   };
 
   useEffect(() => {
-    // getHealth();
-    setAppStatus("App needs maintenance, please consult with IT");
+    getHealth();
   }, []);
 
   return (
@@ -93,7 +91,11 @@ function App() {
                 ) : (
                   <Login />
                 )}
-                <WarningSnackbar opened={appStatus} message={appStatus} />
+                <WarningSnackbar
+                  opened={appStatus !== null}
+                  message={appStatus}
+                  closed={() => setAppStatus(null)}
+                />
               </Container>
             </AuthContext.Provider>
           )}
