@@ -1,17 +1,18 @@
+using el_proyecte_grande_backend;
 using el_proyecte_grande_backend.Configurations;
 using el_proyecte_grande_backend.Data;
 using el_proyecte_grande_backend.Models.Entities;
+using el_proyecte_grande_backend.Services.AuthServices;
 using el_proyecte_grande_backend.Services.GuestServices;
 using el_proyecte_grande_backend.Services.HotelServices;
 using el_proyecte_grande_backend.Services.InventoryServices;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Services.RoomServices;
 using el_proyecte_grande_backend.Services.UserServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using el_proyecte_grande_backend.Services.InventoryServices;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using el_proyecte_grande_backend.Services.AuthServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddTransient<DbInitializer>();
+builder.Services.AddTransient<HealthChecker>();
 
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -62,8 +65,10 @@ if (app.Environment.IsDevelopment())
 
 using var scope = app.Services.CreateScope();
 IServiceProvider services = scope.ServiceProvider;
+
 var initializer = services.GetRequiredService<DbInitializer>();
 initializer.Seed();
+var healthChecker = services.GetRequiredService<HealthChecker>();
 
 app.UseHttpsRedirection();
 
@@ -73,5 +78,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHealthChecks("/api/health", new HealthCheckOptions
+{
+    ResponseWriter = healthChecker.WriteResponse
+});
 app.Run();
