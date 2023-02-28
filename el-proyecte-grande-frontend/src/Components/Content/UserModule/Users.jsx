@@ -17,7 +17,9 @@ import EditUserModal from "./EditUserModal";
 import { UserContext } from "./UserContextProvider";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { minWidth } from "@mui/system";
+import Switch from "@mui/material/Switch";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 const Users = () => {
   const context = useContext(UserContext);
@@ -68,7 +70,7 @@ const Users = () => {
           </Grid>
           <Grid item xs={12} md={4}>
             <Select
-              sx={{minWidth: 300}}
+              sx={{ minWidth: 300 }}
               multiple
               value={roles}
               label="Roles"
@@ -95,22 +97,24 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.filter(x=>x.roles.some(y => roles.includes(y.name))).map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <UserDataCell data={row.name}></UserDataCell>
-                <UserDataCell data={row.email}></UserDataCell>
-                <TableCell sx={{ userSelect: "none" }} align="center">
-                  {row.roles.map((x) => GetRoleName(x)).join(", ")}
-                </TableCell>
+            {rows
+              .filter((x) => x.roles.some((y) => roles.includes(y.name)))
+              .map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <UserDataCell data={row.name}></UserDataCell>
+                  <UserDataCell data={row.email}></UserDataCell>
+                  <TableCell sx={{ userSelect: "none" }} align="center">
+                    {row.roles.map((x) => GetRoleName(x)).join(", ")}
+                  </TableCell>
 
-                <TableCell align="center">
-                  <EditUserModal user={row} onUserUpdate={handleUserUpdate} />
-                </TableCell>
-                <TableCell align="center">
-                  <Button
+                  <TableCell align="center">
+                    <EditUserModal user={row} onUserUpdate={handleUserUpdate} />
+                  </TableCell>
+                  <TableCell align="center">
+                    {/* <Button
                     variant="text"
                     onClick={() => handleActivityChange(row)}
                   >
@@ -119,10 +123,21 @@ const Users = () => {
                         color: row.isActive ? "red" : "green",
                       }}
                     />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </Button> */}
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            onClick={() => handleActivityChange(row)}
+                            checked={row.isActive ? true : false}
+                          />
+                        }
+                        label={row.isActive ? "Active" : "Deactivated"}
+                      />
+                    </FormGroup>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

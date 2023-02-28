@@ -12,6 +12,9 @@ import Button from "@mui/material/Button";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import ContentPagination from "../../Shared/Pagination";
 import TextField from "@mui/material/TextField";
+import Switch from "@mui/material/Switch";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import HotelDataCell from "./HotelDataCell";
 import AddHotelModal from "./AddHotelModal";
 import EditHotelModal from "./EditHotelModal";
@@ -135,7 +138,7 @@ const Hotels = () => {
                         />
                       </TableCell>
                       <TableCell align="center">
-                        <Button
+                        {/* <Button
                           variant="text"
                           onClick={() => handleStatusChange(row)}
                         >
@@ -148,7 +151,22 @@ const Hotels = () => {
                                   : "green",
                             }}
                           />
-                        </Button>
+                        </Button> */}
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                              onClick={() => handleStatusChange(row)}
+                                checked={row.hotelStatus ===
+                                  context.enums.hotelStatus.values.InUse ? true : false}
+                              />
+                            }
+                            // label={
+                            //   row.hotelStatus ===
+                            //   context.enums.hotelStatus.values.InUse ? "In use" : "oUT OF USE"
+                            // }
+                          />
+                        </FormGroup>
                       </TableCell>
                     </>
                   )}
