@@ -79,9 +79,11 @@ namespace el_proyecte_grande_backend_test
             var newData = CreateTestHotel(1);
             newData.Name = "Modified";
             var updated = await _hotelService.UpdateHotel(1, newData);
-
-            Assert.That(updated.Name, Is.EqualTo("Modified"));
-            Assert.That(_hotelContext.Hotels.Find(1L)?.Name, Is.EqualTo("Modified"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(updated.Name, Is.EqualTo("Modified"));
+                Assert.That(_hotelContext.Hotels.Find(1L)?.Name, Is.EqualTo("Modified"));
+            });
         }
 
         [Test]
@@ -91,9 +93,11 @@ namespace el_proyecte_grande_backend_test
             _hotelContext.Hotels.Add(hotelOne);
             _hotelContext.SaveChanges();
             var updated = await _hotelService.SetHotelStatus(1, HotelStatus.RenovationInProgress);
-
-            Assert.That(updated.Status, Is.EqualTo(HotelStatus.RenovationInProgress));
-            Assert.That(_hotelContext.Hotels.Find(1L)?.Status, Is.EqualTo(HotelStatus.RenovationInProgress));
+            Assert.Multiple(() =>
+            {
+                Assert.That(updated.Status, Is.EqualTo(HotelStatus.RenovationInProgress));
+                Assert.That(_hotelContext.Hotels.Find(1L)?.Status, Is.EqualTo(HotelStatus.RenovationInProgress));
+            });
         }
 
         private Hotel CreateTestHotel(int id)
