@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -41,8 +42,10 @@ const Header = () => {
             </div>
           </Grid>
         </Grid>
-        <Box sx={{ marginY: 2, textAlign: "center" }}>
-          <h1>Grande management</h1>
+        <Box sx={{ marginY: 2, textAlign: "center", paddingBottom: 1}}>
+        <Typography variant="h4" sx={{padding:1}}>
+        Grande Management
+      </Typography>
         </Box>
       </Paper>
     </div>

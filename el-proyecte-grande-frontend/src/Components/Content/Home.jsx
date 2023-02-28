@@ -1,6 +1,8 @@
+import Box from "@mui/material/Box";
+
 const Home = () => {
   return (
-    <div>
+    <Box sx={{ height:"100%", display: "flex", flexDirection: "column", alignItems:"center" }}>
       <h2>Welcome to our hotel management system!</h2>
       <div>
         <p>
@@ -20,7 +22,7 @@ const Home = () => {
           system is tailored to meet the unique needs of your property.
         </p>
       </div>
-    </div>
+    </Box>
   );
 };
 

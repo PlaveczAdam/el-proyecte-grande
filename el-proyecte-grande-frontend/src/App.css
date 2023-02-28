@@ -1,0 +1,13 @@
+.App{
+    height: 100vh;
+    
+}
+
+.Header{
+    padding-top: 10px;
+}
+
+.Footer{
+    padding-bottom: 1em;
+    font-weight: 700;
+}

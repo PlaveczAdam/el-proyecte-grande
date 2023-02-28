@@ -44,16 +44,28 @@ function App() {
               logout: logout,
             }}
           >
-            <Container>
+            <Container
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
               {user.username ? (
                 <>
                   <Header />
-                  <Grid container direction="row" spacing={2}>
-                    <Grid item xs={12} md={2}>
+                  <Grid
+                    container
+                    direction="row"
+                    spacing={2}
+                    sx={{  }}
+                  >
+                    <Grid item xs={12} md={2} sx={{ height: "100%" }}>
                       <Menu />
                     </Grid>
                     <Grid item xs={12} md={10}>
-                      <Paper sx={{ padding: "10px" }}>
+                      <Paper sx={{ padding: "2em", height: "100%" }}>
                         <Routes>{routes}</Routes>
                       </Paper>
                     </Grid>

@@ -2,9 +2,9 @@ import Navlinks from './Navlinks.jsx';
 
 const Menu = () => {
     return (
-        <div>
+        <>
             <Navlinks />
-        </div>
+        </>
     )
 }
 
