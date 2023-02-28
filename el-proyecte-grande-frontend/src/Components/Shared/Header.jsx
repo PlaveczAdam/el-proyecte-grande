@@ -46,7 +46,7 @@ const Header = () => {
               <ApartmentIcon sx={{ transform: "scale(3)"}} />
             </Box>
           </Grid>
-          <Grid xs={10}>
+          <Grid item xs={10}>
             <Box
               sx={{ marginBottom: 2, textAlign: "center", paddingBottom: 1 }}
             >
