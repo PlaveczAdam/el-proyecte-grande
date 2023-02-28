@@ -3,7 +3,7 @@ using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Services.HotelServices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+using static el_proyecte_grande_backend_test.TestDataCreator;
 
 namespace el_proyecte_grande_backend_test
 {
@@ -17,7 +17,7 @@ namespace el_proyecte_grande_backend_test
         public void Setup()
         {
             dbContextOptions = new DbContextOptionsBuilder<GrandeHotelContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
             _hotelContext = new GrandeHotelContext(dbContextOptions);
@@ -105,30 +105,6 @@ namespace el_proyecte_grande_backend_test
         {
             var x = Assert.ThrowsAsync<Exception>(() => _hotelService.SetHotelStatus(1, HotelStatus.RenovationInProgress));
             Assert.That(x.Message, Is.EqualTo("There is no hotel."));
-        }
-
-        private Hotel CreateTestHotel(int id)
-        {
-            var hotel = new Hotel()
-            {
-                Id = id,
-                Name = $"New Hotel {id}",
-                Status = HotelStatus.InUse,
-                Classification = Classification.Tourist,
-                Floor = 10,
-                Rooms = 10,
-                Address = new Address()
-                {
-                    Id = id,
-                    PostalCode = "1234",
-                    Country = "France",
-                    Region = "Baguette",
-                    City = "Paris",
-                    AddressLineOne = "Something st.",
-                    AddressLineTwo = "421"
-                }
-            };
-            return hotel;
         }
     }
 }
