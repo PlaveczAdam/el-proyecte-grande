@@ -66,5 +66,29 @@ namespace el_proyecte_grande_backend_test
             };
             return guest;
         }
+
+        public static User CreateTestUser(int id)
+        {
+            var user = new User()
+            {
+                Id = id,
+                Name = $"Rob {id}",
+                Email = "Bor",
+                Password = "Ye",
+                IsActive = true,
+                Roles = new List<Role> { }
+            };
+            return user;
+        }
+
+        public static Role CreateTestRole(int id)
+        {
+            var role = new Role
+            {
+                Id = 1,
+                Name = "A"
+            };
+            return role;
+        }
     }
 }
