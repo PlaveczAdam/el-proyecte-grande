@@ -46,7 +46,7 @@ namespace el_proyecte_grande_backend.Controllers
         }
 
         [HttpGet("validate")]
-        [Authorize(Roles = "Admin,Manager,Receptionist")]
+        [Authorize]
         public async Task<ActionResult> Validate()
         {
             return Ok();
