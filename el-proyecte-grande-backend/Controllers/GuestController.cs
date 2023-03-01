@@ -1,12 +1,14 @@
-﻿using el_proyecte_grande_backend.Models.Dtos;
+﻿using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Services.GuestServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace el_proyecte_grande_backend.Controllers
 {
     [ApiController, Route("/api/guest")]
+    [Authorize(Roles = "Admin,Manager,Receptionist")]
     public class GuestController : ControllerBase
     {
         private readonly IGuestService _repository;
@@ -125,8 +127,8 @@ namespace el_proyecte_grande_backend.Controllers
                     && guest.HotelId > 0
                     && guest.RoomId != null
                     && guest.RoomId > 0
-                    && guest.ReservationIds != null
-                    && guest.ReservationIds.Count > 0);
+                    /*&& guest.ReservationIds != null
+                    && guest.ReservationIds.Count > 0*/);
 
             return hasProperValuesBasedOnStatus;
         }
@@ -143,7 +145,7 @@ namespace el_proyecte_grande_backend.Controllers
         {
             GuestDto result = new GuestDto()
             {
-                Id= guest.Id,
+                Id = guest.Id,
                 PersonalId = guest.PersonalId,
                 FirstName = guest.FirstName,
                 LastName = guest.LastName,
@@ -156,6 +158,14 @@ namespace el_proyecte_grande_backend.Controllers
                 Status = guest.Status,
                 Address = guest.Address
             };
+            if (guest.Hotel != null)
+            {
+                result.HotelId = guest.Hotel.Id;
+            }
+            if (guest.Room != null)
+            {
+                result.RoomId = guest.Room.Id;
+            }
             return result;
         }
 

@@ -1,4 +1,4 @@
-﻿namespace el_proyecte_grande_backend.Models.Dtos
+﻿namespace el_proyecte_grande_backend.Models.Dtos.RoomDtos
 {
     public class NewAccessory
     {

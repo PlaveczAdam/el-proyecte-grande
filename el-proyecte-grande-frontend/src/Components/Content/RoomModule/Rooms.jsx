@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import ContentPagination from "../../Shared/Pagination";
 import RoomTypes from "./RoomTypes";
 import Accessories from "./Accessories";
 import AddRoomModal from "./AddRoomModal";
 import EditRoomModal from "./EditRoomModal";
+import AlertMessage from "../../Shared/AlertMessage";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -16,8 +17,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Check from "@mui/icons-material/Check";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -25,71 +24,128 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
+import Button from "@mui/material/Button";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { AuthContext } from "../../Shared/AuthContext";
 
 const Rooms = () => {
+  const auth = useContext(AuthContext);
   const [hotels, setHotels] = useState(null);
   const [rooms, setRooms] = useState(null);
   const [roomTypes, setRoomTypes] = useState(null);
   const [accessories, setAccessories] = useState(null);
+  const [enums, setEnums] = useState();
 
-  const [enums, setEnums] = useState(null);
-
-  const [hotelFilter, setHotelFilter] = useState("");
+  const [errorText, setErrorText] = useState("");
   const [textFilter, setTextFilter] = useState("");
 
+  const emptyFilters = {
+    hotelId: "",
+    status: "",
+    date: null,
+    roomTypeId: "",
+    maxPrice: "",
+    accessible: "",
+  };
+
+  const [filters, setFilters] = useState(emptyFilters);
+
   useEffect(() => {
-    async function getHotels() {
-      const response = await fetch(`/api/hotel`);
-      const responseBody = await response.json();
-      setHotels(responseBody);
-      //console.log(responseBody);
+    async function getData(dataPath) {
+      try {
+        const response = await fetch(`/api/${dataPath}`);
+        if (!response.ok) {
+          const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+          console.log(errorMessage);
+          setErrorText(errorMessage);
+          return;
+        }
+        const responseBody = await response.json();
+        //console.log(responseBody);
+        switch (dataPath) {
+          case "hotel":
+            setHotels(responseBody);
+            break;
+          case "room":
+            setRooms(responseBody);
+            break;
+          case "room/roomtype":
+            setRoomTypes(responseBody);
+            break;
+          case "room/accessory":
+            setAccessories(responseBody);
+            break;
+          default:
+            break;
+        }
+      } catch (err) {
+        console.log(err);
+        setErrorText(`Failed to get ${dataPath}.`);
+      }
     }
 
-    async function getRooms() {
-      const response = await fetch(`/api/room`);
-      const responseBody = await response.json();
-      setRooms(responseBody);
-      //console.log(responseBody);
-    }
-
-    async function getRoomTypes() {
-      const response = await fetch(`/api/room/roomtype`);
-      const responseBody = await response.json();
-      setRoomTypes(responseBody);
-      //console.log(responseBody);
-    }
-
-    async function getAccessories() {
-      const response = await fetch(`/api/room/accessory`);
-      const responseBody = await response.json();
-      setAccessories(responseBody);
-      //console.log(responseBody);
+    async function getEnum(enumName) {
+      try {
+        const response = await fetch(`/api/enum/${enumName}`);
+        const responseEnum = await response.json();
+        return responseEnum;
+      } catch (err) {
+        console.log(err);
+        setErrorText(`Failed to get ${enumName} enum.`);
+      }
     }
 
     async function getEnums() {
-      const roomStatusResponse = await fetch("/api/enum/RoomStatus");
-      const roomStatus = await roomStatusResponse.json();
-      const roomQualityResponse = await fetch("/api/enum/RoomQuality");
-      const roomQuality = await roomQualityResponse.json();
-      setEnums({ roomStatus, roomQuality });
+      const RoomStatus = await getEnum("RoomStatus");
+      const RoomQuality = await getEnum("RoomQuality");
+      setEnums({ RoomStatus, RoomQuality });
     }
 
-    getHotels();
-    getRooms();
-    getRoomTypes();
-    getAccessories();
     getEnums();
+    getData("hotel");
+    getData("room");
+    getData("room/roomtype");
+    getData("room/accessory");
   }, []);
 
   useEffect(() => {
     async function getFilteredRooms() {
-      const response = await fetch(`/api/room/filter?hotelId=${hotelFilter}`);
-      const responseBody = await response.json();
-      setRooms(responseBody);
-      //console.log(responseBody);
+      try {
+        setErrorText("");
+        const filterDateString = filters.date === null ? "" : filters.date;
+        const filterAddress =
+          "/api/room/filter?hotelId=" +
+          filters.hotelId +
+          "&status=" +
+          filters.status +
+          "&date=" +
+          filterDateString +
+          "&roomTypeId=" +
+          filters.roomTypeId +
+          "&maxPrice=" +
+          filters.maxPrice +
+          "&accessible=" +
+          filters.accessible;
+        const response = await fetch(filterAddress);
+        if (!response.ok) {
+          const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+          console.log(errorMessage);
+          setErrorText(errorMessage);
+          return;
+        }
+        const responseBody = await response.json();
+        setRooms(responseBody);
+        //console.log(responseBody);
+      } catch (err) {
+        console.log(err);
+        setErrorText("Failed to get filtered Rooms.");
+      }
     }
     getFilteredRooms();
-  }, [hotelFilter]);
+  }, [filters]);
 
   const handleNewRoom = (room) => {
     setRooms([...rooms, room]);
@@ -101,11 +157,6 @@ const Rooms = () => {
     newRooms[indexOfRoom] = room;
     setRooms(newRooms);
   };
-
-  async function handleHotelSelectChange(e) {
-    console.log(e.target.value);
-    setHotelFilter(e.target.value);
-  }
 
   async function handleRoomStatusChange(room) {
     const newStatus =
@@ -128,6 +179,26 @@ const Rooms = () => {
     return roomType;
   }
 
+  function handleFiltersChange(e) {
+    const { name, value } = e.target;
+    setFilters((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+  function handleFiltersChangeManual(name, value) {
+    setFilters((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }
+
+  function handleFiltersReset() {
+    setFilters(emptyFilters);
+    setTextFilter("");
+  }
+
   return (
     <>
       <Box sx={{ textAlign: "center" }}>
@@ -135,8 +206,22 @@ const Rooms = () => {
       </Box>
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
+          <Grid item xs={12} md={12}>
+            {errorText && <AlertMessage type="error" message={errorText} />}
+          </Grid>
           <Grid item xs={12} md={3}>
-            <AddRoomModal onNewRoom={handleNewRoom} />
+            {auth.user.roles.some((el) =>
+              ["Admin", "Manager"].includes(el)
+            ) && (
+              <AddRoomModal
+                onNewRoom={handleNewRoom}
+                hotels={hotels}
+                roomTypes={roomTypes}
+                enums={enums}
+              />
+            )}
+
+            <Button onClick={handleFiltersReset}>Reset filters</Button>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
@@ -144,8 +229,9 @@ const Rooms = () => {
               <Select
                 labelId="RoomHotelSelect"
                 id="RoomHotelSelect"
-                value={hotelFilter}
-                onChange={handleHotelSelectChange}
+                name="hotelId"
+                value={filters.hotelId}
+                onChange={handleFiltersChange}
                 label="Hotels"
               >
                 <MenuItem value={""}>Select a hotel...</MenuItem>
@@ -163,11 +249,106 @@ const Rooms = () => {
           </Grid>
           <Grid item xs={12} md={3}>
             <TextField
+              fullWidth
               id="outlined-basic"
               label="Filter room number"
               variant="outlined"
+              value={textFilter}
               onChange={(e) => setTextFilter(e.target.value)}
             />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter1">Room Status</InputLabel>
+                  <Select
+                    id="filter1"
+                    name="status"
+                    value={filters.status}
+                    label="Room Status"
+                    onChange={handleFiltersChange}
+                  >
+                    {" "}
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    {enums
+                      ? Object.entries(enums.RoomStatus.values).map(
+                          ([key, value]) => (
+                            <MenuItem value={value} key={value}>
+                              {key}
+                            </MenuItem>
+                          )
+                        )
+                      : ""}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DesktopDatePicker
+                    id="filter2"
+                    label="Date"
+                    inputFormat="YYYY/MM/DD"
+                    value={filters.date}
+                    onChange={(newValue) =>
+                      handleFiltersChangeManual("date", newValue)
+                    }
+                    renderInput={(params) => (
+                      <TextField fullWidth {...params} />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter3">Room Type</InputLabel>
+                  <Select
+                    id="filter3"
+                    label="Room Type"
+                    name="roomTypeId"
+                    value={filters.roomTypeId}
+                    onChange={handleFiltersChange}
+                  >
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    {roomTypes
+                      ? roomTypes.map((roomType) => (
+                          <MenuItem value={roomType.id} key={roomType.id}>
+                            {roomType.name}
+                          </MenuItem>
+                        ))
+                      : ""}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  id="filter4"
+                  label="Maximum Price"
+                  variant="outlined"
+                  type="number"
+                  name="maxPrice"
+                  value={filters.maxPrice}
+                  onChange={handleFiltersChange}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel id="filter5">Accessible Room</InputLabel>
+                  <Select
+                    id="filter5"
+                    label="Accessible Room"
+                    name="accessible"
+                    value={filters.accessible}
+                    onChange={handleFiltersChange}
+                  >
+                    <MenuItem value={""}>Not filtered</MenuItem>
+                    <MenuItem value={true}>Yes</MenuItem>
+                    <MenuItem value={false}>No</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
@@ -176,17 +357,23 @@ const Rooms = () => {
           <TableHead>
             <TableRow>
               <TableCell align="center">Id</TableCell>
-              {hotelFilter === "" ? (
+              {filters.hotelId === "" ? (
                 <TableCell align="center">Hotel</TableCell>
               ) : (
                 ""
               )}
               <TableCell align="center">Room number</TableCell>
               <TableCell align="center">Room Type</TableCell>
-              <TableCell align="center">Comfort</TableCell>
+              <TableCell align="center">Price</TableCell>
               <TableCell align="center">Accessible</TableCell>
-              <TableCell align="center">Edit</TableCell>
-              <TableCell align="center">Status</TableCell>
+              {auth.user.roles.some((el) =>
+                ["Admin", "Manager"].includes(el)
+              ) && (
+                <>
+                  <TableCell align="center">Edit</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -201,7 +388,7 @@ const Rooms = () => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="center">{room.id}</TableCell>
-                    {hotelFilter === "" ? (
+                    {filters.hotelId === "" ? (
                       <TableCell align="center">
                         {hotels
                           ? getHotelfromId(room.hotelId).name
@@ -220,10 +407,13 @@ const Rooms = () => {
                     </TableCell>
 
                     <TableCell align="center">
-                      {roomTypes && enums
-                        ? Object.keys(enums.roomQuality.values)[
-                            getRoomTypefromId(room.roomTypeId).roomQuality
-                          ]
+                      {roomTypes
+                        ? getRoomTypefromId(
+                            room.roomTypeId
+                          ).price.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "EUR",
+                          })
                         : "..."}
                     </TableCell>
 
@@ -231,33 +421,39 @@ const Rooms = () => {
                       {room.accessible ? <Check color="primary" /> : ""}
                     </TableCell>
 
-                    <TableCell align="center">
-                      <EditRoomModal
-                        room={room}
-                        onRoomUpdate={handleRoomUpdate}
-                      />
-                    </TableCell>
+                    {auth.user.roles.some((el) =>
+                      ["Admin", "Manager"].includes(el)
+                    ) && (
+                      <>
+                        <TableCell align="center">
+                          <EditRoomModal
+                            room={room}
+                            hotels={hotels}
+                            roomTypes={roomTypes}
+                            enums={enums}
+                            onRoomUpdate={handleRoomUpdate}
+                          />
+                        </TableCell>
 
-                    <TableCell align="center">
-                      <FormGroup>
-                        <FormControlLabel
-                          control={
+                        <TableCell align="center">
+                          <Tooltip
+                            title={
+                              enums
+                                ? Object.keys(enums.RoomStatus.values)[
+                                    room.status
+                                  ]
+                                : "..."
+                            }
+                          >
                             <Switch
                               onClick={() => handleRoomStatusChange(room)}
                               disabled={room.status === null}
                               checked={room.status ? true : false}
                             />
-                          }
-                          label={
-                            enums
-                              ? Object.keys(enums.roomStatus.values)[
-                                  room.status
-                                ]
-                              : "..."
-                          }
-                        />
-                      </FormGroup>
-                    </TableCell>
+                          </Tooltip>
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 ))
             ) : (

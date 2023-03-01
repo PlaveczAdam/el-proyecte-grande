@@ -52,6 +52,21 @@ namespace elproyectegrandebackend.Migrations
                     b.ToTable("ReservationRoom");
                 });
 
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<long>("RolesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UsersId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("RolesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RoleUser");
+                });
+
             modelBuilder.Entity("el_proyecte_grande_backend.Models.Entities.Accessory", b =>
                 {
                     b.Property<long>("Id")
@@ -334,6 +349,23 @@ namespace elproyectegrandebackend.Migrations
                     b.ToTable("Reservators");
                 });
 
+            modelBuilder.Entity("el_proyecte_grande_backend.Models.Entities.Role", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("el_proyecte_grande_backend.Models.Entities.Room", b =>
                 {
                     b.Property<long>("Id")
@@ -392,6 +424,34 @@ namespace elproyectegrandebackend.Migrations
                     b.ToTable("RoomTypes");
                 });
 
+            modelBuilder.Entity("el_proyecte_grande_backend.Models.Entities.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("GuestReservation", b =>
                 {
                     b.HasOne("el_proyecte_grande_backend.Models.Entities.Guest", null)
@@ -418,6 +478,21 @@ namespace elproyectegrandebackend.Migrations
                     b.HasOne("el_proyecte_grande_backend.Models.Entities.Room", null)
                         .WithMany()
                         .HasForeignKey("RoomsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("el_proyecte_grande_backend.Models.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("el_proyecte_grande_backend.Models.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -3,11 +3,13 @@ using el_proyecte_grande_backend.Models.Dtos.Inventory;
 using Microsoft.AspNetCore.Mvc;
 using el_proyecte_grande_backend.Models.Enums;
 using el_proyecte_grande_backend.Services.InventoryServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace el_proyecte_grande_backend.Controllers;
 
-[Route("api/inventory")]
+[Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class InventoryController : ControllerBase
 {
 	private readonly IInventoryService _inventoryRepository;

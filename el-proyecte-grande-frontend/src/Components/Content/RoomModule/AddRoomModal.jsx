@@ -38,6 +38,9 @@ const AddRoomModal = (props) => {
             <RoomModalForm
               room={room}
               title={"Add Room"}
+              hotels={props.hotels}
+              roomTypes={props.roomTypes}
+              enums={props.enums}
               onCancel={handleClose}
               onSave={handleSave}
             />

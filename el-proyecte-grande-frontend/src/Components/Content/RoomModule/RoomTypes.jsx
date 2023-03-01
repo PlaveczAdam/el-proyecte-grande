@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import ContentPagination from "../../Shared/Pagination";
 import AddRoomTypeModal from "./AddRoomTypeModal";
@@ -15,8 +15,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
+import { AuthContext } from "../../Shared/AuthContext";
 
 const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
+  const auth = useContext(AuthContext);
   const [textFilter, setTextFilter] = useState("");
 
   const handleNewRoomType = (roomType) => {
@@ -38,7 +40,14 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
       <Box sx={{ marginY: 1 }}>
         <Grid container direction="row" alignItems="center" spacing={2}>
           <Grid item xs={12} md={3}>
-            <AddRoomTypeModal onNewRoomType={handleNewRoomType} />
+            {auth.user.roles.some((el) =>
+              ["Admin", "Manager"].includes(el)
+            ) && (
+              <AddRoomTypeModal
+                enums={enums}
+                onNewRoomType={handleNewRoomType}
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={6}></Grid>
           <Grid item xs={12} md={3}>
@@ -58,8 +67,10 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
               <TableCell align="center">Id</TableCell>
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Price</TableCell>
-              <TableCell align="center">Comfort</TableCell>
-              <TableCell align="center">Edit</TableCell>
+              <TableCell align="center">Comfort level</TableCell>
+              {auth.user.roles.some((el) =>
+                ["Admin", "Manager"].includes(el)
+              ) && <TableCell align="center">Edit</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -77,22 +88,31 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
 
                     <TableCell align="center">{roomType.name}</TableCell>
 
-                    <TableCell align="center">{roomType.price}</TableCell>
+                    <TableCell align="center">
+                      {roomType.price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "EUR",
+                      })}
+                    </TableCell>
 
                     <TableCell align="center">
                       {roomTypes && enums
-                        ? Object.keys(enums.roomQuality.values)[
+                        ? Object.keys(enums.RoomQuality.values)[
                             roomType.roomQuality
                           ]
                         : "..."}
                     </TableCell>
-
-                    <TableCell align="center">
-                      <EditRoomTypeModal
-                        roomType={roomType}
-                        onRoomTypeUpdate={handleRoomTypeUpdate}
-                      />
-                    </TableCell>
+                    {auth.user.roles.some((el) =>
+                      ["Admin", "Manager"].includes(el)
+                    ) && (
+                      <TableCell align="center">
+                        <EditRoomTypeModal
+                          roomType={roomType}
+                          enums={enums}
+                          onRoomTypeUpdate={handleRoomTypeUpdate}
+                        />
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
             ) : (

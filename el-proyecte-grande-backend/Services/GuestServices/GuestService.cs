@@ -1,8 +1,8 @@
-﻿using el_proyecte_grande_backend.Models.Entities;
+﻿using el_proyecte_grande_backend.Data;
+using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
+using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
-using el_proyecte_grande_backend.Data;
 using Microsoft.EntityFrameworkCore;
-using el_proyecte_grande_backend.Models.Dtos;
 
 namespace el_proyecte_grande_backend.Services.GuestServices
 {
@@ -20,7 +20,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         public async Task<Guest?> AddGuestAsync(GuestUpdateDto guest)
         {
-            Guest newGuest = MakeGuestFromDto(guest);
+            var newGuest = MakeGuestFromDto(guest);
             try
             {
                 newGuest.Hotel = await GetGuestHotel(guest.HotelId);
@@ -33,18 +33,18 @@ namespace el_proyecte_grande_backend.Services.GuestServices
             }
 
             if (guest.ReservationIds != null)
-            {
+            {   
                 if (!await AllReservationIsInTheDatabase(guest.ReservationIds))
                 {
                     throw new InvalidOperationException("One or more reservation(s) with the given Id(s) not exits in the database");
                 }
 
-                List<Reservation> reservations = await GetReservationsFromDb(guest.ReservationIds);
+                var reservations = await GetReservationsFromDb(guest.ReservationIds);
                 newGuest.Reservations = reservations;
             }
 
             await _dbContext.Guests.AddAsync(newGuest);
-            int affectedRows = await _dbContext.SaveChangesAsync();
+            var affectedRows = await _dbContext.SaveChangesAsync();
 
             return affectedRows > 0 ? newGuest : null;
         }
@@ -52,15 +52,15 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         public async Task<IEnumerable<Guest>> GetAllGuestByHotelAsync(long hotelId)
         {
-            IEnumerable<Guest> guests = await GetGuestsWithAllDetails();
-            IEnumerable<Guest> result = guests.Where(g => g.Hotel != null && g.Hotel.Id == hotelId);
+            var guests = await GetGuestsWithAllDetails();
+            var result = guests.Where(g => g.Hotel != null && g.Hotel.Id == hotelId);
 
             return result;
         }
 
         public async Task<IEnumerable<Guest>> GetAllGuestsAsync()
         {
-            IEnumerable<Guest> result = await GetGuestsWithAllDetails();
+            var result = await GetGuestsWithAllDetails();
 
             return result;
         }
@@ -68,7 +68,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         public async Task<IEnumerable<Guest>> GetFilteredGuestListAsync(long? hotelId, GuestStatus? guestStatus)
         {
-            IEnumerable<Guest> result = await GetGuestsWithAllDetails();
+            var result = await GetGuestsWithAllDetails();
 
             if (hotelId != null)
             {
@@ -85,8 +85,8 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         public async Task<Guest?> GetGuestByIdAsync(long guestId)
         {
-            IEnumerable<Guest> guests = await GetGuestsWithAllDetails();
-            Guest? guest = guests.FirstOrDefault(r => r.Id == guestId);
+            var guests = await GetGuestsWithAllDetails();
+            var guest = guests.FirstOrDefault(r => r.Id == guestId);
 
             return guest;
         }
@@ -98,7 +98,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                 throw new InvalidOperationException("Guest Id modification is nat allowed.");
             }
 
-            Guest? fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
+            var fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
             if (fromdb == null)
             {
                 return null;
@@ -117,7 +117,12 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                 throw;
             }
 
-            fromdb.Address = guest.Address;
+            fromdb.Address.Country = guest.Address.Country;
+            fromdb.Address.Region = guest.Address.Region;
+            fromdb.Address.PostalCode = guest.Address.PostalCode;
+            fromdb.Address.City = guest.Address.City;
+            fromdb.Address.AddressLineOne = guest.Address.AddressLineOne;
+            fromdb.Address.AddressLineTwo = guest.Address.AddressLineTwo;
             fromdb.BirthDate = guest.BirthDate;
             fromdb.BirthPlace = guest.BirthPlace;
             fromdb.Email = guest.Email;
@@ -128,7 +133,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
             fromdb.Note = guest.Note;
             fromdb.PersonalId = guest.PersonalId;
             fromdb.Status = guest.Status;
-
+            _dbContext.Update(fromdb);
             await _dbContext.SaveChangesAsync();
 
             return fromdb;
@@ -136,7 +141,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         public async Task<Guest?> UpdateGuestStatusAsync(long guestId, int guestStatus)
         {
-            Guest? fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
+            var fromdb = await _dbContext.Guests.FirstOrDefaultAsync(g => g.Id == guestId);
             if (fromdb != null)
             {
                 fromdb.Status = (GuestStatus)guestStatus;
@@ -149,26 +154,26 @@ namespace el_proyecte_grande_backend.Services.GuestServices
         }
         private async Task<IEnumerable<Guest>> GetGuestsWithAllDetails()
         {
-            List<Guest> result = await _dbContext.Guests.Include(g => g.Address).Include(g => g.Reservations).Include(g => g.Hotel).Include(g => g.Room).ToListAsync();
+            var result = await _dbContext.Guests.Include(g => g.Address).Include(g => g.Reservations).Include(g => g.Hotel).Include(g => g.Room).ToListAsync();
 
             return result;
         }
 
         private async Task<bool> HotelIsInTheDatabase(long hotelId)
         {
-            Hotel? hotel = await _dbContext.Hotels.FirstOrDefaultAsync(h => h.Id == hotelId);
+            var hotel = await _dbContext.Hotels.FirstOrDefaultAsync(h => h.Id == hotelId);
             return hotel != null;
         }
 
         private async Task<bool> RoomIsInTheDatabase(long roomId)
         {
-            Room? room = await _dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
+            var room = await _dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
             return room != null;
         }
         private async Task<bool> AllReservationIsInTheDatabase(ICollection<long> reservationIds)
         {
-            bool valid = true;
-            List<Reservation> allReservatrions = await _dbContext.Reservations.ToListAsync();
+            var valid = true;
+            var allReservatrions = await _dbContext.Reservations.ToListAsync();
 
             reservationIds.ToList().ForEach(r =>
             {
@@ -189,7 +194,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                 {
                     throw new InvalidOperationException("There is no hotel with the given Id in the database");
                 }
-                Hotel hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == hotelId.Value);
+                var hotel = await _dbContext.Hotels.FirstAsync(h => h.Id == hotelId.Value);
                 return hotel;
             }
 
@@ -205,7 +210,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                     throw new InvalidOperationException("There is no room with the given Id in the database");
                 }
 
-                Room room = await _dbContext.Rooms.FirstAsync(r => r.Id == roomId.Value);
+                var room = await _dbContext.Rooms.FirstAsync(r => r.Id == roomId.Value);
                 return room;
             }
 
@@ -221,7 +226,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                     throw new InvalidOperationException("One or more reservation(s) with the given Id(s) not exits in the database");
                 }
 
-                List<Reservation> reservations = await GetReservationsFromDb(reservationIds);
+                var reservations = await GetReservationsFromDb(reservationIds);
                 return reservations;
             }
 
@@ -230,8 +235,8 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
         private async Task<List<Reservation>> GetReservationsFromDb(ICollection<long> reservationIds)
         {
-            List<Reservation> AllReservations = await _dbContext.Reservations.ToListAsync();
-            List<Reservation> result = new List<Reservation>();
+            var AllReservations = await _dbContext.Reservations.ToListAsync();
+            var result = new List<Reservation>();
             reservationIds.ToList().ForEach(r =>
             {
                 result.Add(AllReservations.First(res => res.Id == r));
@@ -244,7 +249,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
         {
             if (_dbContext.Hotels.Count() == 0)
             {
-                Hotel hotel = new Hotel()
+                var hotel = new Hotel()
                 {
                     Address = new Address()
                     {
@@ -262,7 +267,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                     Status = HotelStatus.InUse
                 };
 
-                RoomType roomType = new RoomType()
+                var roomType = new RoomType()
                 {
                     Accessories = new List<Accessory>(),
                     Name = "Name",
@@ -270,7 +275,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                     RoomQuality = RoomQuality.Standard
                 };
 
-                Accessory accessory = new Accessory()
+                var accessory = new Accessory()
                 {
                     Name = "Bed",
                     Quantity = 1,
@@ -279,7 +284,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
 
                 roomType.Accessories.Add(accessory);
 
-                Room room = new Room()
+                var room = new Room()
                 {
                     Accessible = true,
                     DoorNo = 101,
@@ -290,7 +295,7 @@ namespace el_proyecte_grande_backend.Services.GuestServices
                     Status = RoomStatus.InUse
                 };
 
-                Reservation reservation = new Reservation()
+                var reservation = new Reservation()
                 {
                     BoardType = BoardType.BedOnly,
                     EndDate = DateTime.Now.ToUniversalTime(),

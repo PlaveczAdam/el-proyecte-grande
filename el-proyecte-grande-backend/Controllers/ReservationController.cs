@@ -3,6 +3,7 @@ using el_proyecte_grande_backend.Models.Dtos.Reservation;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.ReservationServices;
 using el_proyecte_grande_backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace el_proyecte_grande_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager,Receptionist")]
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationRepository;
@@ -50,10 +52,11 @@ namespace el_proyecte_grande_backend.Controllers
             uint? reservedFor,
             bool? payFulfillment,
             DateTime? startDate,
-            DateTime? endDate
+            DateTime? endDate,
+            long? hotelId
             )
         {
-            IEnumerable<Reservation> reservations = await _reservationRepository.GetFilteredReservations(boardType, paymentMethod, reservedFor, payFulfillment, startDate, endDate);
+            IEnumerable<Reservation> reservations = await _reservationRepository.GetFilteredReservations(boardType, paymentMethod, reservedFor, payFulfillment, startDate, endDate, hotelId);
             IEnumerable<GetAllReservationDTO> reservationDTOs = _mapper.Map<IEnumerable<GetAllReservationDTO>>(reservations);
             return Ok(reservationDTOs);
         }
@@ -104,20 +107,19 @@ namespace el_proyecte_grande_backend.Controllers
             return CreatedAtAction("GetReservation", new { id = createdReservation.Id }, createdReservationDTO);
         }
 
-        // PUT: api/Reservation/5
+        // PUT: api/Reservation/5?isCancelled=true
         [HttpPut("{id}")]
-        public async Task<IActionResult> SetReservationToBeCancelled(long id)  // sets isCancelled to true
+        public async Task<IActionResult> SetReservationToBeCancelled(long id, [FromQuery] bool isCancelled)  // sets isCancelled to true or false
         {
             Reservation? reservation = await _reservationRepository.GetWithDetailsAsync(id);
 
             if (reservation == null)
                 return NotFound(JsonConvert.SerializeObject(new { message = $"Reservation with the id of {id} does not exist" }));
 
-
             Reservation? updatedReservation;
             try
             {
-                updatedReservation = await _reservationRepository.SetReservationToBeCancelled(id);
+                updatedReservation = await _reservationRepository.SetReservationToBeCancelled(id, isCancelled);
             }
             catch (DbUpdateConcurrencyException)
             {
