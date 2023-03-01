@@ -90,5 +90,24 @@ namespace el_proyecte_grande_backend_test
             };
             return role;
         }
+        public static Reservation CreateTestReservation(int id)
+        {
+            var reservation = new Reservation
+            {
+                Id = id,
+                ReservedFor = 1,
+                ReserveDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now,
+                PayFullfillment = true,
+                BoardType = BoardType.FullBoard,
+                PaymentMethod = PaymentMethod.CreditCard,
+                isCancelled = false
+                /*Reservator = new Reservator{ Id = 1, Name = "A" },
+                Rooms = new List<Role> { }
+                Guests = new List<Role> { }*/
+            };
+            return reservation;
+        }
     }
 }
