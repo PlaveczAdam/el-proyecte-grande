@@ -15,10 +15,24 @@ using el_proyecte_grande_backend.Services.AuthServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
+var connectionString = String.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration["ConnectionStrings:GrandeHotelConnection"];
+}
+else
+{
+    string connectionVariableName = "ASPNETCORE_DB_CONNECTION_STRING";
+    connectionString = Environment.GetEnvironmentVariable(connectionVariableName);
+    //Console.WriteLine(connectionString);
+    if (connectionString == null)
+    {
+        Console.WriteLine("No environmental variable name provided: " + connectionVariableName);
+        Environment.Exit(-1);
+    }
+}
+
 // Add services to the container.
-
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -50,14 +64,21 @@ builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));
 builder.Services.AddTransient<DbInitializer>();
 
 
+
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
 }
 
 using var scope = app.Services.CreateScope();
