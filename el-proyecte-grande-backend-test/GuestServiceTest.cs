@@ -247,6 +247,18 @@ namespace el_proyecte_grande_backend_test
             Assert.That(result, Is.Null);
         }
 
+        [Test]
+        public void TestSeed()
+        {
+            var dbContextOptions = new DbContextOptionsBuilder<GrandeHotelContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+            var _hotelContext = new GrandeHotelContext(dbContextOptions);
+
+            var service = new GuestService(_hotelContext);
+            Assert.That(_hotelContext.Hotels.Count, Is.GreaterThan(0));
+        }
         private void Seed()
         {
             var hotel = new Hotel()
