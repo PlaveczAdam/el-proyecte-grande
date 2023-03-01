@@ -133,9 +133,9 @@ const Reservations = () => {
   return (
     <>
       {isLoading ? (
-        <div className="loader_overlay">
+        <Box sx={{display:"flex", justifyContent:"center", alignItems:"center"}}>
           <CircularProgress color="primary" />
-        </div>
+        </Box>
       ) : error ? (
         <h2>{error}</h2>
       ) : (

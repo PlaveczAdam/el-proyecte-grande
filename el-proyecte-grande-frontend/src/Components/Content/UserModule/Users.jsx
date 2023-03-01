@@ -8,8 +8,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
+import CircularProgress from "@mui/material/CircularProgress";
 import ContentPagination from "../../Shared/Pagination";
 import UserDataCell from "./UserDataCell";
 import AddUserModal from "./AddUserModal";
@@ -23,7 +22,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 
 const Users = () => {
   const context = useContext(UserContext);
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState(null);
   const [roles, setRoles] = useState(Object.keys(context.enums.values));
 
   const handleNewUser = (user) => {
@@ -97,47 +96,58 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .filter((x) => x.roles.some((y) => roles.includes(y.name)))
-              .map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <UserDataCell data={row.name}></UserDataCell>
-                  <UserDataCell data={row.email}></UserDataCell>
-                  <TableCell sx={{ userSelect: "none" }} align="center">
-                    {row.roles.map((x) => GetRoleName(x)).join(", ")}
-                  </TableCell>
-
-                  <TableCell align="center">
-                    <EditUserModal user={row} onUserUpdate={handleUserUpdate} />
-                  </TableCell>
-                  <TableCell align="center">
-                    {/* <Button
-                    variant="text"
-                    onClick={() => handleActivityChange(row)}
+            {rows ? (
+              rows
+                .filter((x) => x.roles.some((y) => roles.includes(y.name)))
+                .map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <DisabledByDefaultIcon
-                      sx={{
-                        color: row.isActive ? "red" : "green",
-                      }}
-                    />
-                  </Button> */}
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            onClick={() => handleActivityChange(row)}
-                            checked={row.isActive ? true : false}
-                          />
-                        }
-                        label={row.isActive ? "Active" : "Deactivated"}
+                    <UserDataCell data={row.name}></UserDataCell>
+                    <UserDataCell data={row.email}></UserDataCell>
+                    <TableCell sx={{ userSelect: "none" }} align="center">
+                      {row.roles.map((x) => GetRoleName(x)).join(", ")}
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <EditUserModal
+                        user={row}
+                        onUserUpdate={handleUserUpdate}
                       />
-                    </FormGroup>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell align="center">
+                      {/* <Button
+        variant="text"
+        onClick={() => handleActivityChange(row)}
+      >
+        <DisabledByDefaultIcon
+          sx={{
+            color: row.isActive ? "red" : "green",
+          }}
+        />
+      </Button> */}
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              onClick={() => handleActivityChange(row)}
+                              checked={row.isActive ? true : false}
+                            />
+                          }
+                          label={row.isActive ? "Active" : "Deactivated"}
+                        />
+                      </FormGroup>
+                    </TableCell>
+                  </TableRow>
+                ))
+            ) : (
+              <TableRow sx={{ textAlign: "center" }}>
+                <TableCell colSpan="100%" align="center">
+                  <CircularProgress />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
