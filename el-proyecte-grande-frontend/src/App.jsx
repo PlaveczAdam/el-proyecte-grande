@@ -73,7 +73,7 @@ function App() {
               }}
             >
               <Container>
-                {user.username ? (
+                {user.loggedIn ? (
                   <>
                     <Header />
                     <Grid container direction="row" spacing={2}>
