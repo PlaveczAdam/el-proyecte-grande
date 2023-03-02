@@ -213,7 +213,7 @@ const ReservationReservationDetails = ({ reservation }) => {
             Pay fulfillment
           </Typography>
           <Typography variant="body2">
-            {reservation.payFulfillment ? "Settled" : "Unresolved"}
+            {reservation.payFullfillment ? "Settled" : "Unresolved"}
           </Typography>
         </Box>
         {reservation.payFulfillment && (

@@ -113,7 +113,7 @@ const Accessories = ({ accessories, setAccessories, roomTypes }) => {
                 ))
             ) : (
               <TableRow>
-                <TableCell TableCell colSpan="100%" align="center">
+                <TableCell colSpan="100%" align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>

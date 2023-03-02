@@ -161,7 +161,7 @@ const Reservations = () => {
                     setAddReservationModalIsOpen(true);
                   }}
                 >
-                  Add new Reservation
+                  Add new
                 </Button>
               </Grid>
 
