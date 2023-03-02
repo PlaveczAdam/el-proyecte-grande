@@ -139,5 +139,28 @@ namespace el_proyecte_grande_backend_test
             };
             return newAccessory;
         }
+
+        public static Inventory CreateTestInventory(int id)
+        {
+            var inventory = new Inventory
+            {
+                Id = id,
+                Items = new List<Item>()
+            };
+            return inventory;
+        }
+
+        public static Item CreateTestItem(int id)
+        {
+            var item = new Item
+            {
+                Id = id,
+                Amount = 1,
+                ItemType = ItemType.Furniture,
+                Name = "B",
+                RequiredAmount = 1,
+            };
+            return item;
+        }
     }
 }
