@@ -160,9 +160,9 @@ const Rooms = () => {
 
   async function handleRoomStatusChange(room) {
     const newStatus =
-      room.status === enums.roomStatus.values.InUse
-        ? enums.roomStatus.values.OutOfService
-        : enums.roomStatus.values.InUse;
+      room.status === enums.RoomStatus.values.InUse
+        ? enums.RoomStatus.values.OutOfService
+        : enums.RoomStatus.values.InUse;
     await fetch(`/api/room/status/${room.id}?status=${newStatus}`, {
       method: "PUT",
     });
