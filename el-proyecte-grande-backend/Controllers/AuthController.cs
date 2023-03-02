@@ -1,6 +1,7 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.AuthDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.AuthServices;
+using el_proyecte_grande_backend.Services.UserServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -12,17 +13,21 @@ namespace el_proyecte_grande_backend.Controllers
     [ApiController, Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        IAuthService _authService;
+        private readonly IAuthService _authService;
+        private readonly IUserService _userService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<LoggedInUserDto>> Login(CredentialsDto credentials)
         {
             if (String.IsNullOrEmpty(credentials.Username) || String.IsNullOrEmpty(credentials.Password)) return Unauthorized();
+
+            await EnableRootUserIfNecessary();
 
             ClaimsIdentity? user = await _authService.LoginAttemptAsync(credentials.Username, credentials.Password);
 
@@ -38,9 +43,11 @@ namespace el_proyecte_grande_backend.Controllers
             return loggedInUser;
         }
 
+
         [HttpGet("logout")]
         public async Task<ActionResult> Logout()
         {
+            await DisableRootUserIfNecessary();
             await HttpContext.SignOutAsync();
             return Ok();
         }
@@ -63,6 +70,27 @@ namespace el_proyecte_grande_backend.Controllers
                 Email = email,
                 Roles = roles
             };
+        }
+
+        private async Task EnableRootUserIfNecessary()
+        {
+            int activeAdmins = await GetActiveAdminUsersCount();
+
+            if (activeAdmins < 1) await _userService.ActivateRootUser();
+        }
+
+        private async Task DisableRootUserIfNecessary()
+        {
+            int activeAdmins = await GetActiveAdminUsersCount();
+
+            if (activeAdmins > 1) await _userService.DeactivateRootUser();
+        }
+
+        private async Task<int> GetActiveAdminUsersCount()
+        {
+            IEnumerable<User> admins = await _userService.GetAdmins();
+            if (!admins.Any()) throw new Exception("There are no admin users in the database");
+            return admins.Where(a => a.IsActive).Count();
         }
     }
 }
