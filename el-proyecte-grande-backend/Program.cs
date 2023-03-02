@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.ConstrainedExecution;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,21 +70,14 @@ builder.Services.AddTransient<HealthChecker>();
 
 builder.Services.AddHealthChecks();
 
-
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-else
-{
-    app.UseDefaultFiles();
-    app.UseStaticFiles();
 }
 
 using var scope = app.Services.CreateScope();
@@ -94,6 +88,12 @@ initializer.Seed();
 var healthChecker = services.GetRequiredService<HealthChecker>();
 
 app.UseHttpsRedirection();
+
+if(!app.Environment.IsDevelopment())
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+}
 
 app.UseCors("AllowAll");
 
