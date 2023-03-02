@@ -36,6 +36,12 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return await _context.Users.Include(x => x.Roles).ToListAsync();
         }
 
+        public async Task<IEnumerable<User>> GetAdmins()
+        {
+            Role adminRole = await _context.Roles.FirstAsync(r => r.Name == "Admin");
+            return await _context.Users.Include(x => x.Roles).Where(x => x.Roles.Contains(adminRole)).ToListAsync();
+        }
+
         public async Task<User> GetUserById(long id)
         {
             return await _context.Users.Include(x => x.Roles).SingleAsync(x => x.Id == id);
