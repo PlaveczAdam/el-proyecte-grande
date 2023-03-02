@@ -1,4 +1,5 @@
 ﻿using el_proyecte_grande_backend.Models.Dtos.GuestDtos;
+using el_proyecte_grande_backend.Models.Dtos.RoomDtos;
 using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Models.Enums;
 
@@ -43,10 +44,6 @@ namespace el_proyecte_grande_backend_test
                 PersonalId = "123fewrfw",
                 Phone = "141324213",
                 Address = new Address { Id = 1 },
-                /* Room = new Room { Id = 1 },
-                 Hotel = new Hotel { Id = 1 },
-                 Reservations = new List<Reservation> { new Reservation { Id = 1 } }*/
-
             };
             return guest;
         }
@@ -103,11 +100,67 @@ namespace el_proyecte_grande_backend_test
                 BoardType = BoardType.FullBoard,
                 PaymentMethod = PaymentMethod.CreditCard,
                 isCancelled = false
-                /*Reservator = new Reservator{ Id = 1, Name = "A" },
-                Rooms = new List<Role> { }
-                Guests = new List<Role> { }*/
             };
             return reservation;
+        }
+        public static NewRoom CreateTestNewRoom(int id)
+        {
+            var room = new NewRoom
+            {
+                Id = id,
+                Floor = 1,
+                DoorNo = 1,
+                Accessible = true,
+                HotelId = 1,
+                RoomTypeId = 1,
+                Status = RoomStatus.InUse
+            };
+            return room;
+        }
+
+        public static NewRoomType CreateTestNewRoomType(int id)
+        {
+            var roomType = new NewRoomType
+            {
+                Name = $"RoomType {id}",
+                Price = 1,
+                RoomQuality = RoomQuality.Comfort,
+            };
+            return roomType;
+        }
+
+        public static NewAccessory CreateTestNewAccessory(int id)
+        {
+            var newAccessory = new NewAccessory
+            {
+                Name = $"A {id}",
+                Quantity = 10,
+                RoomTypeId = 1
+            };
+            return newAccessory;
+        }
+
+        public static Inventory CreateTestInventory(int id)
+        {
+            var inventory = new Inventory
+            {
+                Id = id,
+                Items = new List<Item>()
+            };
+            return inventory;
+        }
+
+        public static Item CreateTestItem(int id)
+        {
+            var item = new Item
+            {
+                Id = id,
+                Amount = 1,
+                ItemType = ItemType.Furniture,
+                Name = "B",
+                RequiredAmount = 1,
+            };
+            return item;
         }
     }
 }
