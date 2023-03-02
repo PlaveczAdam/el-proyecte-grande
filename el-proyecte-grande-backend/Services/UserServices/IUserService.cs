@@ -12,5 +12,6 @@ namespace el_proyecte_grande_backend.Services.UserServices
         public Task<User> SetUserRole(long userId, Role role);
         public Task<User> UpdateUserActivity(long userId, bool activity);
         public Task ActivateRootUser();
+        public Task DeactivateRootUser();
     }
 }

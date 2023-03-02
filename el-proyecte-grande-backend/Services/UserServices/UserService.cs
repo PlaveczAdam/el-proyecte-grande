@@ -102,5 +102,12 @@ namespace el_proyecte_grande_backend.Services.UserServices
             rootUser.IsActive = true;
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeactivateRootUser()
+        {
+            User rootUser = await _context.Users.FirstAsync(u => u.Name == "Root");
+            rootUser.IsActive = false;
+            await _context.SaveChangesAsync();
+        }
     }
 }
