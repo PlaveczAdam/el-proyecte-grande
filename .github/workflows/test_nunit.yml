@@ -20,10 +20,10 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Setup MSBuild Path
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v1.1
 
       - name: Build
-        run: msbuild.exe .\el-proyecte-grande\el-proyecte-grande.sln
+        run: msbuild .\el-proyecte-grande\el-proyecte-grande.sln
 
       - name: Install NUnit.ConsoleRunner
         run: nuget install NUnit.ConsoleRunner -Version 3.16.3 -DirectDownload -OutputDirectory .
