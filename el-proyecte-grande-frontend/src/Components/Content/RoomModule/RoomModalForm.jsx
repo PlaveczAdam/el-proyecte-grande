@@ -10,6 +10,7 @@ import FormControl from "@mui/material/FormControl";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const RoomModalForm = (props) => {
   const [room, setRoom] = useState(props.room);
@@ -52,7 +53,14 @@ const RoomModalForm = (props) => {
         >
           Save
         </Button>
-        <Button onClick={props.onCancel}>Cancel</Button>
+        <Button
+          onClick={props.onCancel}
+          sx={{
+            position: "relative",
+          }}
+        >
+          <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
+        </Button>
       </Box>
 
       <TextField

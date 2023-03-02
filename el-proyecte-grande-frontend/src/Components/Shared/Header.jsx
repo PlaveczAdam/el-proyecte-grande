@@ -1,12 +1,14 @@
 import { useContext } from "react";
 import { AuthContext } from "../Shared/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
-import { useNavigate } from "react-router-dom";
+import Typography from "@mui/material/Typography";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,30 +22,40 @@ const Header = () => {
   return (
     <div className="Header">
       <Paper>
-        <Grid container alignItems="right" spacing={2}>
-          <Grid item xs={12} md={8}></Grid>
-          <Grid item xs={12} md={4}>
-            <div className="User">
-              <span>Logged in: </span>
-              <Tooltip
-                title={
-                  "Roles: " + (auth.user.roles ? auth.user.roles : "No roles")
-                }
-              >
-                <span>
-                  <b>{auth.user.username ? auth.user.username : "N/A"}</b> (
-                  {auth.user.email ? auth.user.email : "N/A"}){" "}
-                </span>
-              </Tooltip>
-              <Button variant="outlined" size="small" onClick={userLogout}>
-                Logout
-              </Button>
-            </div>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+          <Grid item xs={12} md={6} paddingX={2}>
+            <span>Logged in as </span>
+            <Tooltip
+              title={
+                "Roles: " + (auth.user.roles ? auth.user.roles : "No roles")
+              }
+            >
+              <span>
+                <b>{auth.user.username ? auth.user.username : "N/A"}</b> (
+                {auth.user.email ? auth.user.email : "N/A"})
+              </span>
+            </Tooltip>
+            <Button variant="outlined" size="small" onClick={userLogout} sx={{marginLeft:2}}>
+              Log out
+            </Button>
+          </Grid>
+        </Box>
+        <Grid container>
+          <Grid item xs={2}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+              <ApartmentIcon sx={{ transform: "scale(3)"}} />
+            </Box>
+          </Grid>
+          <Grid item xs={10}>
+            <Box
+              sx={{ marginBottom: 2, textAlign: "center", paddingBottom: 1 }}
+            >
+              <Typography variant="h4" sx={{ padding: 1 }}>
+                Grande Hotel Management System
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
-        <Box sx={{ marginY: 2, textAlign: "center" }}>
-          <h1>Grande management</h1>
-        </Box>
       </Paper>
     </div>
   );

@@ -457,8 +457,8 @@ const Rooms = () => {
                   </TableRow>
                 ))
             ) : (
-              <TableRow>
-                <TableCell align="center">
+              <TableRow  sx={{textAlign:"center"}}>
+                <TableCell colSpan="100%"  align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>

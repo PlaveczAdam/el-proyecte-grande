@@ -5,6 +5,23 @@ import Box from '@mui/material/Box';
 import HotelModalForm from './HotelModalForm';
 import Paper from '@mui/material/Paper';
 
+const style = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "15px",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 800,
+    bgcolor: "background.paper",
+    border: "2px solid black",
+    boxShadow: 24,
+    p: 4,
+    height: "90vh",
+    overflowY: "auto",
+  };
 
 const AddHotelModal = (props) => {
     const [open, setOpen] = React.useState(false);
@@ -42,7 +59,7 @@ const AddHotelModal = (props) => {
         open={open}
         onClose={handleClose}
     >
-        <Box height="100vh"display="flex" sx={{overflowY:"auto"}} >
+        <Box  sx={style} >
             <Paper sx={{margin:"auto"}}>
                 <HotelModalForm hotel={hotel} title={"Add Hotel"} onCancel={handleClose} onSave={handleSave}></HotelModalForm>
             </Paper>

@@ -65,88 +65,84 @@ export default function Login() {
   }
 
   return (
-    <div className="Login">
-      <Box
-        className="Login__Form"
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          flexDirection: "column",
-          alignContent: "center",
-        }}
-      >
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-          spacing={2}
-        >
-          <Grid item xs={12} md={12} textAlign={"center"}>
-            <h1>Grande Management System</h1>
-            <h2>Login</h2>
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      spacing={2}
+      height="100%"
+    >
+      <h1>Grande Hotel Management System</h1>
+      <h2>Log in to continue *</h2>
+
+      <Grid item xs={11} md={4}>
+        {errorText && <AlertMessage type="error" message={errorText} />}
+        {isLoading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress color="primary" />
+          </Box>
+        ) : (
+          <Grid container spacing={1}>
+            <Grid item xs={12} md={12}>
+              <TextField
+                fullWidth
+                required
+                label="Username"
+                id="user"
+                name="user"
+                type="text"
+                value={loginUser}
+                onChange={(e) => setLoginUser(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleLogin();
+                  }
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12}>
+              <TextField
+                fullWidth
+                required
+                label="Password"
+                id="password"
+                name="password"
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleLogin();
+                  }
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12}>
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ marginY: "20px", paddingY: "10px" }}
+                onClick={handleLogin}
+              >
+                Login
+              </Button>
+            </Grid>
+
+            <Grid item xs={12} md={12} textAlign="end" fontStyle="italic">
+              <span>* Employees only</span>
+            </Grid>
           </Grid>
-          <Grid item xs={11} md={4}>
-            {errorText && <AlertMessage type="error" message={errorText} />}
-            {isLoading ? (
-              <CircularProgress />
-            ) : (
-              <Grid container spacing={1}>
-                <Grid item xs={12} md={12}>
-                  <TextField
-                    fullWidth
-                    required
-                    label="Username"
-                    id="user"
-                    name="user"
-                    type="text"
-                    value={loginUser}
-                    onChange={(e) => setLoginUser(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleLogin();
-                      }
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={12}>
-                  <TextField
-                    fullWidth
-                    required
-                    label="Password"
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleLogin();
-                      }
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={12}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ marginY: "20px", paddingY: "10px" }}
-                    onClick={handleLogin}
-                  >
-                    Login
-                  </Button>
-                </Grid>
-
-                <Grid item xs={12} md={12}>
-                  <span>Employees only.</span>
-                </Grid>
-              </Grid>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    </div>
+        )}
+      </Grid>
+    </Grid>
   );
 }
