@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.App{
+    height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.Header{
+    padding-top: 10px;
+}
+
+.Footer{
+    padding-bottom: 1em;
+    font-weight: 700;
+}
+
+::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em;
+  }
+
+::-webkit-scrollbar-track {
+    background: #f4eae0;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #ac8a73;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #977a66;
+  }

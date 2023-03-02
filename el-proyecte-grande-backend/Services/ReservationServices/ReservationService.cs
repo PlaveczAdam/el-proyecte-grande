@@ -30,7 +30,7 @@ namespace el_proyecte_grande_backend.Services.ReservationServices
             uint? reservedFor,
             bool? payFulfillment,
             DateTime? startDate,
-            DateTime? endDate, 
+            DateTime? endDate,
             long? hotelId)
         {
             IEnumerable<Reservation> reservations = await GetAllAsync();

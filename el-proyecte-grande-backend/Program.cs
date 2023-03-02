@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.ConstrainedExecution;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,9 +58,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(o =>
+    .AddCookie(options =>
     {
-        o.AccessDeniedPath = "/api/error/forbidden";
+        options.SlidingExpiration = false;
+        options.AccessDeniedPath = "/api/error/forbidden";
     });
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfiguration));

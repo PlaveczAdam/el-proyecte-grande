@@ -44,10 +44,10 @@ namespace el_proyecte_grande_backend.Services.UserServices
         public async Task<User> SetUserRole(long userId, Role role)
         {
             var user = await GetUserById(userId);
-            if (user is null)
+           /* if (user is null)
             {
                 throw new Exception("There is no such user.");
-            }
+            }*/
             var foundRole = _context.Roles.Single(x => x.Name == role.Name);
 
             if (user.Roles.Contains(foundRole))

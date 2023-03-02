@@ -9,6 +9,24 @@ import Alert from '@mui/material/Alert';
 import GuestModalForm from './GuestModalForm.jsx';
 import dayjs from 'dayjs';
 
+const style = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "15px",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 800,
+    bgcolor: "background.paper",
+    border: "2px solid black",
+    boxShadow: 24,
+    p: 4,
+    height: "90vh",
+    overflowY: "auto",
+  };
+
 function EditGuestModal(props) {
     const [open, setOpen] = useState(false);
     const [snackOpen, setSnackOpen] = useState(false)
@@ -54,7 +72,7 @@ function EditGuestModal(props) {
               </Alert>
           </Snackbar>
           <Modal open={open} onClose={handleClose}>
-              <Box height="100vh" display="flex" sx={{ overflowY: "auto" }} >
+              <Box  sx={style} >
                   <Paper sx={{ margin: "auto" }}>
                       <GuestModalForm enums={props.enums} hotels={props.hotels} guest={props.guest} title={"Edit Guest"} onCancel={handleClose} onSave={handleSave}></GuestModalForm>
                   </Paper>

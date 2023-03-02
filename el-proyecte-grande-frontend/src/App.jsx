@@ -72,8 +72,15 @@ function App() {
                 logout: logout,
               }}
             >
-              <Container>
-                {user.username ? (
+              <Container
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                {user.loggedIn ? (
                   <>
                     <Header />
                     <Grid container direction="row" spacing={2}>

@@ -8,10 +8,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import ContentPagination from "../../Shared/Pagination";
 import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
+import Switch from "@mui/material/Switch";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import HotelDataCell from "./HotelDataCell";
 import AddHotelModal from "./AddHotelModal";
 import EditHotelModal from "./EditHotelModal";
@@ -21,7 +23,7 @@ import { AuthContext } from "../../Shared/AuthContext";
 const Hotels = () => {
   const auth = useContext(AuthContext);
 
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState(null);
   const [filter, setFilter] = useState("");
   const handleNewHotel = (hotel) => {
     setRows([...rows, hotel]);
@@ -101,59 +103,83 @@ const Hotels = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .filter((x) =>
-                x.name.toLowerCase().includes(filter.toLowerCase())
-              )
-              .map((row) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <HotelDataCell data={row.id}></HotelDataCell>
-                  <HotelDataCell data={row.name}></HotelDataCell>
-                  <HotelDataCell
-                    data={getAddressString(row.address)}
-                  ></HotelDataCell>
-                  <HotelDataCell
-                    data={
-                      Object.keys(context.enums.hotelStatus.values)[
-                        row.hotelStatus
-                      ]
-                    }
-                  ></HotelDataCell>
-                  <HotelDataCell data={row.classification}></HotelDataCell>
-                  <HotelDataCell data={row.floor}></HotelDataCell>
-                  <HotelDataCell data={row.rooms}></HotelDataCell>
-
-                  {auth.user.roles.includes("Admin") && (
-                    <>
-                      <TableCell align="center">
-                        <EditHotelModal
-                          hotel={row}
-                          onHotelUpdate={handleHotelUpdate}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          variant="text"
-                          onClick={() => handleStatusChange(row)}
-                        >
-                          <DisabledByDefaultIcon
-                            sx={{
-                              color:
-                                row.hotelStatus ===
-                                context.enums.hotelStatus.values.InUse
-                                  ? "red"
-                                  : "green",
-                            }}
+            {rows ? (
+              rows
+                .filter((x) =>
+                  x.name.toLowerCase().includes(filter.toLowerCase())
+                )
+                .map((row) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <HotelDataCell data={row.id}></HotelDataCell>
+                    <HotelDataCell data={row.name}></HotelDataCell>
+                    <HotelDataCell
+                      data={getAddressString(row.address)}
+                    ></HotelDataCell>
+                    <HotelDataCell
+                      data={
+                        Object.keys(context.enums.hotelStatus.values)[
+                          row.hotelStatus
+                        ]
+                      }
+                    ></HotelDataCell>
+                    <HotelDataCell data={row.classification}></HotelDataCell>
+                    <HotelDataCell data={row.floor}></HotelDataCell>
+                    <HotelDataCell data={row.rooms}></HotelDataCell>
+  
+                    {auth.user.roles.includes("Admin") && (
+                      <>
+                        <TableCell align="center">
+                          <EditHotelModal
+                            hotel={row}
+                            onHotelUpdate={handleHotelUpdate}
                           />
-                        </Button>
-                      </TableCell>
-                    </>
-                  )}
-                </TableRow>
-              ))}
+                        </TableCell>
+                        <TableCell align="center">
+                          {/* <Button
+                            variant="text"
+                            onClick={() => handleStatusChange(row)}
+                          >
+                            <DisabledByDefaultIcon
+                              sx={{
+                                color:
+                                  row.hotelStatus ===
+                                  context.enums.hotelStatus.values.InUse
+                                    ? "red"
+                                    : "green",
+                              }}
+                            />
+                          </Button> */}
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                onClick={() => handleStatusChange(row)}
+                                  checked={row.hotelStatus ===
+                                    context.enums.hotelStatus.values.InUse ? true : false}
+                                />
+                              }
+                              // label={
+                              //   row.hotelStatus ===
+                              //   context.enums.hotelStatus.values.InUse ? "In use" : "oUT OF USE"
+                              // }
+                            />
+                          </FormGroup>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                ))
+
+            ) : (
+              <TableRow  sx={{textAlign:"center"}}>
+              <TableCell colSpan="100%"  align="center">
+                <CircularProgress />
+              </TableCell>
+            </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
