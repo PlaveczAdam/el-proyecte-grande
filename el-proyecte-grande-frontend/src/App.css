@@ -13,3 +13,20 @@
     padding-bottom: 1em;
     font-weight: 700;
 }
+
+::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em;
+  }
+
+::-webkit-scrollbar-track {
+    background: #f4eae0;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #ac8a73;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #977a66;
+  }
