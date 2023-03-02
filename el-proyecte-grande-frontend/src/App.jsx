@@ -43,7 +43,7 @@ function App() {
       const response = await fetch(url);
       const responseData = await response.json();
 
-      if (responseData.status !== "Health") {
+      if (responseData.status !== "Healthy") {
         setAppStatus("App needs maintenance, please consult with IT");
         return;
       }
