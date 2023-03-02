@@ -36,6 +36,12 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return await _context.Users.Include(x => x.Roles).ToListAsync();
         }
 
+        public async Task<IEnumerable<User>> GetAdmins()
+        {
+            Role adminRole = await _context.Roles.FirstAsync(r => r.Name == "Admin");
+            return await _context.Users.Include(x => x.Roles).Where(x => x.Roles.Contains(adminRole)).ToListAsync();
+        }
+
         public async Task<User> GetUserById(long id)
         {
             return await _context.Users.Include(x => x.Roles).SingleAsync(x => x.Id == id);
@@ -90,5 +96,18 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
         }
 
+        public async Task ActivateRootUser()
+        {
+            User rootUser = await _context.Users.FirstAsync(u => u.Name == "Root");
+            rootUser.IsActive = true;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeactivateRootUser()
+        {
+            User rootUser = await _context.Users.FirstAsync(u => u.Name == "Root");
+            rootUser.IsActive = false;
+            await _context.SaveChangesAsync();
+        }
     }
 }
