@@ -101,7 +101,7 @@ public class RoomService : IRoomService
             if (!dateParsed) return null;
             var unix = DateTime.UnixEpoch.ToUniversalTime();
             DateTime filterDate = unix.AddMilliseconds(filterDateInMs).ToLocalTime();
-            roomsToFilterQuery = roomsToFilterQuery.Where(r => r.Reservations.Any(res =>
+            roomsToFilterQuery = roomsToFilterQuery.Where(r => !r.Reservations.Any(res =>
                 res.StartDate < filterDate && res.EndDate > filterDate));
         }
         if (accessible != null)

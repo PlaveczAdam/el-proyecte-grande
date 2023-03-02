@@ -287,7 +287,7 @@ const Rooms = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DesktopDatePicker
                     id="filter2"
-                    label="Date"
+                    label="Free on this Date"
                     inputFormat="YYYY/MM/DD"
                     value={filters.date}
                     onChange={(newValue) =>
@@ -457,8 +457,8 @@ const Rooms = () => {
                   </TableRow>
                 ))
             ) : (
-              <TableRow  sx={{textAlign:"center"}}>
-                <TableCell colSpan="100%"  align="center">
+              <TableRow sx={{ textAlign: "center" }}>
+                <TableCell colSpan="100%" align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>
