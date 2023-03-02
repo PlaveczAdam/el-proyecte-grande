@@ -1,102 +1,219 @@
-import * as React from 'react';
+import * as React from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TextField from '@mui/material/TextField';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
-import ContentPagination from '../../Shared/Pagination';
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TextField from "@mui/material/TextField";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import CircularProgress from "@mui/material/CircularProgress";
+import ContentPagination from "../../Shared/Pagination";
+import Filter from "./Filter.jsx";
+import AddGuestModal from "./AddGuestModal.jsx";
+import EditGuestModal from "./EditGuestModal.jsx";
+import { useEffect } from "react";
 
 const Guests = () => {
-  function createData(id, firstName, lastName, personalId, birthDate, birthplace, gender, phone, email, adress, reservation, roomId, hotelId, status, note) {
-  return { id, firstName, lastName, personalId, birthDate, birthplace, gender, phone, email, adress, reservation, roomId, hotelId, status, note};
-}
+  const [loading, setLoading] = React.useState(true);
+  const [filterLoading, setFilterLoading] = React.useState(false);
+  const [rows, setRows] = React.useState([]);
+  const [filteredRows, setFilteredRows] = React.useState([]);
+  const [enums, setEnums] = React.useState({});
+  const [hotelNames, setHotelNames] = React.useState([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [selectedHotelId, setSelectedHotelId] = React.useState(null);
+  const [selectedStatusId, setSelectedStatusId] = React.useState(null);
+  const [refresh, setRefresh] = React.useState(0);
 
-const rows = [
-    createData(1, 'Lorem', 'Ipsum', 123456, '1999.01.23', "Lorem City", "Male" , "123-123-123" ,"Lorem@ipsum.com", "1234 Lorem Ipsum 23", "This, That" ,4 , 2, "Checked in", "This is a note"),
-    createData(2, 'Ipsum', 'Lorem', 523, '1939.12.01', "Lorem City", "Female", "21324-42132-13", "Ipsum@Lorem.com", "3225 Ipsum 23", "This, That" , 7 , 40, "Checked out", "This is a note"),
-    createData(3, 'Bob', 'DaBuilder', 2342342, '1979.01.04', "New York", "Male", "1234-5243-34", "Builda@Bob.com", "5321 NewBob Ipsum 23", "This, That",  32 , 123, "Checked in", "This is a note"),
-    createData(4, 'Jose', 'Sumip', 65246, '1969.04.04', "Lorem City", "Male", "6534-3452-1234", "OutOf@Idea.com", "2345 Tuna 23", "This, That" , 6 , 420, "Checked out", "This is a note"),
-];
+  const searchBoxChanged = (e) => {
+    const text = e.target.value;
+    const filteredUsers = rows.filter(
+      (r) => r.firstName.includes(text) || r.lastName.includes(text)
+    );
+    if (text !== "" && text !== undefined) {
+      setFilteredRows(filteredUsers);
+    } else {
+      setFilteredRows(rows);
+    }
+    setSearchText(text);
+  };
 
-return (
-  <>
-            <Box sx={{ textAlign: 'center' }}>
-                <h2 >Guest</h2>
-            </Box>
-            <Box sx={{ marginY: 1 }}>
-                <Grid container
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                >
-                    <Grid item xs={12} md={9} >
-                        <Button variant="text">Add new</Button>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <TextField id="outlined-basic" label="Filter" variant="outlined" size="small" />
-                    </Grid>
-                </Grid>
-            </Box>
-  <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-              <TableRow>
-                  <TableCell align="center">Id</TableCell>
-                  <TableCell align="center">FirstName</TableCell>
-                  <TableCell align="center">LastName</TableCell>
-                  <TableCell align="center">Personal Id</TableCell>
-                  <TableCell align="center">Birth Date</TableCell>
-                  <TableCell align="center">Birth Place</TableCell>
-                  <TableCell align="center">Gender</TableCell>
-                  <TableCell align="center">Phone</TableCell>
-                  <TableCell align="center">Email</TableCell>
-                  <TableCell align="center">Adress</TableCell>
-                  <TableCell align="center">Reservation</TableCell>
-                  <TableCell align="center">Room Id</TableCell>
-                  <TableCell align="center">Hotel Id</TableCell>
-                  <TableCell align="center">Status</TableCell>
-                  <TableCell align="center">Note</TableCell>
-              </TableRow>
-          </TableHead>
-          <TableBody>
-              {rows.map((row) => (
-                  <TableRow
-                      key={row.name}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                      <TableCell align="center">{row.id}</TableCell>
-                      <TableCell align="center">{row.firstName}</TableCell>
-                      <TableCell align="center">{row.lastName}</TableCell>
-                      <TableCell align="center">{row.personalId}</TableCell>
-                      <TableCell align="center">{row.birthDate}</TableCell>
-                      <TableCell align="center">{row.birthplace}</TableCell>
-                      <TableCell align="center">{row.gender}</TableCell>
-                      <TableCell align="center">{row.phone}</TableCell>
-                      <TableCell align="center">{row.email}</TableCell>
-                      <TableCell align="center">{row.adress}</TableCell>
-                      <TableCell align="center">{row.reservation}</TableCell>
-                      <TableCell align="center">{row.roomId}</TableCell>
-                      <TableCell align="center">{row.hotelId}</TableCell>
-                      <TableCell align="center">{row.status}</TableCell>
-                      <TableCell align="center">{row.note}</TableCell>
-                      <TableCell align="center"><Button variant="text"><EditIcon/></Button></TableCell>
-                      <TableCell align="center"><Button variant="text"><DisabledByDefaultIcon /></Button></TableCell>
-                  </TableRow>
-              ))}
-          </TableBody>
-      </Table>
-      </TableContainer>
-      <ContentPagination />
-  </>
-)
-}
+  const handleGuestUpdate = () => {
+    const counter = (refresh + 1) % 2;
+    setRefresh(counter);
+    setSearchText("");
+  };
 
-export default Guests
+  useEffect(() => {
+    async function getGuests() {
+      const response = await fetch("api/guest");
+      const guestsJson = await response.json();
+      setRows(guestsJson);
+      setFilteredRows(guestsJson);
+    }
+
+    async function getFilteredGuests() {
+      let url = "api/guest/filter?";
+      url += selectedHotelId !== null ? `hotelId=${selectedHotelId}` : "";
+      url +=
+        selectedStatusId !== null
+          ? selectedHotelId !== null
+            ? `&guestStatus=${selectedStatusId}`
+            : `guestStatus=${selectedStatusId}`
+          : "";
+      const filteredResp = await fetch(url);
+      const filteredJson = await filteredResp.json();
+      setRows(filteredJson);
+      setFilteredRows(filteredJson);
+    }
+
+    async function getHotelNames() {
+      const hotelsResp = await fetch("api/hotel");
+      const hotelJson = await hotelsResp.json();
+      const namesArray = hotelJson.map(({ id, name }) => {
+        return { name, id };
+      });
+      setHotelNames(namesArray);
+    }
+
+    async function getEnums() {
+      let resp = await fetch("api/enum/Gender");
+      const gender = await resp.json();
+      resp = await fetch("api/enum/GuestStatus");
+      const status = await resp.json();
+      const enumsObj = { gender, status };
+      setEnums(enumsObj);
+    }
+
+    async function load() {
+      await getHotelNames();
+      await getEnums();
+      if (selectedHotelId === null && selectedStatusId === null) {
+        setFilterLoading(true);
+        await getGuests();
+        setTimeout(() => {
+          setFilterLoading(false);
+          setLoading(false);
+        }, 500);
+      } else {
+        setFilterLoading(true);
+        await getFilteredGuests();
+        setTimeout(() => {
+          setFilterLoading(false);
+        }, 500);
+      }
+    }
+
+    load();
+  }, [selectedHotelId, selectedStatusId, refresh]);
+
+  return (
+    <>
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress color="primary" />
+        </Box>
+      ) : (
+        <>
+          <Box sx={{ textAlign: "center" }}>
+            <h2>Guest</h2>
+          </Box>
+          <Box sx={{ marginY: 1 }}>
+            <Grid container direction="row" alignItems="center" spacing={2}>
+              <Grid item xs={12} md={9}>
+                <AddGuestModal
+                  enums={enums}
+                  hotels={hotelNames}
+                  onSave={handleGuestUpdate}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <TextField
+                  id="outlined-basic"
+                  onInput={searchBoxChanged}
+                  value={searchText}
+                  label="Search"
+                  variant="outlined"
+                  size="small"
+                />
+              </Grid>
+              <Grid item md={12}>
+                <Filter
+                  enums={enums}
+                  hotelNames={hotelNames}
+                  setSelectedHotelId={setSelectedHotelId}
+                  setSelectedStatusId={setSelectedStatusId}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          {filterLoading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Id</TableCell>
+                      <TableCell align="center">Name</TableCell>
+                      <TableCell align="center">Personal Id</TableCell>
+                      <TableCell align="center">Birth Date</TableCell>
+                      <TableCell align="center">Phone</TableCell>
+                      <TableCell align="center">Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredRows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell align="center">{row.id}</TableCell>
+                        <TableCell align="center">
+                          {row.firstName + " " + row.lastName}
+                        </TableCell>
+                        <TableCell align="center">{row.personalId}</TableCell>
+                        <TableCell align="center">
+                          {new Date(
+                            Date.parse(row.birthDate)
+                          ).toLocaleDateString("en-US")}
+                        </TableCell>
+                        <TableCell align="center">{row.phone}</TableCell>
+                        <TableCell align="center">
+                          {Object.keys(enums.status.values)[row.status]}
+                        </TableCell>
+                        <TableCell align="center">
+                          <EditGuestModal
+                            enums={enums}
+                            hotels={hotelNames}
+                            guest={row}
+                            onSave={handleGuestUpdate}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <ContentPagination />
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+};
+
+export default Guests;
