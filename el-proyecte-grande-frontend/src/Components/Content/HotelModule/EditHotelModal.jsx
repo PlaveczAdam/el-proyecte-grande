@@ -6,6 +6,24 @@ import EditIcon from "@mui/icons-material/Edit";
 import HotelModalForm from "./HotelModalForm";
 import Paper from "@mui/material/Paper";
 
+const style = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "15px",
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 800,
+  bgcolor: "background.paper",
+  border: "2px solid black",
+  boxShadow: 24,
+  p: 4,
+  height: "90vh",
+  overflowY: "auto",
+};
+
 const EditHotelModal = (props) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -27,7 +45,7 @@ const EditHotelModal = (props) => {
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <Box height="100vh" display="flex" sx={{ overflowY: "auto" }}>
+        <Box sx={style}>
           <Paper sx={{ margin: "auto" }}>
             <HotelModalForm
               hotel={props.hotel}

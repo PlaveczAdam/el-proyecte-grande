@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ReservationModalBase from "./ReservationModalBase";
 import AddReservation from "../Forms/AddReservation";
@@ -70,7 +71,18 @@ const AddReservationModal = ({
       handleClose={handleClose}
       boxStyle={style}
     >
-      <Button
+      {childModalIsOpen && (
+        <ChildModal message={message} modalWasClosed={childModalWasClosed} />
+      )}
+      <Box
+      width="100%"
+        display="flex"
+        justifyContent="space-between"
+      >
+        <Typography id="transition-modal-title" variant="h4">
+          Add Reservation
+        </Typography>
+        <Button
         onClick={handleClose}
         sx={{
           position: "absolute",
@@ -80,18 +92,13 @@ const AddReservationModal = ({
       >
         <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
       </Button>
-      {childModalIsOpen && (
-        <ChildModal message={message} modalWasClosed={childModalWasClosed} />
-      )}
-      <Typography id="transition-modal-title" variant="h5" component="h2">
-        Add new Reservation
-      </Typography>
+      </Box>
       <AddReservation
         onError={handleAddReservationError}
         onSuccess={handleAddReservationSuccess}
       />
       <div className="modal-buttons-container">
-        <Button onClick={handleClose} variant="contained" color="primary">
+        <Button onClick={handleClose} variant="outlined" color="primary">
           {buttonText}
         </Button>
       </div>

@@ -117,7 +117,7 @@ const RoomTypes = ({ enums, roomTypes, setRoomTypes }) => {
                 ))
             ) : (
               <TableRow>
-                <TableCell align="center">
+                <TableCell TableCell colSpan="100%" align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>

@@ -72,7 +72,14 @@ function App() {
                 logout: logout,
               }}
             >
-              <Container>
+              <Container
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 {user.loggedIn ? (
                   <>
                     <Header />

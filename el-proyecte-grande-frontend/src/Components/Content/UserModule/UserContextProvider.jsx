@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect} from "react";
 import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 export const UserContext = createContext({enums:{}})
 
@@ -18,7 +19,11 @@ const UserContextProvider = (props) => {
     },[]);
     if(!enums.values)
     {
-        return <CircularProgress color="primary" />;
+        return      <Box
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
+        <CircularProgress color="primary" />;
+      </Box>
     }
     return <UserContext.Provider value={{enums}}>{props.children()}</UserContext.Provider>
 }

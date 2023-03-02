@@ -133,9 +133,9 @@ const Reservations = () => {
   return (
     <>
       {isLoading ? (
-        <div className="loader_overlay">
+        <Box sx={{display:"flex", justifyContent:"center", alignItems:"center"}}>
           <CircularProgress color="primary" />
-        </div>
+        </Box>
       ) : error ? (
         <h2>{error}</h2>
       ) : (
@@ -150,7 +150,7 @@ const Reservations = () => {
           )}
 
           <Box sx={{ textAlign: "center" }}>
-            <h2>Reservations</h2>
+            <h2>Reservation</h2>
           </Box>
           <Box sx={{ marginY: 1 }}>
             <Grid container direction="row" alignItems="center" spacing={2}>
