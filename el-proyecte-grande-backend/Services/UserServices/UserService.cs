@@ -96,5 +96,11 @@ namespace el_proyecte_grande_backend.Services.UserServices
             return _context.Roles.ToList().Where(x => user.Roles.Any(y => x.Name == y.Name));
         }
 
+        public async Task ActivateRootUser()
+        {
+            User rootUser = await _context.Users.FirstAsync(u => u.Name == "Root");
+            rootUser.IsActive = true;
+            await _context.SaveChangesAsync();
+        }
     }
 }
