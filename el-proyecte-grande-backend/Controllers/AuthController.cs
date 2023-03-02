@@ -3,6 +3,7 @@ using el_proyecte_grande_backend.Models.Entities;
 using el_proyecte_grande_backend.Services.AuthServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -24,10 +25,14 @@ namespace el_proyecte_grande_backend.Controllers
             if (String.IsNullOrEmpty(credentials.Username) || String.IsNullOrEmpty(credentials.Password)) return Unauthorized();
 
             ClaimsIdentity? user = await _authService.LoginAttemptAsync(credentials.Username, credentials.Password);
-            
+
             if (user == null) return Unauthorized();
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(user));
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(user), new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                IsPersistent = true
+            });
 
             LoggedInUserDto loggedInUser = MakeLoggedInUserDto(user);
             return loggedInUser;
@@ -38,7 +43,14 @@ namespace el_proyecte_grande_backend.Controllers
         {
             await HttpContext.SignOutAsync();
             return Ok();
-        } 
+        }
+
+        [HttpGet("validate")]
+        [Authorize]
+        public async Task<ActionResult> Validate()
+        {
+            return Ok();
+        }
 
         private LoggedInUserDto MakeLoggedInUserDto(ClaimsIdentity user)
         {

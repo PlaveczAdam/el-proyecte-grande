@@ -80,7 +80,7 @@ function App() {
                   justifyContent: "space-between",
                 }}
               >
-                {user.username ? (
+                {user.loggedIn ? (
                   <>
                     <Header />
                     <Grid container direction="row" spacing={2}>
