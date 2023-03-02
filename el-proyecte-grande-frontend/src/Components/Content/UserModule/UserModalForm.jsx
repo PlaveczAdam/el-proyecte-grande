@@ -3,12 +3,12 @@ import { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-/* import Card from "@mui/material/Card"; */
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import Button from "@mui/material/Button";
 import { UserContext } from "./UserContextProvider";
 
 const UserModalForm = (props) => {
-  const [roles, setRoles] = useState(props.user.roles.map(x=>x.name));
+  const [roles, setRoles] = useState(props.user.roles.map((x) => x.name));
   const [user, setUser] = useState(props.user);
   const context = useContext(UserContext);
 
@@ -20,11 +20,25 @@ const UserModalForm = (props) => {
       gap={4}
       sx={{ padding: 4 }}
     >
-        <Box typography="h4" display="flex" gap={4}>
-            {props.title}
-            <Button sx={{marginLeft:"auto"}} onClick={()=>props.onSave({...user, roles: roles.map(x => ({name: x}))})}>Save</Button>
-            <Button onClick={props.onCancel}>Cancel</Button>
-        </Box>
+      <Box typography="h4" display="flex" gap={4}>
+        {props.title}
+        <Button
+          sx={{ marginLeft: "auto" }}
+          onClick={() =>
+            props.onSave({ ...user, roles: roles.map((x) => ({ name: x })) })
+          }
+        >
+          Save
+        </Button>
+        <Button
+          onClick={props.onCancel}
+          sx={{
+            position: "relative",
+          }}
+        >
+          <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
+        </Button>
+      </Box>
       <TextField
         required
         label="Name"
@@ -48,18 +62,14 @@ const UserModalForm = (props) => {
         multiple
         value={roles}
         label="Roles"
-        onChange={(e) => setRoles( e.target.value )}
+        onChange={(e) => setRoles(e.target.value)}
       >
-        {Object.entries(context.enums.values).map(
-          ([key, value]) => (
-            <MenuItem value={key} key={value}>
-              {key}
-            </MenuItem>
-          )
-        )}
+        {Object.entries(context.enums.values).map(([key, value]) => (
+          <MenuItem value={key} key={value}>
+            {key}
+          </MenuItem>
+        ))}
       </Select>
-     
-   
     </Box>
   );
 };

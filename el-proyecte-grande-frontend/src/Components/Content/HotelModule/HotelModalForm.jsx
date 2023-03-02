@@ -7,6 +7,7 @@ import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { HotelContext } from "./HotelContextProvider";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const HotelModalForm = (props) => {
   const [address, setAddress] = useState(props.hotel.address);
@@ -29,7 +30,14 @@ const HotelModalForm = (props) => {
         >
           Save
         </Button>
-        <Button onClick={props.onCancel}>Cancel</Button>
+        <Button
+          onClick={props.onCancel}
+          sx={{
+            position: "relative",
+          }}
+        >
+          <HighlightOffIcon sx={{ color: "brown", fontSize: "2rem" }} />
+        </Button>
       </Box>
       <TextField
         required
@@ -60,7 +68,8 @@ const HotelModalForm = (props) => {
         <Typography variant="caption" display="block">
           Hotel classification
         </Typography>
-        <Select fullWidth
+        <Select
+          fullWidth
           value={hotel.classification}
           label="Classification"
           onChange={(e) =>
