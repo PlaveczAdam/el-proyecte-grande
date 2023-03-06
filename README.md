@@ -18,8 +18,7 @@ The technologies and features that we have incorporated in this application incl
 - Authentication and Authorization implemented both on backend and frontend
 - Management and permissions of different users based on their roles
 - Containerization: Backend and frontend in one Docker container
-- CI: Workflows for GitHub Actions that also run tests for backend services on each pull request
-- CD: Workflows for GitHub Actions builds the version on the main branch and pushes to DockerHub
+- CI/CD: Workflows for GitHub Actions run tests for backend services on each pull request, also builds the version pushed to the main branch and publishes to DockerHub
 - HTTPS enabled for security
 
 ## How to run this application?
@@ -31,18 +30,20 @@ This application contains backend and frontend and requires:
 
 ### Windows
 
-In a windows environment, you can execute the `production_test.bat` file, with edited variables, to quickly test out the deployed version locally, with Docker. Help text is included within the file.
+In a windows environment, you can execute the `production_test.bat` file with edited variables, to quickly test out the deployed version locally. Docker required. Help text is included within the file.
+
 This file builds a docker image (default name: grande-management) and and runs it in container (default name: grande_container).
+
 The app runs on [localhost](http://localhost) by default.
 
 ### Docker
 
-The project is on [DockerHub](https://hub.docker.com/r/grandthefthotel/grande_management), you can use the image, edited with your environmental variables, to deploy in a container with docker.
+The project is on [DockerHub](https://hub.docker.com/r/grandthefthotel/grande_management), you can use the image edited with your environmental variables, to deploy in a container with docker.
 
 ### Environmental variables
 
 - `ASPNETCORE_DB_CONNECTION_STRING`: The connection string of your PostgreSQL database
-- `ASPNETCORE_URLS`: Ports of the frontend, recommended: `"https://+:443;http://+:80"`
+- `ASPNETCORE_URLS`: The ports of the frontend site, recommended: `"https://+:443;http://+:80"`
 - `ASPNETCORE_HTTPS_PORT`: The HTTPS port, recommended: `443`
 - `ASPNETCORE_Kestrel__Certificates__Default__Path`: The path of your certificate
 - `ASPNETCORE_Kestrel__Certificates__Default__Password`: The secure password of your certificate
